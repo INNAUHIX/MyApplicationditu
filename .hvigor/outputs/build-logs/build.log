@@ -7802,3 +7802,1960 @@ at E:\MyApplicationditu\entry\src\main\resources\base\element\string.json
 [2026-07-09T21:01:59.112] [DEBUG] debug-file - session manager: set active socket. socketId=e_EZvgXbqe6bczQRAAAH
 [2026-07-09T21:01:59.116] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
 [2026-07-09T21:01:59.118] [DEBUG] debug-file - Workers' log level updated to INFO
+[2026-07-09T21:01:59.119] [DEBUG] debug-file - Hvigor init with startParameters:{
+  hvigorfileTypeCheck: false,
+  parallelExecution: true,
+  incrementalExecution: true,
+  printStackTrace: false,
+  daemon: true,
+  analyze: 0,
+  logLevel: Level { level: 20000, levelStr: 'INFO', colour: 'green' },
+  optimizationStrategy: 'memory',
+  hotCompile: undefined,
+  hotReloadBuild: undefined,
+  customizedParam: undefined
+}
+[2026-07-09T21:01:59.121] [DEBUG] debug-file - Cache service initialization finished in 2 ms 
+[2026-07-09T21:01:59.122] [DEBUG] debug-file - hvigorfile, resolving E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T21:01:59.127] [DEBUG] debug-file - hvigorfile, require result:  { default: { plugins: [] } }
+[2026-07-09T21:01:59.127] [DEBUG] debug-file - hvigorfile, binding system plugins null
+[2026-07-09T21:01:59.127] [DEBUG] debug-file - Starting plugin build process
+[2026-07-09T21:01:59.127] [DEBUG] debug-file - App plugin prepare start...
+[2026-07-09T21:01:59.127] [DEBUG] debug-file - App plugin prepare end...
+[2026-07-09T21:01:59.127] [DEBUG] debug-file - App plugin creating...
+[2026-07-09T21:01:59.131] [DEBUG] debug-file - App plugin register hook start...
+[2026-07-09T21:01:59.131] [DEBUG] debug-file - App plugin register hook end...
+[2026-07-09T21:01:59.131] [DEBUG] debug-file - Plugin build process completed
+[2026-07-09T21:01:59.131] [DEBUG] debug-file - Start initialize project's product build option map with build mode debug.
+[2026-07-09T21:01:59.131] [DEBUG] debug-file - Picking option from product 'default' with build mode 'debug'.
+[2026-07-09T21:01:59.131] [DEBUG] debug-file - Product 'default' build option initialized
+[2026-07-09T21:01:59.131] [DEBUG] debug-file - End initialize project's product build option map with build mode 'debug'.
+[2026-07-09T21:01:59.131] [DEBUG] debug-file - Obtain build option for product 'default'in this build.
+[2026-07-09T21:01:59.133] [DEBUG] debug-file - E:\MyApplicationditu\build\cache\default\remote_hsp\remoteHspCache.json not exists.
+[2026-07-09T21:01:59.135] [DEBUG] debug-file - Start recording SDK configuration permission data.
+[2026-07-09T21:01:59.154] [DEBUG] debug-file - Sdk init in 21 ms 
+[2026-07-09T21:01:59.156] [DEBUG] debug-file - Project task initialization takes 2 ms 
+[2026-07-09T21:01:59.156] [DEBUG] debug-file - hvigorfile, begin to bind custom plugins...
+[2026-07-09T21:01:59.156] [DEBUG] debug-file - hvigorfile, no custom plugins were found in E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T21:01:59.156] [DEBUG] debug-file - hvigorfile, resolve finished E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T21:01:59.156] [DEBUG] debug-file - hvigorfile, resolving E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T21:01:59.159] [DEBUG] debug-file - hvigorfile, require result:  { default: { plugins: [] } }
+[2026-07-09T21:01:59.159] [DEBUG] debug-file - hvigorfile, binding system plugins null
+[2026-07-09T21:01:59.159] [DEBUG] debug-file - Starting plugin build process
+[2026-07-09T21:01:59.159] [DEBUG] debug-file - Hap plugin creating...
+[2026-07-09T21:01:59.161] [DEBUG] debug-file - failed to load cangjie to dynamically generate schemas: Error: Cannot find module '@ohos/cangjie-build-support/index'
+Require stack:
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\hooks\cangjie-register.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\strategy\stage-init-strategy.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\abstract-plugin-builder.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\app-plugin-builder.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\factory\plugin-factory.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\index.js
+- E:\MyApplicationditu\hvigorfile.ts
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\internal\lifecycle\configuration.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\boot\index.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\cluster\worker-process-lifecycle.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\process\daemon-process-boot-script.js
+[2026-07-09T21:01:59.162] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-07-09T21:01:59.162] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T21:01:59.162] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T21:01:59.162] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T21:01:59.162] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T21:01:59.162] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T21:01:59.162] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=release
+[2026-07-09T21:01:59.162] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T21:01:59.162] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T21:01:59.163] [DEBUG] debug-file - Obtain build option for module 'entry' target 'default'in this build.
+[2026-07-09T21:01:59.164] [DEBUG] debug-file - Module entry task initialization takes 1 ms 
+[2026-07-09T21:01:59.165] [DEBUG] debug-file - Hap plugin register hook start...
+[2026-07-09T21:01:59.165] [DEBUG] debug-file - Hap plugin register hook end...
+[2026-07-09T21:01:59.165] [DEBUG] debug-file - Plugin build process completed
+[2026-07-09T21:01:59.165] [DEBUG] debug-file - hvigorfile, begin to bind custom plugins...
+[2026-07-09T21:01:59.165] [DEBUG] debug-file - hvigorfile, no custom plugins were found in E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T21:01:59.165] [DEBUG] debug-file - hvigorfile, resolve finished E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T21:01:59.176] [DEBUG] debug-file - hvigorfile, resolve hvigorfile dependencies in 12 ms 
+[2026-07-09T21:01:59.177] [DEBUG] debug-file - project has submodules:entry
+[2026-07-09T21:01:59.177] [DEBUG] debug-file - start to load updatedOhPackageInfo to the disk
+[2026-07-09T21:01:59.178] [DEBUG] debug-file - load to the disk finished
+[2026-07-09T21:01:59.178] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-07-09T21:01:59.180] [DEBUG] debug-file - Module MyApplicationditu Collected Dependency: 
+[2026-07-09T21:01:59.180] [DEBUG] debug-file - Module MyApplicationditu's total dependency: 0
+[2026-07-09T21:01:59.180] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-07-09T21:01:59.181] [DEBUG] debug-file - Module entry Collected Dependency: 
+[2026-07-09T21:01:59.181] [DEBUG] debug-file - Module entry's total dependency: 0
+[2026-07-09T21:01:59.181] [DEBUG] debug-file - Configuration phase cost:61 ms 
+[2026-07-09T21:01:59.182] [DEBUG] debug-file - Configuration task cost before running: 64 ms 
+[2026-07-09T21:01:59.183] [DEBUG] debug-file - Executing task :entry:default@PreBuild
+[2026-07-09T21:01:59.185] [DEBUG] debug-file - Task 'entry:default@PreBuild' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.187] [DEBUG] debug-file - Incremental task entry:default@PreBuild pre-execution cost: 2 ms .
+[2026-07-09T21:01:59.187] [DEBUG] debug-file - entry : default@PreBuild cost memory 0.6205062866210938
+[2026-07-09T21:01:59.187] [INFO] debug-file - UP-TO-DATE :entry:default@PreBuild...  
+[2026-07-09T21:01:59.188] [DEBUG] debug-file - Executing task :entry:default@CreateModuleInfo
+[2026-07-09T21:01:59.188] [DEBUG] debug-file - Task 'entry:default@CreateModuleInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.188] [DEBUG] debug-file - entry : default@CreateModuleInfo cost memory 0.04140472412109375
+[2026-07-09T21:01:59.188] [DEBUG] debug-file - runTaskFromQueue task cost before running: 71 ms 
+[2026-07-09T21:01:59.188] [INFO] debug-file - Finished :entry:default@CreateModuleInfo... after 1 ms 
+[2026-07-09T21:01:59.189] [DEBUG] debug-file - Executing task :entry:default@GenerateMetadata
+[2026-07-09T21:01:59.189] [DEBUG] debug-file - Task 'entry:default@GenerateMetadata' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.189] [DEBUG] debug-file - Incremental task entry:default@GenerateMetadata pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.189] [DEBUG] debug-file - entry : default@GenerateMetadata cost memory 0.08364105224609375
+[2026-07-09T21:01:59.190] [INFO] debug-file - UP-TO-DATE :entry:default@GenerateMetadata...  
+[2026-07-09T21:01:59.190] [DEBUG] debug-file - Executing task :entry:default@ConfigureCmake
+[2026-07-09T21:01:59.190] [DEBUG] debug-file - entry : default@ConfigureCmake cost memory 0.01448822021484375
+[2026-07-09T21:01:59.190] [DEBUG] debug-file - runTaskFromQueue task cost before running: 73 ms 
+[2026-07-09T21:01:59.190] [INFO] debug-file - Finished :entry:default@ConfigureCmake... after 1 ms 
+[2026-07-09T21:01:59.191] [DEBUG] debug-file - Executing task :entry:default@MergeProfile
+[2026-07-09T21:01:59.191] [DEBUG] debug-file - Task 'entry:default@MergeProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.191] [DEBUG] debug-file - Incremental task entry:default@MergeProfile pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.191] [DEBUG] debug-file - entry : default@MergeProfile cost memory 0.12908935546875
+[2026-07-09T21:01:59.191] [INFO] debug-file - UP-TO-DATE :entry:default@MergeProfile...  
+[2026-07-09T21:01:59.192] [DEBUG] debug-file - Executing task :entry:default@CreateBuildProfile
+[2026-07-09T21:01:59.192] [DEBUG] debug-file - Task 'entry:default@CreateBuildProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.193] [DEBUG] debug-file - Incremental task entry:default@CreateBuildProfile pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.193] [DEBUG] debug-file - entry : default@CreateBuildProfile cost memory 0.09903717041015625
+[2026-07-09T21:01:59.193] [INFO] debug-file - UP-TO-DATE :entry:default@CreateBuildProfile...  
+[2026-07-09T21:01:59.193] [DEBUG] debug-file - Executing task :entry:default@PreCheckSyscap
+[2026-07-09T21:01:59.193] [DEBUG] debug-file - entry : default@PreCheckSyscap cost memory 0.01470947265625
+[2026-07-09T21:01:59.193] [DEBUG] debug-file - runTaskFromQueue task cost before running: 76 ms 
+[2026-07-09T21:01:59.194] [INFO] debug-file - Finished :entry:default@PreCheckSyscap... after 1 ms 
+[2026-07-09T21:01:59.194] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgContextInfo
+[2026-07-09T21:01:59.195] [DEBUG] debug-file - Task 'entry:default@GeneratePkgContextInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.195] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgContextInfo pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.195] [DEBUG] debug-file - entry : default@GeneratePkgContextInfo cost memory 0.19878387451171875
+[2026-07-09T21:01:59.196] [INFO] debug-file - UP-TO-DATE :entry:default@GeneratePkgContextInfo...  
+[2026-07-09T21:01:59.196] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgSdkInfo
+[2026-07-09T21:01:59.196] [DEBUG] debug-file - Task 'entry:default@GeneratePkgSdkInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.196] [DEBUG] debug-file - entry : default@GeneratePkgSdkInfo cost memory 0.11841583251953125
+[2026-07-09T21:01:59.196] [DEBUG] debug-file - runTaskFromQueue task cost before running: 79 ms 
+[2026-07-09T21:01:59.197] [INFO] debug-file - Finished :entry:default@GeneratePkgSdkInfo... after 1 ms 
+[2026-07-09T21:01:59.197] [DEBUG] debug-file - Executing task :entry:default@ProcessIntegratedHsp
+[2026-07-09T21:01:59.198] [DEBUG] debug-file - entry:default@ProcessIntegratedHsp is not up-to-date, since the output file 'E:\MyApplicationditu\build\cache\default\integrated_hsp\integratedHspCache.json' does not exist.
+[2026-07-09T21:01:59.198] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.198] [DEBUG] debug-file - entry : default@ProcessIntegratedHsp cost memory 0.0570068359375
+[2026-07-09T21:01:59.198] [DEBUG] debug-file - runTaskFromQueue task cost before running: 80 ms 
+[2026-07-09T21:01:59.198] [INFO] debug-file - Finished :entry:default@ProcessIntegratedHsp... after 1 ms 
+[2026-07-09T21:01:59.198] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithCmake
+[2026-07-09T21:01:59.198] [DEBUG] debug-file - entry : default@BuildNativeWithCmake cost memory 0.014495849609375
+[2026-07-09T21:01:59.199] [DEBUG] debug-file - runTaskFromQueue task cost before running: 81 ms 
+[2026-07-09T21:01:59.199] [INFO] debug-file - Finished :entry:default@BuildNativeWithCmake... after 1 ms 
+[2026-07-09T21:01:59.199] [DEBUG] debug-file - Executing task :entry:default@MakePackInfo
+[2026-07-09T21:01:59.200] [DEBUG] debug-file - Incremental task entry:default@MakePackInfo pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.200] [DEBUG] debug-file - entry : default@MakePackInfo cost memory 0.12548065185546875
+[2026-07-09T21:01:59.200] [INFO] debug-file - UP-TO-DATE :entry:default@MakePackInfo...  
+[2026-07-09T21:01:59.201] [DEBUG] debug-file - Executing task :entry:default@SyscapTransform
+[2026-07-09T21:01:59.201] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\src\main\syscap.json' from 'sysCapJsonPath' is not exists, just ignore.
+[2026-07-09T21:01:59.201] [DEBUG] debug-file - Task 'entry:default@SyscapTransform' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.203] [DEBUG] debug-file - entry:default@SyscapTransform is not up-to-date, since the output file 'E:\MyApplicationditu\entry\build\default\intermediates\syscap\default\rpcid.sc' does not exist.
+[2026-07-09T21:01:59.203] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform pre-execution cost: 2 ms .
+[2026-07-09T21:01:59.203] [DEBUG] debug-file - entry : default@SyscapTransform cost memory -1.4196090698242188
+[2026-07-09T21:01:59.203] [DEBUG] debug-file - runTaskFromQueue task cost before running: 86 ms 
+[2026-07-09T21:01:59.203] [INFO] debug-file - Finished :entry:default@SyscapTransform... after 3 ms 
+[2026-07-09T21:01:59.204] [DEBUG] debug-file - Executing task :entry:default@ProcessProfile
+[2026-07-09T21:01:59.204] [DEBUG] debug-file - Task 'entry:default@ProcessProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.204] [DEBUG] debug-file - Incremental task entry:default@ProcessProfile pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.204] [DEBUG] debug-file - entry : default@ProcessProfile cost memory 0.15130615234375
+[2026-07-09T21:01:59.204] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessProfile...  
+[2026-07-09T21:01:59.205] [DEBUG] debug-file - Executing task :entry:default@ProcessRouterMap
+[2026-07-09T21:01:59.206] [DEBUG] debug-file - Incremental task entry:default@ProcessRouterMap pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.206] [DEBUG] debug-file - entry : default@ProcessRouterMap cost memory 0.1429901123046875
+[2026-07-09T21:01:59.206] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessRouterMap...  
+[2026-07-09T21:01:59.206] [DEBUG] debug-file - Executing task :entry:default@ProcessShareConfig
+[2026-07-09T21:01:59.207] [DEBUG] debug-file - Incremental task entry:default@ProcessShareConfig pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.207] [DEBUG] debug-file - entry : default@ProcessShareConfig cost memory 0.12060546875
+[2026-07-09T21:01:59.207] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessShareConfig...  
+[2026-07-09T21:01:59.207] [DEBUG] debug-file - Executing task :entry:default@ProcessStartupConfig
+[2026-07-09T21:01:59.207] [DEBUG] debug-file - Task 'entry:default@ProcessStartupConfig' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.208] [DEBUG] debug-file - entry:default@ProcessStartupConfig is not up-to-date, since the output file 'E:\MyApplicationditu\entry\build\default\intermediates\startup\default\startup_config.json' does not exist.
+[2026-07-09T21:01:59.208] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.208] [DEBUG] debug-file - entry : default@ProcessStartupConfig cost memory 0.16309356689453125
+[2026-07-09T21:01:59.208] [DEBUG] debug-file - runTaskFromQueue task cost before running: 91 ms 
+[2026-07-09T21:01:59.208] [INFO] debug-file - Finished :entry:default@ProcessStartupConfig... after 1 ms 
+[2026-07-09T21:01:59.208] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithNinja
+[2026-07-09T21:01:59.209] [DEBUG] debug-file - entry : default@BuildNativeWithNinja cost memory 0.01956939697265625
+[2026-07-09T21:01:59.209] [DEBUG] debug-file - runTaskFromQueue task cost before running: 91 ms 
+[2026-07-09T21:01:59.209] [INFO] debug-file - Finished :entry:default@BuildNativeWithNinja... after 1 ms 
+[2026-07-09T21:01:59.209] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@ProcessResource
+[2026-07-09T21:01:59.210] [DEBUG] debug-file - Executing task :entry:default@ProcessResource
+[2026-07-09T21:01:59.210] [DEBUG] debug-file - Task 'entry:default@ProcessResource' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.211] [DEBUG] debug-file - Incremental task entry:default@ProcessResource pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.211] [DEBUG] debug-file - entry : default@ProcessResource cost memory 0.1249237060546875
+[2026-07-09T21:01:59.212] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessResource...  
+[2026-07-09T21:01:59.212] [DEBUG] debug-file - Executing task :entry:default@GenerateLoaderJson
+[2026-07-09T21:01:59.212] [DEBUG] debug-file - Task 'entry:default@GenerateLoaderJson' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.215] [DEBUG] debug-file - Incremental task entry:default@GenerateLoaderJson pre-execution cost: 2 ms .
+[2026-07-09T21:01:59.215] [DEBUG] debug-file - entry : default@GenerateLoaderJson cost memory -1.1296005249023438
+[2026-07-09T21:01:59.217] [INFO] debug-file - UP-TO-DATE :entry:default@GenerateLoaderJson...  
+[2026-07-09T21:01:59.217] [DEBUG] debug-file - Executing task :entry:default@ProcessLibs
+[2026-07-09T21:01:59.218] [DEBUG] debug-file - Incremental task entry:default@ProcessLibs pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.218] [DEBUG] debug-file - entry : default@ProcessLibs cost memory 0.09064483642578125
+[2026-07-09T21:01:59.218] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessLibs...  
+[2026-07-09T21:01:59.219] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@CompileResource
+[2026-07-09T21:01:59.219] [DEBUG] debug-file - Executing task :entry:default@CompileResource
+[2026-07-09T21:01:59.224] [DEBUG] debug-file - Incremental task entry:default@CompileResource pre-execution cost: 6 ms .
+[2026-07-09T21:01:59.225] [DEBUG] debug-file - entry : default@CompileResource cost memory 0.9337234497070312
+[2026-07-09T21:01:59.226] [INFO] debug-file - UP-TO-DATE :entry:default@CompileResource...  
+[2026-07-09T21:01:59.227] [DEBUG] debug-file - Executing task :entry:default@DoNativeStrip
+[2026-07-09T21:01:59.227] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\binxo\default' from 'doBinxoNativeLibs' is not exists, just ignore.
+[2026-07-09T21:01:59.227] [DEBUG] debug-file - Task 'entry:default@DoNativeStrip' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.227] [DEBUG] debug-file - Incremental task entry:default@DoNativeStrip pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.227] [DEBUG] debug-file - entry : default@DoNativeStrip cost memory 0.0908050537109375
+[2026-07-09T21:01:59.227] [INFO] debug-file - UP-TO-DATE :entry:default@DoNativeStrip...  
+[2026-07-09T21:01:59.228] [DEBUG] debug-file - Executing task :entry:default@CompileArkTS
+[2026-07-09T21:01:59.228] [DEBUG] debug-file - obfuscationOptions: undefined
+[2026-07-09T21:01:59.228] [DEBUG] debug-file - Task 'entry:default@CompileArkTS' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.231] [DEBUG] debug-file - Incremental task entry:default@CompileArkTS pre-execution cost: 3 ms .
+[2026-07-09T21:01:59.231] [DEBUG] debug-file - entry : default@CompileArkTS cost memory 0.5052032470703125
+[2026-07-09T21:01:59.232] [INFO] debug-file - UP-TO-DATE :entry:default@CompileArkTS...  
+[2026-07-09T21:01:59.232] [DEBUG] debug-file - Executing task :entry:default@BuildJS
+[2026-07-09T21:01:59.233] [DEBUG] debug-file - Task 'entry:default@BuildJS' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.233] [DEBUG] debug-file - entry : default@BuildJS cost memory 0.1456146240234375
+[2026-07-09T21:01:59.233] [DEBUG] debug-file - runTaskFromQueue task cost before running: 116 ms 
+[2026-07-09T21:01:59.233] [INFO] debug-file - Finished :entry:default@BuildJS... after 1 ms 
+[2026-07-09T21:01:59.234] [DEBUG] debug-file - Executing task :entry:default@CacheNativeLibs
+[2026-07-09T21:01:59.234] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\binxo\default' from 'cacheBinxoNativeLibs' is not exists, just ignore.
+[2026-07-09T21:01:59.234] [DEBUG] debug-file - Task 'entry:default@CacheNativeLibs' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.234] [DEBUG] debug-file - Incremental task entry:default@CacheNativeLibs pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.235] [DEBUG] debug-file - entry : default@CacheNativeLibs cost memory 0.11534881591796875
+[2026-07-09T21:01:59.235] [INFO] debug-file - UP-TO-DATE :entry:default@CacheNativeLibs...  
+[2026-07-09T21:01:59.235] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgModuleJson
+[2026-07-09T21:01:59.235] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\preload\default\preload.json' from 'preloadSoJsonPath' is not exists, just ignore.
+[2026-07-09T21:01:59.235] [DEBUG] debug-file - Error occurs while handling @Input 'shouldDeduplicateHar': The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+[2026-07-09T21:01:59.235] [DEBUG] debug-file - Task 'entry:default@GeneratePkgModuleJson' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.235] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgModuleJson pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.235] [DEBUG] debug-file - entry : default@GeneratePkgModuleJson cost memory 0.10066986083984375
+[2026-07-09T21:01:59.235] [INFO] debug-file - UP-TO-DATE :entry:default@GeneratePkgModuleJson...  
+[2026-07-09T21:01:59.236] [DEBUG] debug-file - Executing task :entry:default@ProcessCompiledResources
+[2026-07-09T21:01:59.236] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\preload\default\preload.json' from 'preloadSoJsonPath' is not exists, just ignore.
+[2026-07-09T21:01:59.236] [DEBUG] debug-file - Task 'entry:default@ProcessCompiledResources' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:01:59.236] [DEBUG] debug-file - entry : default@ProcessCompiledResources cost memory 0.0559539794921875
+[2026-07-09T21:01:59.236] [DEBUG] debug-file - runTaskFromQueue task cost before running: 119 ms 
+[2026-07-09T21:01:59.236] [INFO] debug-file - Finished :entry:default@ProcessCompiledResources... after 1 ms 
+[2026-07-09T21:01:59.237] [DEBUG] debug-file - Executing task :entry:default@PackageHap
+[2026-07-09T21:01:59.240] [DEBUG] debug-file - Incremental task entry:default@PackageHap pre-execution cost: 3 ms .
+[2026-07-09T21:01:59.240] [DEBUG] debug-file - entry : default@PackageHap cost memory 0.5963134765625
+[2026-07-09T21:01:59.241] [INFO] debug-file - UP-TO-DATE :entry:default@PackageHap...  
+[2026-07-09T21:01:59.241] [DEBUG] debug-file - Executing task :entry:default@PackingCheck
+[2026-07-09T21:01:59.243] [DEBUG] debug-file - entry : default@PackingCheck cost memory 0.36389923095703125
+[2026-07-09T21:01:59.244] [DEBUG] debug-file - runTaskFromQueue task cost before running: 126 ms 
+[2026-07-09T21:01:59.244] [INFO] debug-file - Finished :entry:default@PackingCheck... after 3 ms 
+[2026-07-09T21:01:59.244] [DEBUG] debug-file - Executing task :entry:default@SignHap
+[2026-07-09T21:01:59.245] [DEBUG] debug-file - Incremental task entry:default@SignHap pre-execution cost: 1 ms .
+[2026-07-09T21:01:59.245] [DEBUG] debug-file - entry : default@SignHap cost memory 0.11168670654296875
+[2026-07-09T21:01:59.246] [INFO] debug-file - UP-TO-DATE :entry:default@SignHap...  
+[2026-07-09T21:01:59.246] [DEBUG] debug-file - Executing task :entry:default@CollectDebugSymbol
+[2026-07-09T21:01:59.247] [DEBUG] debug-file - entry : default@CollectDebugSymbol cost memory 0.07733154296875
+[2026-07-09T21:01:59.247] [DEBUG] debug-file - runTaskFromQueue task cost before running: 129 ms 
+[2026-07-09T21:01:59.247] [INFO] debug-file - Finished :entry:default@CollectDebugSymbol... after 1 ms 
+[2026-07-09T21:01:59.247] [DEBUG] debug-file - Executing task :entry:assembleHap
+[2026-07-09T21:01:59.247] [DEBUG] debug-file - entry : assembleHap cost memory 0.01273345947265625
+[2026-07-09T21:01:59.247] [DEBUG] debug-file - runTaskFromQueue task cost before running: 130 ms 
+[2026-07-09T21:01:59.247] [INFO] debug-file - Finished :entry:assembleHap... after 1 ms 
+[2026-07-09T21:01:59.501] [INFO] debug-file - BUILD SUCCESSFUL in 384 ms 
+[2026-07-09T21:01:59.501] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@PreBuild is up-to-date.
+[2026-07-09T21:01:59.501] [DEBUG] debug-file - Update task entry:default@CreateModuleInfo output file:E:\MyApplicationditu\entry\build\default\generated\profile\default\ModuleInfo.ts cache.
+[2026-07-09T21:01:59.502] [DEBUG] debug-file - Incremental task entry:default@CreateModuleInfo post-execution cost:1 ms .
+[2026-07-09T21:01:59.502] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateMetadata is up-to-date.
+[2026-07-09T21:01:59.502] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MergeProfile is up-to-date.
+[2026-07-09T21:01:59.502] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CreateBuildProfile is up-to-date.
+[2026-07-09T21:01:59.502] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GeneratePkgContextInfo is up-to-date.
+[2026-07-09T21:01:59.502] [DEBUG] debug-file - Update task entry:default@GeneratePkgSdkInfo output file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgSdkInfo.json cache.
+[2026-07-09T21:01:59.502] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgSdkInfo post-execution cost:1 ms .
+[2026-07-09T21:01:59.502] [DEBUG] debug-file - Update task entry:default@ProcessIntegratedHsp output file:E:\MyApplicationditu\build\cache\default\integrated_hsp\integratedHspCache.json cache.
+[2026-07-09T21:01:59.503] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp post-execution cost:1 ms .
+[2026-07-09T21:01:59.503] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MakePackInfo is up-to-date.
+[2026-07-09T21:01:59.503] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\toolchains\syscap_tool.exe cache by regenerate.
+[2026-07-09T21:01:59.503] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\ets\api\device-define cache by regenerate.
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - Update task entry:default@SyscapTransform output file:E:\MyApplicationditu\entry\build\default\intermediates\syscap\default\rpcid.sc cache.
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform post-execution cost:2 ms .
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessProfile is up-to-date.
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessRouterMap is up-to-date.
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessShareConfig is up-to-date.
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig output file:E:\MyApplicationditu\entry\build\default\intermediates\startup\default\startup_config.json cache.
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig post-execution cost:1 ms .
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessResource is up-to-date.
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateLoaderJson is up-to-date.
+[2026-07-09T21:01:59.504] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessLibs is up-to-date.
+[2026-07-09T21:01:59.505] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CompileResource is up-to-date.
+[2026-07-09T21:01:59.505] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@DoNativeStrip is up-to-date.
+[2026-07-09T21:01:59.505] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CompileArkTS is up-to-date.
+[2026-07-09T21:01:59.505] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-07-09T21:01:59.505] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-07-09T21:01:59.505] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-07-09T21:01:59.505] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - Update task entry:default@BuildJS output file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\js cache.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - Incremental task entry:default@BuildJS post-execution cost:2 ms .
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CacheNativeLibs is up-to-date.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GeneratePkgModuleJson is up-to-date.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - Incremental task entry:default@ProcessCompiledResources post-execution cost:1 ms .
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@PackageHap is up-to-date.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@SignHap is up-to-date.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets\sourceMaps.map cache by regenerate.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:E:\MyApplicationditu\entry\build\default\intermediates\libs\default cache by regenerate.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol output file:E:\MyApplicationditu\entry\build\default\outputs\default\symbol cache.
+[2026-07-09T21:01:59.506] [DEBUG] debug-file - Incremental task entry:default@CollectDebugSymbol post-execution cost:1 ms .
+[2026-07-09T21:01:59.746] [DEBUG] debug-file - hvigor build process will be closed.
+[2026-07-09T21:01:59.751] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-09T21:01:59.752] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-09T21:01:59.751] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T21:01:59.751] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T21:37:56.176] [DEBUG] debug-file - session manager: set active socket. socketId=y_p_D0JEcQJLGqVnAAAJ
+[2026-07-09T21:37:56.185] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T21:37:56.192] [DEBUG] debug-file - Workers' log level updated to INFO
+[2026-07-09T21:37:56.199] [DEBUG] debug-file - Hvigor init with startParameters:{
+  hvigorfileTypeCheck: false,
+  parallelExecution: true,
+  incrementalExecution: true,
+  printStackTrace: false,
+  daemon: true,
+  analyze: 0,
+  logLevel: Level { level: 20000, levelStr: 'INFO', colour: 'green' },
+  optimizationStrategy: 'memory',
+  hotCompile: undefined,
+  hotReloadBuild: undefined,
+  customizedParam: undefined
+}
+[2026-07-09T21:37:56.205] [DEBUG] debug-file - Cache service initialization finished in 5 ms 
+[2026-07-09T21:37:56.205] [DEBUG] debug-file - hvigorfile, resolving E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T21:37:56.217] [DEBUG] debug-file - hvigorfile, require result:  { default: { plugins: [] } }
+[2026-07-09T21:37:56.217] [DEBUG] debug-file - hvigorfile, binding system plugins null
+[2026-07-09T21:37:56.218] [DEBUG] debug-file - Starting plugin build process
+[2026-07-09T21:37:56.218] [DEBUG] debug-file - App plugin prepare start...
+[2026-07-09T21:37:56.218] [DEBUG] debug-file - App plugin prepare end...
+[2026-07-09T21:37:56.218] [DEBUG] debug-file - App plugin creating...
+[2026-07-09T21:37:56.224] [DEBUG] debug-file - App plugin register hook start...
+[2026-07-09T21:37:56.224] [DEBUG] debug-file - App plugin register hook end...
+[2026-07-09T21:37:56.224] [DEBUG] debug-file - Plugin build process completed
+[2026-07-09T21:37:56.224] [DEBUG] debug-file - Start initialize project's product build option map with build mode debug.
+[2026-07-09T21:37:56.224] [DEBUG] debug-file - Picking option from product 'default' with build mode 'debug'.
+[2026-07-09T21:37:56.224] [DEBUG] debug-file - Product 'default' build option initialized
+[2026-07-09T21:37:56.225] [DEBUG] debug-file - End initialize project's product build option map with build mode 'debug'.
+[2026-07-09T21:37:56.225] [DEBUG] debug-file - Obtain build option for product 'default'in this build.
+[2026-07-09T21:37:56.228] [DEBUG] debug-file - E:\MyApplicationditu\build\cache\default\remote_hsp\remoteHspCache.json not exists.
+[2026-07-09T21:37:56.230] [DEBUG] debug-file - Start recording SDK configuration permission data.
+[2026-07-09T21:37:56.252] [DEBUG] debug-file - Sdk init in 23 ms 
+[2026-07-09T21:37:56.254] [DEBUG] debug-file - Project task initialization takes 2 ms 
+[2026-07-09T21:37:56.254] [DEBUG] debug-file - hvigorfile, begin to bind custom plugins...
+[2026-07-09T21:37:56.254] [DEBUG] debug-file - hvigorfile, no custom plugins were found in E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T21:37:56.254] [DEBUG] debug-file - hvigorfile, resolve finished E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T21:37:56.254] [DEBUG] debug-file - hvigorfile, resolving E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T21:37:56.258] [DEBUG] debug-file - hvigorfile, require result:  { default: { plugins: [] } }
+[2026-07-09T21:37:56.258] [DEBUG] debug-file - hvigorfile, binding system plugins null
+[2026-07-09T21:37:56.258] [DEBUG] debug-file - Starting plugin build process
+[2026-07-09T21:37:56.258] [DEBUG] debug-file - Hap plugin creating...
+[2026-07-09T21:37:56.259] [DEBUG] debug-file - failed to load cangjie to dynamically generate schemas: Error: Cannot find module '@ohos/cangjie-build-support/index'
+Require stack:
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\hooks\cangjie-register.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\strategy\stage-init-strategy.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\abstract-plugin-builder.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\app-plugin-builder.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\factory\plugin-factory.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\index.js
+- E:\MyApplicationditu\hvigorfile.ts
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\internal\lifecycle\configuration.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\boot\index.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\cluster\worker-process-lifecycle.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\process\daemon-process-boot-script.js
+[2026-07-09T21:37:56.260] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-07-09T21:37:56.260] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=release
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T21:37:56.261] [DEBUG] debug-file - Obtain build option for module 'entry' target 'default'in this build.
+[2026-07-09T21:37:56.263] [DEBUG] debug-file - Module entry task initialization takes 1 ms 
+[2026-07-09T21:37:56.263] [DEBUG] debug-file - Hap plugin register hook start...
+[2026-07-09T21:37:56.263] [DEBUG] debug-file - Hap plugin register hook end...
+[2026-07-09T21:37:56.263] [DEBUG] debug-file - Plugin build process completed
+[2026-07-09T21:37:56.263] [DEBUG] debug-file - hvigorfile, begin to bind custom plugins...
+[2026-07-09T21:37:56.263] [DEBUG] debug-file - hvigorfile, no custom plugins were found in E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T21:37:56.263] [DEBUG] debug-file - hvigorfile, resolve finished E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T21:37:56.275] [DEBUG] debug-file - hvigorfile, resolve hvigorfile dependencies in 12 ms 
+[2026-07-09T21:37:56.275] [DEBUG] debug-file - project has submodules:entry
+[2026-07-09T21:37:56.276] [DEBUG] debug-file - start to load updatedOhPackageInfo to the disk
+[2026-07-09T21:37:56.277] [DEBUG] debug-file - load to the disk finished
+[2026-07-09T21:37:56.277] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-07-09T21:37:56.279] [DEBUG] debug-file - Module MyApplicationditu Collected Dependency: 
+[2026-07-09T21:37:56.279] [DEBUG] debug-file - Module MyApplicationditu's total dependency: 0
+[2026-07-09T21:37:56.279] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-07-09T21:37:56.280] [DEBUG] debug-file - Module entry Collected Dependency: 
+[2026-07-09T21:37:56.280] [DEBUG] debug-file - Module entry's total dependency: 0
+[2026-07-09T21:37:56.281] [DEBUG] debug-file - Configuration phase cost:76 ms 
+[2026-07-09T21:37:56.281] [DEBUG] debug-file - Configuration task cost before running: 90 ms 
+[2026-07-09T21:37:56.283] [DEBUG] debug-file - Executing task :entry:default@PreBuild
+[2026-07-09T21:37:56.285] [DEBUG] debug-file - Task 'entry:default@PreBuild' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.287] [DEBUG] debug-file - Incremental task entry:default@PreBuild pre-execution cost: 2 ms .
+[2026-07-09T21:37:56.287] [DEBUG] debug-file - entry : default@PreBuild cost memory 0.5874710083007812
+[2026-07-09T21:37:56.288] [INFO] debug-file - UP-TO-DATE :entry:default@PreBuild...  
+[2026-07-09T21:37:56.288] [DEBUG] debug-file - Executing task :entry:default@CreateModuleInfo
+[2026-07-09T21:37:56.289] [DEBUG] debug-file - Task 'entry:default@CreateModuleInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.289] [DEBUG] debug-file - entry : default@CreateModuleInfo cost memory 0.04132080078125
+[2026-07-09T21:37:56.289] [DEBUG] debug-file - runTaskFromQueue task cost before running: 97 ms 
+[2026-07-09T21:37:56.289] [INFO] debug-file - Finished :entry:default@CreateModuleInfo... after 1 ms 
+[2026-07-09T21:37:56.290] [DEBUG] debug-file - Executing task :entry:default@GenerateMetadata
+[2026-07-09T21:37:56.290] [DEBUG] debug-file - Task 'entry:default@GenerateMetadata' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.291] [DEBUG] debug-file - Incremental task entry:default@GenerateMetadata pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.291] [DEBUG] debug-file - entry : default@GenerateMetadata cost memory 0.08356475830078125
+[2026-07-09T21:37:56.291] [INFO] debug-file - UP-TO-DATE :entry:default@GenerateMetadata...  
+[2026-07-09T21:37:56.291] [DEBUG] debug-file - Executing task :entry:default@ConfigureCmake
+[2026-07-09T21:37:56.291] [DEBUG] debug-file - entry : default@ConfigureCmake cost memory 0.01448822021484375
+[2026-07-09T21:37:56.291] [DEBUG] debug-file - runTaskFromQueue task cost before running: 100 ms 
+[2026-07-09T21:37:56.291] [INFO] debug-file - Finished :entry:default@ConfigureCmake... after 1 ms 
+[2026-07-09T21:37:56.292] [DEBUG] debug-file - Executing task :entry:default@MergeProfile
+[2026-07-09T21:37:56.292] [DEBUG] debug-file - Task 'entry:default@MergeProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.292] [DEBUG] debug-file - Incremental task entry:default@MergeProfile pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.292] [DEBUG] debug-file - entry : default@MergeProfile cost memory 0.12873077392578125
+[2026-07-09T21:37:56.293] [INFO] debug-file - UP-TO-DATE :entry:default@MergeProfile...  
+[2026-07-09T21:37:56.293] [DEBUG] debug-file - Executing task :entry:default@CreateBuildProfile
+[2026-07-09T21:37:56.293] [DEBUG] debug-file - Task 'entry:default@CreateBuildProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.294] [DEBUG] debug-file - Incremental task entry:default@CreateBuildProfile pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.294] [DEBUG] debug-file - entry : default@CreateBuildProfile cost memory -1.61090087890625
+[2026-07-09T21:37:56.294] [INFO] debug-file - UP-TO-DATE :entry:default@CreateBuildProfile...  
+[2026-07-09T21:37:56.295] [DEBUG] debug-file - Executing task :entry:default@PreCheckSyscap
+[2026-07-09T21:37:56.295] [DEBUG] debug-file - entry : default@PreCheckSyscap cost memory 0.01470947265625
+[2026-07-09T21:37:56.295] [DEBUG] debug-file - runTaskFromQueue task cost before running: 104 ms 
+[2026-07-09T21:37:56.295] [INFO] debug-file - Finished :entry:default@PreCheckSyscap... after 1 ms 
+[2026-07-09T21:37:56.296] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgContextInfo
+[2026-07-09T21:37:56.297] [DEBUG] debug-file - Task 'entry:default@GeneratePkgContextInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.297] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgContextInfo pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.297] [DEBUG] debug-file - entry : default@GeneratePkgContextInfo cost memory 0.19049835205078125
+[2026-07-09T21:37:56.297] [INFO] debug-file - UP-TO-DATE :entry:default@GeneratePkgContextInfo...  
+[2026-07-09T21:37:56.298] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgSdkInfo
+[2026-07-09T21:37:56.298] [DEBUG] debug-file - Task 'entry:default@GeneratePkgSdkInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.298] [DEBUG] debug-file - entry : default@GeneratePkgSdkInfo cost memory 0.1113128662109375
+[2026-07-09T21:37:56.298] [DEBUG] debug-file - runTaskFromQueue task cost before running: 107 ms 
+[2026-07-09T21:37:56.298] [INFO] debug-file - Finished :entry:default@GeneratePkgSdkInfo... after 1 ms 
+[2026-07-09T21:37:56.299] [DEBUG] debug-file - Executing task :entry:default@ProcessIntegratedHsp
+[2026-07-09T21:37:56.300] [DEBUG] debug-file - entry:default@ProcessIntegratedHsp is not up-to-date, since the output file 'E:\MyApplicationditu\build\cache\default\integrated_hsp\integratedHspCache.json' does not exist.
+[2026-07-09T21:37:56.300] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.300] [DEBUG] debug-file - entry : default@ProcessIntegratedHsp cost memory 0.05389404296875
+[2026-07-09T21:37:56.300] [DEBUG] debug-file - runTaskFromQueue task cost before running: 108 ms 
+[2026-07-09T21:37:56.300] [INFO] debug-file - Finished :entry:default@ProcessIntegratedHsp... after 1 ms 
+[2026-07-09T21:37:56.300] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithCmake
+[2026-07-09T21:37:56.300] [DEBUG] debug-file - entry : default@BuildNativeWithCmake cost memory 0.014495849609375
+[2026-07-09T21:37:56.300] [DEBUG] debug-file - runTaskFromQueue task cost before running: 109 ms 
+[2026-07-09T21:37:56.300] [INFO] debug-file - Finished :entry:default@BuildNativeWithCmake... after 1 ms 
+[2026-07-09T21:37:56.301] [DEBUG] debug-file - Executing task :entry:default@MakePackInfo
+[2026-07-09T21:37:56.302] [DEBUG] debug-file - Incremental task entry:default@MakePackInfo pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.302] [DEBUG] debug-file - entry : default@MakePackInfo cost memory 0.1250762939453125
+[2026-07-09T21:37:56.302] [INFO] debug-file - UP-TO-DATE :entry:default@MakePackInfo...  
+[2026-07-09T21:37:56.303] [DEBUG] debug-file - Executing task :entry:default@SyscapTransform
+[2026-07-09T21:37:56.303] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\src\main\syscap.json' from 'sysCapJsonPath' is not exists, just ignore.
+[2026-07-09T21:37:56.303] [DEBUG] debug-file - Task 'entry:default@SyscapTransform' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.305] [DEBUG] debug-file - entry:default@SyscapTransform is not up-to-date, since the output file 'E:\MyApplicationditu\entry\build\default\intermediates\syscap\default\rpcid.sc' does not exist.
+[2026-07-09T21:37:56.305] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform pre-execution cost: 2 ms .
+[2026-07-09T21:37:56.305] [DEBUG] debug-file - entry : default@SyscapTransform cost memory 0.1386260986328125
+[2026-07-09T21:37:56.305] [DEBUG] debug-file - runTaskFromQueue task cost before running: 113 ms 
+[2026-07-09T21:37:56.305] [INFO] debug-file - Finished :entry:default@SyscapTransform... after 3 ms 
+[2026-07-09T21:37:56.306] [DEBUG] debug-file - Executing task :entry:default@ProcessProfile
+[2026-07-09T21:37:56.306] [DEBUG] debug-file - Task 'entry:default@ProcessProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.307] [DEBUG] debug-file - Incremental task entry:default@ProcessProfile pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.307] [DEBUG] debug-file - entry : default@ProcessProfile cost memory 0.15123748779296875
+[2026-07-09T21:37:56.307] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessProfile...  
+[2026-07-09T21:37:56.308] [DEBUG] debug-file - Executing task :entry:default@ProcessRouterMap
+[2026-07-09T21:37:56.309] [DEBUG] debug-file - Incremental task entry:default@ProcessRouterMap pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.309] [DEBUG] debug-file - entry : default@ProcessRouterMap cost memory 0.1430816650390625
+[2026-07-09T21:37:56.309] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessRouterMap...  
+[2026-07-09T21:37:56.310] [DEBUG] debug-file - Executing task :entry:default@ProcessShareConfig
+[2026-07-09T21:37:56.310] [DEBUG] debug-file - Incremental task entry:default@ProcessShareConfig pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.310] [DEBUG] debug-file - entry : default@ProcessShareConfig cost memory 0.12060546875
+[2026-07-09T21:37:56.311] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessShareConfig...  
+[2026-07-09T21:37:56.311] [DEBUG] debug-file - Executing task :entry:default@ProcessStartupConfig
+[2026-07-09T21:37:56.311] [DEBUG] debug-file - Task 'entry:default@ProcessStartupConfig' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.311] [DEBUG] debug-file - entry:default@ProcessStartupConfig is not up-to-date, since the output file 'E:\MyApplicationditu\entry\build\default\intermediates\startup\default\startup_config.json' does not exist.
+[2026-07-09T21:37:56.311] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.312] [DEBUG] debug-file - entry : default@ProcessStartupConfig cost memory 0.12424468994140625
+[2026-07-09T21:37:56.312] [DEBUG] debug-file - runTaskFromQueue task cost before running: 120 ms 
+[2026-07-09T21:37:56.312] [INFO] debug-file - Finished :entry:default@ProcessStartupConfig... after 1 ms 
+[2026-07-09T21:37:56.312] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithNinja
+[2026-07-09T21:37:56.313] [DEBUG] debug-file - entry : default@BuildNativeWithNinja cost memory 0.01956939697265625
+[2026-07-09T21:37:56.313] [DEBUG] debug-file - runTaskFromQueue task cost before running: 121 ms 
+[2026-07-09T21:37:56.313] [INFO] debug-file - Finished :entry:default@BuildNativeWithNinja... after 1 ms 
+[2026-07-09T21:37:56.313] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@ProcessResource
+[2026-07-09T21:37:56.314] [DEBUG] debug-file - Executing task :entry:default@ProcessResource
+[2026-07-09T21:37:56.314] [DEBUG] debug-file - Task 'entry:default@ProcessResource' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.315] [DEBUG] debug-file - Incremental task entry:default@ProcessResource pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.315] [DEBUG] debug-file - entry : default@ProcessResource cost memory 0.125
+[2026-07-09T21:37:56.316] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessResource...  
+[2026-07-09T21:37:56.316] [DEBUG] debug-file - Executing task :entry:default@GenerateLoaderJson
+[2026-07-09T21:37:56.316] [DEBUG] debug-file - Task 'entry:default@GenerateLoaderJson' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.319] [DEBUG] debug-file - Incremental task entry:default@GenerateLoaderJson pre-execution cost: 2 ms .
+[2026-07-09T21:37:56.319] [DEBUG] debug-file - entry : default@GenerateLoaderJson cost memory 0.6762161254882812
+[2026-07-09T21:37:56.320] [INFO] debug-file - UP-TO-DATE :entry:default@GenerateLoaderJson...  
+[2026-07-09T21:37:56.321] [DEBUG] debug-file - Executing task :entry:default@ProcessLibs
+[2026-07-09T21:37:56.321] [DEBUG] debug-file - Incremental task entry:default@ProcessLibs pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.322] [DEBUG] debug-file - entry : default@ProcessLibs cost memory 0.09059906005859375
+[2026-07-09T21:37:56.322] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessLibs...  
+[2026-07-09T21:37:56.322] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@CompileResource
+[2026-07-09T21:37:56.322] [DEBUG] debug-file - Executing task :entry:default@CompileResource
+[2026-07-09T21:37:56.328] [DEBUG] debug-file - Incremental task entry:default@CompileResource pre-execution cost: 5 ms .
+[2026-07-09T21:37:56.328] [DEBUG] debug-file - entry : default@CompileResource cost memory 0.9247894287109375
+[2026-07-09T21:37:56.328] [INFO] debug-file - UP-TO-DATE :entry:default@CompileResource...  
+[2026-07-09T21:37:56.328] [DEBUG] debug-file - Executing task :entry:default@DoNativeStrip
+[2026-07-09T21:37:56.329] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\binxo\default' from 'doBinxoNativeLibs' is not exists, just ignore.
+[2026-07-09T21:37:56.329] [DEBUG] debug-file - Task 'entry:default@DoNativeStrip' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.329] [DEBUG] debug-file - Incremental task entry:default@DoNativeStrip pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.329] [DEBUG] debug-file - entry : default@DoNativeStrip cost memory 0.09063720703125
+[2026-07-09T21:37:56.329] [INFO] debug-file - UP-TO-DATE :entry:default@DoNativeStrip...  
+[2026-07-09T21:37:56.330] [DEBUG] debug-file - Executing task :entry:default@CompileArkTS
+[2026-07-09T21:37:56.330] [DEBUG] debug-file - obfuscationOptions: undefined
+[2026-07-09T21:37:56.330] [DEBUG] debug-file - Task 'entry:default@CompileArkTS' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.333] [DEBUG] debug-file - Incremental task entry:default@CompileArkTS pre-execution cost: 3 ms .
+[2026-07-09T21:37:56.333] [DEBUG] debug-file - entry : default@CompileArkTS cost memory -1.0155563354492188
+[2026-07-09T21:37:56.334] [INFO] debug-file - UP-TO-DATE :entry:default@CompileArkTS...  
+[2026-07-09T21:37:56.335] [DEBUG] debug-file - Executing task :entry:default@BuildJS
+[2026-07-09T21:37:56.335] [DEBUG] debug-file - Task 'entry:default@BuildJS' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.335] [DEBUG] debug-file - entry : default@BuildJS cost memory 0.14521026611328125
+[2026-07-09T21:37:56.335] [DEBUG] debug-file - runTaskFromQueue task cost before running: 144 ms 
+[2026-07-09T21:37:56.335] [INFO] debug-file - Finished :entry:default@BuildJS... after 1 ms 
+[2026-07-09T21:37:56.336] [DEBUG] debug-file - Executing task :entry:default@CacheNativeLibs
+[2026-07-09T21:37:56.336] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\binxo\default' from 'cacheBinxoNativeLibs' is not exists, just ignore.
+[2026-07-09T21:37:56.336] [DEBUG] debug-file - Task 'entry:default@CacheNativeLibs' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.337] [DEBUG] debug-file - Incremental task entry:default@CacheNativeLibs pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.337] [DEBUG] debug-file - entry : default@CacheNativeLibs cost memory 0.11577606201171875
+[2026-07-09T21:37:56.337] [INFO] debug-file - UP-TO-DATE :entry:default@CacheNativeLibs...  
+[2026-07-09T21:37:56.337] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgModuleJson
+[2026-07-09T21:37:56.337] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\preload\default\preload.json' from 'preloadSoJsonPath' is not exists, just ignore.
+[2026-07-09T21:37:56.337] [DEBUG] debug-file - Error occurs while handling @Input 'shouldDeduplicateHar': The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+[2026-07-09T21:37:56.337] [DEBUG] debug-file - Task 'entry:default@GeneratePkgModuleJson' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.337] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgModuleJson pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.338] [DEBUG] debug-file - entry : default@GeneratePkgModuleJson cost memory 0.10092926025390625
+[2026-07-09T21:37:56.338] [INFO] debug-file - UP-TO-DATE :entry:default@GeneratePkgModuleJson...  
+[2026-07-09T21:37:56.338] [DEBUG] debug-file - Executing task :entry:default@ProcessCompiledResources
+[2026-07-09T21:37:56.338] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\preload\default\preload.json' from 'preloadSoJsonPath' is not exists, just ignore.
+[2026-07-09T21:37:56.338] [DEBUG] debug-file - Task 'entry:default@ProcessCompiledResources' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:37:56.338] [DEBUG] debug-file - entry : default@ProcessCompiledResources cost memory 0.05568695068359375
+[2026-07-09T21:37:56.338] [DEBUG] debug-file - runTaskFromQueue task cost before running: 147 ms 
+[2026-07-09T21:37:56.338] [INFO] debug-file - Finished :entry:default@ProcessCompiledResources... after 1 ms 
+[2026-07-09T21:37:56.339] [DEBUG] debug-file - Executing task :entry:default@PackageHap
+[2026-07-09T21:37:56.343] [DEBUG] debug-file - Incremental task entry:default@PackageHap pre-execution cost: 4 ms .
+[2026-07-09T21:37:56.343] [DEBUG] debug-file - entry : default@PackageHap cost memory -1.1214523315429688
+[2026-07-09T21:37:56.343] [INFO] debug-file - UP-TO-DATE :entry:default@PackageHap...  
+[2026-07-09T21:37:56.344] [DEBUG] debug-file - Executing task :entry:default@PackingCheck
+[2026-07-09T21:37:56.346] [DEBUG] debug-file - entry : default@PackingCheck cost memory 0.6094436645507812
+[2026-07-09T21:37:56.346] [DEBUG] debug-file - runTaskFromQueue task cost before running: 154 ms 
+[2026-07-09T21:37:56.346] [INFO] debug-file - Finished :entry:default@PackingCheck... after 3 ms 
+[2026-07-09T21:37:56.346] [DEBUG] debug-file - Executing task :entry:default@SignHap
+[2026-07-09T21:37:56.348] [DEBUG] debug-file - Incremental task entry:default@SignHap pre-execution cost: 1 ms .
+[2026-07-09T21:37:56.348] [DEBUG] debug-file - entry : default@SignHap cost memory 0.11181640625
+[2026-07-09T21:37:56.348] [INFO] debug-file - UP-TO-DATE :entry:default@SignHap...  
+[2026-07-09T21:37:56.348] [DEBUG] debug-file - Executing task :entry:default@CollectDebugSymbol
+[2026-07-09T21:37:56.349] [DEBUG] debug-file - entry : default@CollectDebugSymbol cost memory 0.07672882080078125
+[2026-07-09T21:37:56.349] [DEBUG] debug-file - runTaskFromQueue task cost before running: 157 ms 
+[2026-07-09T21:37:56.349] [INFO] debug-file - Finished :entry:default@CollectDebugSymbol... after 1 ms 
+[2026-07-09T21:37:56.349] [DEBUG] debug-file - Executing task :entry:assembleHap
+[2026-07-09T21:37:56.349] [DEBUG] debug-file - entry : assembleHap cost memory 0.01268768310546875
+[2026-07-09T21:37:56.349] [DEBUG] debug-file - runTaskFromQueue task cost before running: 158 ms 
+[2026-07-09T21:37:56.349] [INFO] debug-file - Finished :entry:assembleHap... after 1 ms 
+[2026-07-09T21:37:56.580] [INFO] debug-file - BUILD SUCCESSFUL in 388 ms 
+[2026-07-09T21:37:56.580] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@PreBuild is up-to-date.
+[2026-07-09T21:37:56.580] [DEBUG] debug-file - Update task entry:default@CreateModuleInfo output file:E:\MyApplicationditu\entry\build\default\generated\profile\default\ModuleInfo.ts cache.
+[2026-07-09T21:37:56.580] [DEBUG] debug-file - Incremental task entry:default@CreateModuleInfo post-execution cost:1 ms .
+[2026-07-09T21:37:56.580] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateMetadata is up-to-date.
+[2026-07-09T21:37:56.580] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MergeProfile is up-to-date.
+[2026-07-09T21:37:56.580] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CreateBuildProfile is up-to-date.
+[2026-07-09T21:37:56.580] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GeneratePkgContextInfo is up-to-date.
+[2026-07-09T21:37:56.580] [DEBUG] debug-file - Update task entry:default@GeneratePkgSdkInfo output file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgSdkInfo.json cache.
+[2026-07-09T21:37:56.580] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgSdkInfo post-execution cost:1 ms .
+[2026-07-09T21:37:56.581] [DEBUG] debug-file - Update task entry:default@ProcessIntegratedHsp output file:E:\MyApplicationditu\build\cache\default\integrated_hsp\integratedHspCache.json cache.
+[2026-07-09T21:37:56.581] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp post-execution cost:1 ms .
+[2026-07-09T21:37:56.581] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MakePackInfo is up-to-date.
+[2026-07-09T21:37:56.581] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\toolchains\syscap_tool.exe cache by regenerate.
+[2026-07-09T21:37:56.581] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\ets\api\device-define cache by regenerate.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - Update task entry:default@SyscapTransform output file:E:\MyApplicationditu\entry\build\default\intermediates\syscap\default\rpcid.sc cache.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform post-execution cost:2 ms .
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessProfile is up-to-date.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessRouterMap is up-to-date.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessShareConfig is up-to-date.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig output file:E:\MyApplicationditu\entry\build\default\intermediates\startup\default\startup_config.json cache.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig post-execution cost:1 ms .
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessResource is up-to-date.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateLoaderJson is up-to-date.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessLibs is up-to-date.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CompileResource is up-to-date.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@DoNativeStrip is up-to-date.
+[2026-07-09T21:37:56.582] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CompileArkTS is up-to-date.
+[2026-07-09T21:37:56.583] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-07-09T21:37:56.583] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-07-09T21:37:56.583] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-07-09T21:37:56.583] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-07-09T21:37:56.583] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T21:37:56.583] [DEBUG] debug-file - Update task entry:default@BuildJS output file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\js cache.
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - Incremental task entry:default@BuildJS post-execution cost:2 ms .
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CacheNativeLibs is up-to-date.
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GeneratePkgModuleJson is up-to-date.
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - Incremental task entry:default@ProcessCompiledResources post-execution cost:1 ms .
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@PackageHap is up-to-date.
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@SignHap is up-to-date.
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets\sourceMaps.map cache by regenerate.
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:E:\MyApplicationditu\entry\build\default\intermediates\libs\default cache by regenerate.
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol output file:E:\MyApplicationditu\entry\build\default\outputs\default\symbol cache.
+[2026-07-09T21:37:56.584] [DEBUG] debug-file - Incremental task entry:default@CollectDebugSymbol post-execution cost:1 ms .
+[2026-07-09T21:37:56.823] [DEBUG] debug-file - hvigor build process will be closed.
+[2026-07-09T21:37:56.829] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-09T21:37:56.830] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-09T21:37:56.829] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T21:37:56.829] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T21:58:42.162] [DEBUG] debug-file - session manager: set active socket. socketId=WoAg7jvH_7iRU4w-AAAL
+[2026-07-09T21:58:42.167] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T21:58:42.171] [DEBUG] debug-file - Workers' log level updated to INFO
+[2026-07-09T21:58:42.176] [DEBUG] debug-file - Hvigor init with startParameters:{
+  hvigorfileTypeCheck: false,
+  parallelExecution: true,
+  incrementalExecution: true,
+  printStackTrace: false,
+  daemon: true,
+  analyze: 0,
+  logLevel: Level { level: 20000, levelStr: 'INFO', colour: 'green' },
+  optimizationStrategy: 'memory',
+  hotCompile: undefined,
+  hotReloadBuild: undefined,
+  customizedParam: undefined
+}
+[2026-07-09T21:58:42.179] [DEBUG] debug-file - Cache service initialization finished in 3 ms 
+[2026-07-09T21:58:42.179] [DEBUG] debug-file - hvigorfile, resolving E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T21:58:42.184] [DEBUG] debug-file - hvigorfile, require result:  { default: { plugins: [] } }
+[2026-07-09T21:58:42.184] [DEBUG] debug-file - hvigorfile, binding system plugins null
+[2026-07-09T21:58:42.184] [DEBUG] debug-file - Starting plugin build process
+[2026-07-09T21:58:42.184] [DEBUG] debug-file - App plugin prepare start...
+[2026-07-09T21:58:42.184] [DEBUG] debug-file - App plugin prepare end...
+[2026-07-09T21:58:42.184] [DEBUG] debug-file - App plugin creating...
+[2026-07-09T21:58:42.187] [DEBUG] debug-file - App plugin register hook start...
+[2026-07-09T21:58:42.187] [DEBUG] debug-file - App plugin register hook end...
+[2026-07-09T21:58:42.187] [DEBUG] debug-file - Plugin build process completed
+[2026-07-09T21:58:42.187] [DEBUG] debug-file - Start initialize project's product build option map with build mode debug.
+[2026-07-09T21:58:42.187] [DEBUG] debug-file - Picking option from product 'default' with build mode 'debug'.
+[2026-07-09T21:58:42.187] [DEBUG] debug-file - Product 'default' build option initialized
+[2026-07-09T21:58:42.187] [DEBUG] debug-file - End initialize project's product build option map with build mode 'debug'.
+[2026-07-09T21:58:42.188] [DEBUG] debug-file - Obtain build option for product 'default'in this build.
+[2026-07-09T21:58:42.189] [DEBUG] debug-file - E:\MyApplicationditu\build\cache\default\remote_hsp\remoteHspCache.json not exists.
+[2026-07-09T21:58:42.192] [DEBUG] debug-file - Start recording SDK configuration permission data.
+[2026-07-09T21:58:42.207] [DEBUG] debug-file - Sdk init in 17 ms 
+[2026-07-09T21:58:42.209] [DEBUG] debug-file - Project task initialization takes 3 ms 
+[2026-07-09T21:58:42.209] [DEBUG] debug-file - hvigorfile, begin to bind custom plugins...
+[2026-07-09T21:58:42.209] [DEBUG] debug-file - hvigorfile, no custom plugins were found in E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T21:58:42.209] [DEBUG] debug-file - hvigorfile, resolve finished E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T21:58:42.210] [DEBUG] debug-file - hvigorfile, resolving E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T21:58:42.212] [DEBUG] debug-file - hvigorfile, require result:  { default: { plugins: [] } }
+[2026-07-09T21:58:42.212] [DEBUG] debug-file - hvigorfile, binding system plugins null
+[2026-07-09T21:58:42.212] [DEBUG] debug-file - Starting plugin build process
+[2026-07-09T21:58:42.212] [DEBUG] debug-file - Hap plugin creating...
+[2026-07-09T21:58:42.213] [DEBUG] debug-file - failed to load cangjie to dynamically generate schemas: Error: Cannot find module '@ohos/cangjie-build-support/index'
+Require stack:
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\hooks\cangjie-register.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\strategy\stage-init-strategy.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\abstract-plugin-builder.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\app-plugin-builder.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\factory\plugin-factory.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\index.js
+- E:\MyApplicationditu\hvigorfile.ts
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\internal\lifecycle\configuration.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\boot\index.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\cluster\worker-process-lifecycle.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\process\daemon-process-boot-script.js
+[2026-07-09T21:58:42.214] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-07-09T21:58:42.214] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=release
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T21:58:42.215] [DEBUG] debug-file - Obtain build option for module 'entry' target 'default'in this build.
+[2026-07-09T21:58:42.216] [DEBUG] debug-file - Module entry task initialization takes 1 ms 
+[2026-07-09T21:58:42.216] [DEBUG] debug-file - Hap plugin register hook start...
+[2026-07-09T21:58:42.216] [DEBUG] debug-file - Hap plugin register hook end...
+[2026-07-09T21:58:42.216] [DEBUG] debug-file - Plugin build process completed
+[2026-07-09T21:58:42.216] [DEBUG] debug-file - hvigorfile, begin to bind custom plugins...
+[2026-07-09T21:58:42.216] [DEBUG] debug-file - hvigorfile, no custom plugins were found in E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T21:58:42.216] [DEBUG] debug-file - hvigorfile, resolve finished E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T21:58:42.225] [DEBUG] debug-file - hvigorfile, resolve hvigorfile dependencies in 9 ms 
+[2026-07-09T21:58:42.225] [DEBUG] debug-file - project has submodules:entry
+[2026-07-09T21:58:42.226] [DEBUG] debug-file - start to load updatedOhPackageInfo to the disk
+[2026-07-09T21:58:42.227] [DEBUG] debug-file - load to the disk finished
+[2026-07-09T21:58:42.227] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-07-09T21:58:42.229] [DEBUG] debug-file - Module MyApplicationditu Collected Dependency: 
+[2026-07-09T21:58:42.229] [DEBUG] debug-file - Module MyApplicationditu's total dependency: 0
+[2026-07-09T21:58:42.229] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-07-09T21:58:42.230] [DEBUG] debug-file - Module entry Collected Dependency: 
+[2026-07-09T21:58:42.230] [DEBUG] debug-file - Module entry's total dependency: 0
+[2026-07-09T21:58:42.230] [DEBUG] debug-file - Configuration phase cost:52 ms 
+[2026-07-09T21:58:42.231] [DEBUG] debug-file - Configuration task cost before running: 61 ms 
+[2026-07-09T21:58:42.233] [DEBUG] debug-file - Executing task :entry:default@PreBuild
+[2026-07-09T21:58:42.235] [DEBUG] debug-file - Task 'entry:default@PreBuild' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.237] [DEBUG] debug-file - Incremental task entry:default@PreBuild pre-execution cost: 2 ms .
+[2026-07-09T21:58:42.238] [DEBUG] debug-file - entry : default@PreBuild cost memory 0.6298904418945312
+[2026-07-09T21:58:42.238] [INFO] debug-file - UP-TO-DATE :entry:default@PreBuild...  
+[2026-07-09T21:58:42.239] [DEBUG] debug-file - Executing task :entry:default@CreateModuleInfo
+[2026-07-09T21:58:42.239] [DEBUG] debug-file - Task 'entry:default@CreateModuleInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.239] [DEBUG] debug-file - entry : default@CreateModuleInfo cost memory 0.04141998291015625
+[2026-07-09T21:58:42.239] [DEBUG] debug-file - runTaskFromQueue task cost before running: 69 ms 
+[2026-07-09T21:58:42.239] [INFO] debug-file - Finished :entry:default@CreateModuleInfo... after 1 ms 
+[2026-07-09T21:58:42.240] [DEBUG] debug-file - Executing task :entry:default@GenerateMetadata
+[2026-07-09T21:58:42.240] [DEBUG] debug-file - Task 'entry:default@GenerateMetadata' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.240] [DEBUG] debug-file - Incremental task entry:default@GenerateMetadata pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.240] [DEBUG] debug-file - entry : default@GenerateMetadata cost memory 0.08618927001953125
+[2026-07-09T21:58:42.240] [INFO] debug-file - UP-TO-DATE :entry:default@GenerateMetadata...  
+[2026-07-09T21:58:42.241] [DEBUG] debug-file - Executing task :entry:default@ConfigureCmake
+[2026-07-09T21:58:42.241] [DEBUG] debug-file - entry : default@ConfigureCmake cost memory 0.01448822021484375
+[2026-07-09T21:58:42.241] [DEBUG] debug-file - runTaskFromQueue task cost before running: 70 ms 
+[2026-07-09T21:58:42.241] [INFO] debug-file - Finished :entry:default@ConfigureCmake... after 1 ms 
+[2026-07-09T21:58:42.241] [DEBUG] debug-file - Executing task :entry:default@MergeProfile
+[2026-07-09T21:58:42.241] [DEBUG] debug-file - Task 'entry:default@MergeProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.242] [DEBUG] debug-file - Incremental task entry:default@MergeProfile pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.242] [DEBUG] debug-file - entry : default@MergeProfile cost memory 0.133270263671875
+[2026-07-09T21:58:42.242] [INFO] debug-file - UP-TO-DATE :entry:default@MergeProfile...  
+[2026-07-09T21:58:42.242] [DEBUG] debug-file - Executing task :entry:default@CreateBuildProfile
+[2026-07-09T21:58:42.243] [DEBUG] debug-file - Task 'entry:default@CreateBuildProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.244] [DEBUG] debug-file - Incremental task entry:default@CreateBuildProfile pre-execution cost: 2 ms .
+[2026-07-09T21:58:42.244] [DEBUG] debug-file - entry : default@CreateBuildProfile cost memory -1.5843734741210938
+[2026-07-09T21:58:42.244] [INFO] debug-file - UP-TO-DATE :entry:default@CreateBuildProfile...  
+[2026-07-09T21:58:42.244] [DEBUG] debug-file - Executing task :entry:default@PreCheckSyscap
+[2026-07-09T21:58:42.244] [DEBUG] debug-file - entry : default@PreCheckSyscap cost memory 0.01470947265625
+[2026-07-09T21:58:42.244] [DEBUG] debug-file - runTaskFromQueue task cost before running: 74 ms 
+[2026-07-09T21:58:42.244] [INFO] debug-file - Finished :entry:default@PreCheckSyscap... after 1 ms 
+[2026-07-09T21:58:42.245] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgContextInfo
+[2026-07-09T21:58:42.246] [DEBUG] debug-file - Task 'entry:default@GeneratePkgContextInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.247] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgContextInfo pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.247] [DEBUG] debug-file - entry : default@GeneratePkgContextInfo cost memory 0.2151641845703125
+[2026-07-09T21:58:42.247] [INFO] debug-file - UP-TO-DATE :entry:default@GeneratePkgContextInfo...  
+[2026-07-09T21:58:42.247] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgSdkInfo
+[2026-07-09T21:58:42.248] [DEBUG] debug-file - Task 'entry:default@GeneratePkgSdkInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.248] [DEBUG] debug-file - entry : default@GeneratePkgSdkInfo cost memory 0.116363525390625
+[2026-07-09T21:58:42.248] [DEBUG] debug-file - runTaskFromQueue task cost before running: 78 ms 
+[2026-07-09T21:58:42.248] [INFO] debug-file - Finished :entry:default@GeneratePkgSdkInfo... after 1 ms 
+[2026-07-09T21:58:42.249] [DEBUG] debug-file - Executing task :entry:default@ProcessIntegratedHsp
+[2026-07-09T21:58:42.249] [DEBUG] debug-file - entry:default@ProcessIntegratedHsp is not up-to-date, since the output file 'E:\MyApplicationditu\build\cache\default\integrated_hsp\integratedHspCache.json' does not exist.
+[2026-07-09T21:58:42.249] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.249] [DEBUG] debug-file - entry : default@ProcessIntegratedHsp cost memory 0.05358123779296875
+[2026-07-09T21:58:42.249] [DEBUG] debug-file - runTaskFromQueue task cost before running: 79 ms 
+[2026-07-09T21:58:42.249] [INFO] debug-file - Finished :entry:default@ProcessIntegratedHsp... after 1 ms 
+[2026-07-09T21:58:42.250] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithCmake
+[2026-07-09T21:58:42.250] [DEBUG] debug-file - entry : default@BuildNativeWithCmake cost memory 0.014495849609375
+[2026-07-09T21:58:42.250] [DEBUG] debug-file - runTaskFromQueue task cost before running: 79 ms 
+[2026-07-09T21:58:42.250] [INFO] debug-file - Finished :entry:default@BuildNativeWithCmake... after 1 ms 
+[2026-07-09T21:58:42.251] [DEBUG] debug-file - Executing task :entry:default@MakePackInfo
+[2026-07-09T21:58:42.251] [DEBUG] debug-file - Incremental task entry:default@MakePackInfo pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.251] [DEBUG] debug-file - entry : default@MakePackInfo cost memory 0.1301422119140625
+[2026-07-09T21:58:42.252] [INFO] debug-file - UP-TO-DATE :entry:default@MakePackInfo...  
+[2026-07-09T21:58:42.252] [DEBUG] debug-file - Executing task :entry:default@SyscapTransform
+[2026-07-09T21:58:42.252] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\src\main\syscap.json' from 'sysCapJsonPath' is not exists, just ignore.
+[2026-07-09T21:58:42.253] [DEBUG] debug-file - Task 'entry:default@SyscapTransform' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.253] [DEBUG] debug-file - entry:default@SyscapTransform is not up-to-date, since the output file 'E:\MyApplicationditu\entry\build\default\intermediates\syscap\default\rpcid.sc' does not exist.
+[2026-07-09T21:58:42.253] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.253] [DEBUG] debug-file - entry : default@SyscapTransform cost memory 0.1622772216796875
+[2026-07-09T21:58:42.254] [DEBUG] debug-file - runTaskFromQueue task cost before running: 83 ms 
+[2026-07-09T21:58:42.254] [INFO] debug-file - Finished :entry:default@SyscapTransform... after 2 ms 
+[2026-07-09T21:58:42.254] [DEBUG] debug-file - Executing task :entry:default@ProcessProfile
+[2026-07-09T21:58:42.255] [DEBUG] debug-file - Task 'entry:default@ProcessProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.255] [DEBUG] debug-file - Incremental task entry:default@ProcessProfile pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.255] [DEBUG] debug-file - entry : default@ProcessProfile cost memory 0.15276336669921875
+[2026-07-09T21:58:42.255] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessProfile...  
+[2026-07-09T21:58:42.256] [DEBUG] debug-file - Executing task :entry:default@ProcessRouterMap
+[2026-07-09T21:58:42.256] [DEBUG] debug-file - Incremental task entry:default@ProcessRouterMap pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.257] [DEBUG] debug-file - entry : default@ProcessRouterMap cost memory 0.142425537109375
+[2026-07-09T21:58:42.257] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessRouterMap...  
+[2026-07-09T21:58:42.257] [DEBUG] debug-file - Executing task :entry:default@ProcessShareConfig
+[2026-07-09T21:58:42.258] [DEBUG] debug-file - Incremental task entry:default@ProcessShareConfig pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.258] [DEBUG] debug-file - entry : default@ProcessShareConfig cost memory 0.122802734375
+[2026-07-09T21:58:42.258] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessShareConfig...  
+[2026-07-09T21:58:42.258] [DEBUG] debug-file - Executing task :entry:default@ProcessStartupConfig
+[2026-07-09T21:58:42.258] [DEBUG] debug-file - Task 'entry:default@ProcessStartupConfig' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.258] [DEBUG] debug-file - entry:default@ProcessStartupConfig is not up-to-date, since the output file 'E:\MyApplicationditu\entry\build\default\intermediates\startup\default\startup_config.json' does not exist.
+[2026-07-09T21:58:42.258] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.259] [DEBUG] debug-file - entry : default@ProcessStartupConfig cost memory 0.12375640869140625
+[2026-07-09T21:58:42.259] [DEBUG] debug-file - runTaskFromQueue task cost before running: 88 ms 
+[2026-07-09T21:58:42.259] [INFO] debug-file - Finished :entry:default@ProcessStartupConfig... after 1 ms 
+[2026-07-09T21:58:42.259] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithNinja
+[2026-07-09T21:58:42.259] [DEBUG] debug-file - entry : default@BuildNativeWithNinja cost memory 0.01950836181640625
+[2026-07-09T21:58:42.259] [DEBUG] debug-file - runTaskFromQueue task cost before running: 89 ms 
+[2026-07-09T21:58:42.259] [INFO] debug-file - Finished :entry:default@BuildNativeWithNinja... after 1 ms 
+[2026-07-09T21:58:42.260] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@ProcessResource
+[2026-07-09T21:58:42.261] [DEBUG] debug-file - Executing task :entry:default@ProcessResource
+[2026-07-09T21:58:42.261] [DEBUG] debug-file - Task 'entry:default@ProcessResource' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.261] [DEBUG] debug-file - Incremental task entry:default@ProcessResource pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.261] [DEBUG] debug-file - entry : default@ProcessResource cost memory 0.1279296875
+[2026-07-09T21:58:42.262] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessResource...  
+[2026-07-09T21:58:42.262] [DEBUG] debug-file - Executing task :entry:default@GenerateLoaderJson
+[2026-07-09T21:58:42.263] [DEBUG] debug-file - Task 'entry:default@GenerateLoaderJson' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.266] [DEBUG] debug-file - Incremental task entry:default@GenerateLoaderJson pre-execution cost: 2 ms .
+[2026-07-09T21:58:42.266] [DEBUG] debug-file - entry : default@GenerateLoaderJson cost memory -1.2197113037109375
+[2026-07-09T21:58:42.267] [INFO] debug-file - UP-TO-DATE :entry:default@GenerateLoaderJson...  
+[2026-07-09T21:58:42.267] [DEBUG] debug-file - Executing task :entry:default@ProcessLibs
+[2026-07-09T21:58:42.268] [DEBUG] debug-file - Incremental task entry:default@ProcessLibs pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.268] [DEBUG] debug-file - entry : default@ProcessLibs cost memory 0.090087890625
+[2026-07-09T21:58:42.268] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessLibs...  
+[2026-07-09T21:58:42.269] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@CompileResource
+[2026-07-09T21:58:42.269] [DEBUG] debug-file - Executing task :entry:default@CompileResource
+[2026-07-09T21:58:42.273] [DEBUG] debug-file - Incremental task entry:default@CompileResource pre-execution cost: 4 ms .
+[2026-07-09T21:58:42.273] [DEBUG] debug-file - entry : default@CompileResource cost memory 0.92022705078125
+[2026-07-09T21:58:42.273] [INFO] debug-file - UP-TO-DATE :entry:default@CompileResource...  
+[2026-07-09T21:58:42.274] [DEBUG] debug-file - Executing task :entry:default@DoNativeStrip
+[2026-07-09T21:58:42.274] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\binxo\default' from 'doBinxoNativeLibs' is not exists, just ignore.
+[2026-07-09T21:58:42.274] [DEBUG] debug-file - Task 'entry:default@DoNativeStrip' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.274] [DEBUG] debug-file - Incremental task entry:default@DoNativeStrip pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.274] [DEBUG] debug-file - entry : default@DoNativeStrip cost memory 0.10524749755859375
+[2026-07-09T21:58:42.274] [INFO] debug-file - UP-TO-DATE :entry:default@DoNativeStrip...  
+[2026-07-09T21:58:42.275] [DEBUG] debug-file - Executing task :entry:default@CompileArkTS
+[2026-07-09T21:58:42.275] [DEBUG] debug-file - obfuscationOptions: undefined
+[2026-07-09T21:58:42.276] [DEBUG] debug-file - Task 'entry:default@CompileArkTS' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.278] [DEBUG] debug-file - entry:default@CompileArkTS is not up-to-date, since the input file 'E:\MyApplicationditu\entry\src\main\ets' has been changed.
+[2026-07-09T21:58:42.278] [DEBUG] debug-file - Incremental task entry:default@CompileArkTS pre-execution cost: 2 ms .
+[2026-07-09T21:58:42.285] [DEBUG] debug-file - build config:
+[2026-07-09T21:58:42.285] [DEBUG] debug-file - {
+  moduleType: 'entry',
+  perf: 0,
+  targetName: '.default',
+  packageManagerType: 'ohpm',
+  localPropertiesPath: 'E:\\MyApplicationditu\\local.properties',
+  isPreview: false,
+  isOhosTest: false,
+  isLocalTest: false,
+  buildMode: 'Debug',
+  hotReloadBuild: undefined,
+  watchMode: 'false',
+  aceProfilePath: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\resources\\base\\profile',
+  etsLoaderPath: 'D:\\DevEco Studio\\sdk\\default\\openharmony\\ets\\build-tools\\ets-loader',
+  modulePath: 'E:\\MyApplicationditu\\entry',
+  testFrameworkPar: {
+    testMode: undefined,
+    coveragePathFilter: undefined,
+    coverageMode: undefined
+  },
+  needCoverageInsert: false,
+  debugLine: false,
+  projectTopDir: 'E:\\MyApplicationditu',
+  compileSdkVersion: 24,
+  compatibleSdkVersion: 23,
+  originCompatibleSdkVersion: '6.1.0(23)',
+  compatibleSdkVersionStage: undefined,
+  bundleName: 'c***o',
+  etsLoaderVersion: '6.1.1.125',
+  etsLoaderReleaseType: 'Release',
+  aotCompileMode: 'type',
+  apPath: 'E:\\MyApplicationditu\\entry\\modules.ap',
+  entryModuleName: 'entry',
+  entryModuleVersion: '1.0.0',
+  entryPackageName: 'entry',
+  allModuleNameHash: '9d5501c7e833e614c89c69cbd708cd8da6f0ba00e9e01c6978a332aae8bda841',
+  externalApiPaths: [ 'D:\\DevEco Studio\\sdk\\default\\hms\\ets' ],
+  compilerTypes: [],
+  isCrossplatform: false,
+  hvigorPluginFile: undefined,
+  compilePluginPath: undefined,
+  buildGeneratedProfilePath: 'E:\\MyApplicationditu\\entry\\build\\default\\generated\\profile\\default',
+  bundleType: 'app',
+  arkTSVersion: undefined,
+  apiVersion: 24,
+  needCompleteSourcesMap: false,
+  isFaMode: false,
+  buildDir: 'E:\\MyApplicationditu\\entry\\build',
+  deviceTypes: [ 'phone' ],
+  pkgContextInfo: {
+    '@ohos/hypium': {
+      packageName: '@ohos/hypium',
+      bundleName: '*****',
+      moduleName: '',
+      version: '1.0.25',
+      entryPath: 'index.js',
+      isSO: false,
+      dependencyAlias: ''
+    },
+    '@ohos/hamock': {
+      packageName: '@ohos/hamock',
+      bundleName: '*****',
+      moduleName: '',
+      version: '1.0.0',
+      entryPath: 'index.ets',
+      isSO: false,
+      dependencyAlias: ''
+    },
+    entry: {
+      packageName: 'entry',
+      bundleName: '*****',
+      moduleName: '',
+      version: '',
+      entryPath: 'src/main/',
+      isSO: false,
+      dependencyAlias: ''
+    }
+  },
+  ohPackagePathMap: {},
+  dependencyAliasMap: {},
+  permission: {
+    requestPermissions: [ [Object], [Object], [Object], [Object], [Object], [Object] ],
+    definePermissions: undefined
+  },
+  useGetCurrentBundleName: false,
+  projectArkOption: undefined,
+  sourceMapDir: undefined,
+  branchElimination: false,
+  transformLib: undefined,
+  tsImportSendable: false,
+  resolveConflictMode: true,
+  depName2RootPath: {},
+  depName2DepInfo: {},
+  depName2OhExports: {},
+  rootPathSet: [ 'E:\\MyApplicationditu' ],
+  useNativeResolver: true,
+  shouldEmitJs: true,
+  useTscResolve: false,
+  singleFileEmit: false,
+  userProjectConfig: {
+    autoLazyImport: false,
+    allowEmptyBundleName: false,
+    reExportCheckMode: 'noCheck',
+    executionMode: 'memory',
+    usePathPlaceholder: false,
+    writeRollupCache: true,
+    isExpandImportEnabled: false,
+    expandImportExclude: '',
+    lazyImportExclude: '',
+    lazyImportInclude: '',
+    ignoreCrossplatformCheck: false,
+    isHarDeduplicateEnabled: false,
+    skipOhModulesLint: false,
+    enableStrictCheckOHModule: false,
+    disableSendableCheckRules: [],
+    useDeclarationFileSignature: false,
+    customizedOptions: undefined,
+    integratedHsp: false,
+    isPreloadSoEnabled: false
+  },
+  executionMode: 'memory',
+  arkCompileCachePath: 'E:\\MyApplicationditu\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule',
+  autoLazyFilter: undefined,
+  isHarDeduplicateEnabled: false,
+  intermediateHarDuplicateDirPath: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\har_duplicate\\default',
+  autoLazyImport: false,
+  allowEmptyBundleName: false,
+  reExportCheckMode: 'noCheck',
+  usePathPlaceholder: false,
+  writeRollupCache: true,
+  isExpandImportEnabled: false,
+  expandImportExclude: '',
+  lazyImportExclude: '',
+  lazyImportInclude: '',
+  ignoreCrossplatformCheck: false,
+  skipOhModulesLint: false,
+  enableStrictCheckOHModule: false,
+  disableSendableCheckRules: [],
+  useDeclarationFileSignature: false,
+  customizedOptions: undefined,
+  integratedHsp: false,
+  isPreloadSoEnabled: false,
+  strictMode: {
+    caseSensitiveCheck: true,
+    useNormalizedOHMUrl: true,
+    noExternalImportByPath: true
+  },
+  useNormalizedOHMUrl: true,
+  caseSensitiveCheck: true,
+  strictCheckerOnly: false,
+  aceModuleJsonPath: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\ark_module.json',
+  appResource: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\ResourceTable.txt',
+  rawFileResource: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\resources\\rawfile',
+  resourceTableHash: '4ea45fd4c44f1734057d26eaa1ab9e6b00dfbc614128ae29323db348bdc20d6d',
+  runtimeOS: 'HarmonyOS',
+  sdkInfo: 'false:24:6.1.1.125:Release',
+  aceModuleRoot: 'E:\\MyApplicationditu\\entry\\src\\main\\ets',
+  compileMode: 'esmodule',
+  aceSuperVisualPath: 'E:\\MyApplicationditu\\entry\\src\\main\\supervisual',
+  aceBuildJson: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader\\default\\loader.json',
+  cachePath: 'E:\\MyApplicationditu\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule\\debug',
+  aceModuleBuild: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out\\default\\ets',
+  supportChunks: true,
+  declaredFilesPath: undefined,
+  shouldCollectDirectImportees: false,
+  isByteCodeHarOptimize: false,
+  expandImportPath: undefined,
+  resourceTableTs: 'E:\\MyApplicationditu\\entry\\build\\default\\generated\\r\\default\\ResourceTable.ts',
+  moduleMetaInfoFiles: [
+    {
+      filePath: 'E:\\MyApplicationditu\\entry\\build\\default\\generated\\r\\default\\ResourceTable.ts',
+      ohmurl: '&entry/build/generated/r/ResourceTable&'
+    }
+  ],
+  pkgNameToPkgBriefInfo: {
+    entry: {
+      pkgRoot: 'E:\\MyApplicationditu\\entry',
+      originalSourceRoots: undefined,
+      sourceRoots: [Array],
+      pkgName: 'entry'
+    }
+  },
+  projectModel: {
+    'E:\\MyApplicationditu\\entry\\src\\main': {
+      moduleName: 'entry',
+      modulePkgPath: 'E:\\MyApplicationditu\\entry',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    },
+    'E:\\MyApplicationditu\\entry\\.test\\default\\intermediates\\src\\ohosTest\\ets': {
+      moduleName: 'entry_test',
+      modulePkgPath: 'E:\\MyApplicationditu\\entry',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    },
+    'E:\\MyApplicationditu\\entry\\src\\ohosTest': {
+      moduleName: 'entry_test',
+      modulePkgPath: 'E:\\MyApplicationditu\\entry',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    },
+    'E:\\MyApplicationditu\\entry': {
+      moduleName: 'entry',
+      modulePkgPath: 'E:\\MyApplicationditu\\entry',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    },
+    'E:\\MyApplicationditu': {
+      moduleName: 'MyApplicationditu',
+      modulePkgPath: 'E:\\MyApplicationditu',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    }
+  },
+  pkgJsonFileHash: 'f2c36f4ba14724bb2b4e8067767fa90c4c5ce188f62f92589aca964baac48833',
+  allModulePaths: [ 'E:\\MyApplicationditu\\entry' ],
+  routerMap: {},
+  obfuscationOptions: undefined,
+  byteCodeHarToDependencyKeys: undefined,
+  compileBlockPkg: [],
+  mockParams: {
+    decorator: '@MockSetup',
+    packageName: '@ohos/hamock',
+    etsSourceRootPath: 'src/main/ets',
+    mockConfigPath: 'E:\\MyApplicationditu\\entry\\src\\mock\\mock-config.json5',
+    mockConfigKey2ModuleInfo: {},
+    source2ModuleIdMap: {}
+  },
+  copyCodeResourceEnable: false,
+  copyCodeResourceExcludes: [],
+  copyCodeResourceIncludes: undefined,
+  uiTransformOptimization: false,
+  sdkPath: 'D:/DevEco Studio/sdk',
+  needPreloadSoFileSet: {},
+  preloadSoFilePath: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\preload\\default\\preload.json',
+  useSourceHash: false,
+  localModuleParamMap: {},
+  otherPaths: {
+    'entry/*': [
+      '..\\*',
+      '..\\..\\..\\build\\default\\generated\\profile\\default\\*'
+    ]
+  },
+  collectImportersConfig: undefined
+}
+[2026-07-09T21:58:42.285] [DEBUG] debug-file - Compile arkts with external api path: D:\DevEco Studio\sdk\default\hms\ets
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - default@CompileArkTS work[5] is submitted.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - default@CompileArkTS work[5] is pushed to ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[15] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[14] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[13] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[12] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[11] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[10] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[9] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[8] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[7] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[6] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - A work dispatched to worker[5] failed because unable to get work from ready queue.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - default@CompileArkTS work[5] has been dispatched to worker[4].
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - default@CompileArkTS work[5] is dispatched.
+[2026-07-09T21:58:42.286] [DEBUG] debug-file - entry : default@CompileArkTS cost memory -0.37400054931640625
+[2026-07-09T21:58:42.287] [DEBUG] debug-file - Executing task :entry:default@BuildJS
+[2026-07-09T21:58:42.287] [DEBUG] debug-file - Task 'entry:default@BuildJS' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.288] [DEBUG] debug-file - entry : default@BuildJS cost memory 0.14052581787109375
+[2026-07-09T21:58:42.288] [DEBUG] debug-file - runTaskFromQueue task cost before running: 117 ms 
+[2026-07-09T21:58:42.288] [INFO] debug-file - Finished :entry:default@BuildJS... after 2 ms 
+[2026-07-09T21:58:42.288] [DEBUG] debug-file - Executing task :entry:default@CacheNativeLibs
+[2026-07-09T21:58:42.288] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\binxo\default' from 'cacheBinxoNativeLibs' is not exists, just ignore.
+[2026-07-09T21:58:42.288] [DEBUG] debug-file - Task 'entry:default@CacheNativeLibs' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T21:58:42.289] [DEBUG] debug-file - Incremental task entry:default@CacheNativeLibs pre-execution cost: 1 ms .
+[2026-07-09T21:58:42.289] [DEBUG] debug-file - entry : default@CacheNativeLibs cost memory 0.1157684326171875
+[2026-07-09T21:58:42.289] [INFO] debug-file - UP-TO-DATE :entry:default@CacheNativeLibs...  
+[2026-07-09T21:58:44.017] [DEBUG] debug-file - Ark compile task finished.finished time is 1633084791806600
+[2026-07-09T21:58:44.017] [DEBUG] debug-file - worker[4] has one work error.
+[2026-07-09T21:58:44.018] [DEBUG] debug-file - default@CompileArkTS work[5] failed.
+[2026-07-09T21:58:44.018] [ERROR] debug-file - Failed :entry:default@CompileArkTS... 
+[2026-07-09T21:58:44.018] [WARN] debug-file - 
+[33m1 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:875:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33m2 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:903:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33m3 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:931:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33m4 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:987:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33m5 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1040:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33m6 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1137:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33m7 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1243:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33m8 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1271:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33m9 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1312:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33m10 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1340:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33m11 WARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1442:28
+ 'showToast' has been deprecated.
+[39m[39m
+[2026-07-09T21:58:44.018] [DEBUG] debug-file - hvigor build process will be closed with an error.
+[2026-07-09T21:58:44.026] [DEBUG] debug-file - ERROR: stacktrace = Error: ArkTS Compiler Error
+[31m1 ERROR: [31m10505001 ArkTS Compiler Error
+Error Message: Module '"@kit.ArkUI"' has no exported member 'BottomTabBarStyle'. At File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:8:10
+[39m
+[39m
+[31m2 ERROR: [31m10505001 ArkTS Compiler Error
+Error Message: Property 'FOLLOW_SYSTEM' does not exist on type 'typeof DayNightMode'. At File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:554:39
+[39m
+[39m
+[31m3 ERROR: [31mArkTS:ERROR File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:8:10
+ ERROR Code: 10311006 ArkTS: ERROR
+Error Message: 'BottomTabBarStyle' is not exported from Kit '@kit.ArkUI'.
+
+* Try the following: 
+  > Please make sure the Kit apis are consistent with SDK and there's no local modification on Kit apis.
+  > For more details on Kit apis, please refer to https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/development-intro-api-V5.
+[39m
+[39m
+[31mCOMPILE RESULT:FAIL {ERROR:4 WARN:11}[39m
+    at runArkPack (D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-compose\dist\src\arkts-pack.js:1:5076)
+ArkTSCompilerError: ArkTS Compiler Error
+    at throwArkTsCompilerError (D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-compose\dist\src\data\compose-error.js:1:423)
+    at throwErrorIfHasErrorInfo (D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-compose\dist\src\plugins\common-plugin.js:1:4923)
+    at Object.handler (D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-compose\dist\src\plugins\common-plugin.js:1:3018)
+    at D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-base\node_modules\rollup\dist\shared\rollup.js:27864:40
+[2026-07-09T21:58:44.026] [ERROR] debug-file - Error: ArkTS Compiler Error
+[31m1 ERROR: [31m10505001 ArkTS Compiler Error
+Error Message: Module '"@kit.ArkUI"' has no exported member 'BottomTabBarStyle'. At File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:8:10
+[39m
+[39m
+[31m2 ERROR: [31m10505001 ArkTS Compiler Error
+Error Message: Property 'FOLLOW_SYSTEM' does not exist on type 'typeof DayNightMode'. At File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:554:39
+[39m
+[39m
+[31m3 ERROR: [31mArkTS:ERROR File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:8:10
+ ERROR Code: 10311006 ArkTS: ERROR
+Error Message: 'BottomTabBarStyle' is not exported from Kit '@kit.ArkUI'.
+
+* Try the following: 
+  > Please make sure the Kit apis are consistent with SDK and there's no local modification on Kit apis.
+  > For more details on Kit apis, please refer to https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/development-intro-api-V5.
+[39m
+[39m
+[31mCOMPILE RESULT:FAIL {ERROR:4 WARN:11}[39m
+    at runArkPack (D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-compose\dist\src\arkts-pack.js:1:5076)
+ArkTSCompilerError: ArkTS Compiler Error
+    at throwArkTsCompilerError (D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-compose\dist\src\data\compose-error.js:1:423)
+    at throwErrorIfHasErrorInfo (D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-compose\dist\src\plugins\common-plugin.js:1:4923)
+    at Object.handler (D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-compose\dist\src\plugins\common-plugin.js:1:3018)
+    at D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\node_modules\@ohos\hvigor-arkts-base\node_modules\rollup\dist\shared\rollup.js:27864:40
+[2026-07-09T21:58:44.317] [ERROR] debug-file - BUILD FAILED in 2 s 146 ms 
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@PreBuild is up-to-date.
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - Update task entry:default@CreateModuleInfo output file:E:\MyApplicationditu\entry\build\default\generated\profile\default\ModuleInfo.ts cache.
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - Incremental task entry:default@CreateModuleInfo post-execution cost:1 ms .
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateMetadata is up-to-date.
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MergeProfile is up-to-date.
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CreateBuildProfile is up-to-date.
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GeneratePkgContextInfo is up-to-date.
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - Update task entry:default@GeneratePkgSdkInfo output file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgSdkInfo.json cache.
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgSdkInfo post-execution cost:1 ms .
+[2026-07-09T21:58:44.317] [DEBUG] debug-file - Update task entry:default@ProcessIntegratedHsp output file:E:\MyApplicationditu\build\cache\default\integrated_hsp\integratedHspCache.json cache.
+[2026-07-09T21:58:44.318] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp post-execution cost:1 ms .
+[2026-07-09T21:58:44.318] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MakePackInfo is up-to-date.
+[2026-07-09T21:58:44.318] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\toolchains\syscap_tool.exe cache by regenerate.
+[2026-07-09T21:58:44.318] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\ets\api\device-define cache by regenerate.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - Update task entry:default@SyscapTransform output file:E:\MyApplicationditu\entry\build\default\intermediates\syscap\default\rpcid.sc cache.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform post-execution cost:2 ms .
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessProfile is up-to-date.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessRouterMap is up-to-date.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessShareConfig is up-to-date.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig output file:E:\MyApplicationditu\entry\build\default\intermediates\startup\default\startup_config.json cache.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig post-execution cost:1 ms .
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessResource is up-to-date.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateLoaderJson is up-to-date.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessLibs is up-to-date.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CompileResource is up-to-date.
+[2026-07-09T21:58:44.319] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@DoNativeStrip is up-to-date.
+[2026-07-09T21:58:44.320] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-07-09T21:58:44.320] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-07-09T21:58:44.320] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-07-09T21:58:44.320] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-07-09T21:58:44.320] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\src\main\ets cache from map.
+[2026-07-09T21:58:44.321] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T21:58:44.321] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\generated\profile\default\BuildProfile.ets cache by regenerate.
+[2026-07-09T21:58:44.321] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\src\mock\mock-config.json5 cache by regenerate.
+[2026-07-09T21:58:44.321] [DEBUG] debug-file - Update task entry:default@CompileArkTS output file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets cache.
+[2026-07-09T21:58:44.321] [DEBUG] debug-file - Incremental task entry:default@CompileArkTS post-execution cost:2 ms .
+[2026-07-09T21:58:44.321] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-07-09T21:58:44.321] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-07-09T21:58:44.321] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-07-09T21:58:44.321] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-07-09T21:58:44.322] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T21:58:44.322] [DEBUG] debug-file - Update task entry:default@BuildJS output file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\js cache.
+[2026-07-09T21:58:44.322] [DEBUG] debug-file - Incremental task entry:default@BuildJS post-execution cost:1 ms .
+[2026-07-09T21:58:44.322] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CacheNativeLibs is up-to-date.
+[2026-07-09T21:58:44.551] [DEBUG] debug-file - hvigor build process will be closed.
+[2026-07-09T21:58:44.556] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-09T21:58:44.556] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-09T21:58:44.556] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T21:58:44.557] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T22:06:20.890] [DEBUG] debug-file - session manager: set active socket. socketId=DDRtkoId1OjtHUMWAAAN
+[2026-07-09T22:06:20.894] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T22:06:20.896] [DEBUG] debug-file - Workers' log level updated to INFO
+[2026-07-09T22:06:20.897] [DEBUG] debug-file - Hvigor init with startParameters:{
+  hvigorfileTypeCheck: false,
+  parallelExecution: true,
+  incrementalExecution: true,
+  printStackTrace: false,
+  daemon: true,
+  analyze: 0,
+  logLevel: Level { level: 20000, levelStr: 'INFO', colour: 'green' },
+  optimizationStrategy: 'memory',
+  hotCompile: undefined,
+  hotReloadBuild: undefined,
+  customizedParam: undefined
+}
+[2026-07-09T22:06:20.901] [DEBUG] debug-file - Cache service initialization finished in 3 ms 
+[2026-07-09T22:06:20.901] [DEBUG] debug-file - hvigorfile, resolving E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T22:06:20.905] [DEBUG] debug-file - hvigorfile, require result:  { default: { plugins: [] } }
+[2026-07-09T22:06:20.905] [DEBUG] debug-file - hvigorfile, binding system plugins null
+[2026-07-09T22:06:20.906] [DEBUG] debug-file - Starting plugin build process
+[2026-07-09T22:06:20.906] [DEBUG] debug-file - App plugin prepare start...
+[2026-07-09T22:06:20.906] [DEBUG] debug-file - App plugin prepare end...
+[2026-07-09T22:06:20.906] [DEBUG] debug-file - App plugin creating...
+[2026-07-09T22:06:20.910] [DEBUG] debug-file - App plugin register hook start...
+[2026-07-09T22:06:20.910] [DEBUG] debug-file - App plugin register hook end...
+[2026-07-09T22:06:20.910] [DEBUG] debug-file - Plugin build process completed
+[2026-07-09T22:06:20.910] [DEBUG] debug-file - Start initialize project's product build option map with build mode debug.
+[2026-07-09T22:06:20.910] [DEBUG] debug-file - Picking option from product 'default' with build mode 'debug'.
+[2026-07-09T22:06:20.910] [DEBUG] debug-file - Product 'default' build option initialized
+[2026-07-09T22:06:20.910] [DEBUG] debug-file - End initialize project's product build option map with build mode 'debug'.
+[2026-07-09T22:06:20.910] [DEBUG] debug-file - Obtain build option for product 'default'in this build.
+[2026-07-09T22:06:20.912] [DEBUG] debug-file - E:\MyApplicationditu\build\cache\default\remote_hsp\remoteHspCache.json not exists.
+[2026-07-09T22:06:20.913] [DEBUG] debug-file - Start recording SDK configuration permission data.
+[2026-07-09T22:06:20.929] [DEBUG] debug-file - Sdk init in 18 ms 
+[2026-07-09T22:06:20.931] [DEBUG] debug-file - Project task initialization takes 2 ms 
+[2026-07-09T22:06:20.931] [DEBUG] debug-file - hvigorfile, begin to bind custom plugins...
+[2026-07-09T22:06:20.931] [DEBUG] debug-file - hvigorfile, no custom plugins were found in E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T22:06:20.931] [DEBUG] debug-file - hvigorfile, resolve finished E:\MyApplicationditu\hvigorfile.ts
+[2026-07-09T22:06:20.931] [DEBUG] debug-file - hvigorfile, resolving E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T22:06:20.934] [DEBUG] debug-file - hvigorfile, require result:  { default: { plugins: [] } }
+[2026-07-09T22:06:20.934] [DEBUG] debug-file - hvigorfile, binding system plugins null
+[2026-07-09T22:06:20.934] [DEBUG] debug-file - Starting plugin build process
+[2026-07-09T22:06:20.934] [DEBUG] debug-file - Hap plugin creating...
+[2026-07-09T22:06:20.935] [DEBUG] debug-file - failed to load cangjie to dynamically generate schemas: Error: Cannot find module '@ohos/cangjie-build-support/index'
+Require stack:
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\hooks\cangjie-register.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\strategy\stage-init-strategy.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\abstract-plugin-builder.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\builder\app-plugin-builder.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\src\plugin\factory\plugin-factory.js
+- D:\DevEco Studio\tools\hvigor\hvigor-ohos-plugin\index.js
+- E:\MyApplicationditu\hvigorfile.ts
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\internal\lifecycle\configuration.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\boot\index.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\cluster\worker-process-lifecycle.js
+- D:\DevEco Studio\tools\hvigor\hvigor\src\base\daemon\process\daemon-process-boot-script.js
+[2026-07-09T22:06:20.936] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-07-09T22:06:20.936] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T22:06:20.936] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=release
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Start initialize module-target build option map, moduleName=entry, buildMode=debug
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Target 'default' config initialized
+[2026-07-09T22:06:20.937] [DEBUG] debug-file - Target 'ohosTest' config initialized
+[2026-07-09T22:06:20.938] [DEBUG] debug-file - Module 'entry' target 'default' build option initialized
+[2026-07-09T22:06:20.938] [DEBUG] debug-file - Module 'entry' target 'ohosTest' build option initialized
+[2026-07-09T22:06:20.938] [DEBUG] debug-file - End initialize module-target build option map, moduleName=entry
+[2026-07-09T22:06:20.938] [DEBUG] debug-file - Obtain build option for module 'entry' target 'default'in this build.
+[2026-07-09T22:06:20.938] [DEBUG] debug-file - Module entry task initialization takes 1 ms 
+[2026-07-09T22:06:20.938] [DEBUG] debug-file - Hap plugin register hook start...
+[2026-07-09T22:06:20.939] [DEBUG] debug-file - Hap plugin register hook end...
+[2026-07-09T22:06:20.939] [DEBUG] debug-file - Plugin build process completed
+[2026-07-09T22:06:20.939] [DEBUG] debug-file - hvigorfile, begin to bind custom plugins...
+[2026-07-09T22:06:20.939] [DEBUG] debug-file - hvigorfile, no custom plugins were found in E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T22:06:20.939] [DEBUG] debug-file - hvigorfile, resolve finished E:\MyApplicationditu\entry\hvigorfile.ts
+[2026-07-09T22:06:20.948] [DEBUG] debug-file - hvigorfile, resolve hvigorfile dependencies in 9 ms 
+[2026-07-09T22:06:20.948] [DEBUG] debug-file - project has submodules:entry
+[2026-07-09T22:06:20.948] [DEBUG] debug-file - start to load updatedOhPackageInfo to the disk
+[2026-07-09T22:06:20.949] [DEBUG] debug-file - load to the disk finished
+[2026-07-09T22:06:20.949] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-07-09T22:06:20.950] [DEBUG] debug-file - Module MyApplicationditu Collected Dependency: 
+[2026-07-09T22:06:20.951] [DEBUG] debug-file - Module MyApplicationditu's total dependency: 0
+[2026-07-09T22:06:20.951] [DEBUG] debug-file - Start to initialize dependency information.
+[2026-07-09T22:06:20.951] [DEBUG] debug-file - Module entry Collected Dependency: 
+[2026-07-09T22:06:20.951] [DEBUG] debug-file - Module entry's total dependency: 0
+[2026-07-09T22:06:20.952] [DEBUG] debug-file - Configuration phase cost:52 ms 
+[2026-07-09T22:06:20.952] [DEBUG] debug-file - Configuration task cost before running: 56 ms 
+[2026-07-09T22:06:20.954] [DEBUG] debug-file - Executing task :entry:default@PreBuild
+[2026-07-09T22:06:20.955] [DEBUG] debug-file - Task 'entry:default@PreBuild' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.957] [DEBUG] debug-file - Incremental task entry:default@PreBuild pre-execution cost: 2 ms .
+[2026-07-09T22:06:20.957] [DEBUG] debug-file - entry : default@PreBuild cost memory 0.5887985229492188
+[2026-07-09T22:06:20.958] [INFO] debug-file - UP-TO-DATE :entry:default@PreBuild...  
+[2026-07-09T22:06:20.958] [DEBUG] debug-file - Executing task :entry:default@CreateModuleInfo
+[2026-07-09T22:06:20.958] [DEBUG] debug-file - Task 'entry:default@CreateModuleInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.958] [DEBUG] debug-file - entry : default@CreateModuleInfo cost memory 0.03928375244140625
+[2026-07-09T22:06:20.958] [DEBUG] debug-file - runTaskFromQueue task cost before running: 63 ms 
+[2026-07-09T22:06:20.959] [INFO] debug-file - Finished :entry:default@CreateModuleInfo... after 1 ms 
+[2026-07-09T22:06:20.960] [DEBUG] debug-file - Executing task :entry:default@GenerateMetadata
+[2026-07-09T22:06:20.960] [DEBUG] debug-file - Task 'entry:default@GenerateMetadata' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.960] [DEBUG] debug-file - Incremental task entry:default@GenerateMetadata pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.960] [DEBUG] debug-file - entry : default@GenerateMetadata cost memory 0.08153533935546875
+[2026-07-09T22:06:20.960] [INFO] debug-file - UP-TO-DATE :entry:default@GenerateMetadata...  
+[2026-07-09T22:06:20.961] [DEBUG] debug-file - Executing task :entry:default@ConfigureCmake
+[2026-07-09T22:06:20.961] [DEBUG] debug-file - entry : default@ConfigureCmake cost memory 0.01406097412109375
+[2026-07-09T22:06:20.961] [DEBUG] debug-file - runTaskFromQueue task cost before running: 65 ms 
+[2026-07-09T22:06:20.961] [INFO] debug-file - Finished :entry:default@ConfigureCmake... after 1 ms 
+[2026-07-09T22:06:20.961] [DEBUG] debug-file - Executing task :entry:default@MergeProfile
+[2026-07-09T22:06:20.961] [DEBUG] debug-file - Task 'entry:default@MergeProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.962] [DEBUG] debug-file - Incremental task entry:default@MergeProfile pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.962] [DEBUG] debug-file - entry : default@MergeProfile cost memory 0.1272735595703125
+[2026-07-09T22:06:20.962] [INFO] debug-file - UP-TO-DATE :entry:default@MergeProfile...  
+[2026-07-09T22:06:20.963] [DEBUG] debug-file - Executing task :entry:default@CreateBuildProfile
+[2026-07-09T22:06:20.963] [DEBUG] debug-file - Task 'entry:default@CreateBuildProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.963] [DEBUG] debug-file - Incremental task entry:default@CreateBuildProfile pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.963] [DEBUG] debug-file - entry : default@CreateBuildProfile cost memory 0.09751129150390625
+[2026-07-09T22:06:20.963] [INFO] debug-file - UP-TO-DATE :entry:default@CreateBuildProfile...  
+[2026-07-09T22:06:20.964] [DEBUG] debug-file - Executing task :entry:default@PreCheckSyscap
+[2026-07-09T22:06:20.964] [DEBUG] debug-file - entry : default@PreCheckSyscap cost memory 0.0142822265625
+[2026-07-09T22:06:20.964] [DEBUG] debug-file - runTaskFromQueue task cost before running: 68 ms 
+[2026-07-09T22:06:20.964] [INFO] debug-file - Finished :entry:default@PreCheckSyscap... after 1 ms 
+[2026-07-09T22:06:20.965] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgContextInfo
+[2026-07-09T22:06:20.966] [DEBUG] debug-file - Task 'entry:default@GeneratePkgContextInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.967] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgContextInfo pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.967] [DEBUG] debug-file - entry : default@GeneratePkgContextInfo cost memory -1.4789352416992188
+[2026-07-09T22:06:20.967] [INFO] debug-file - UP-TO-DATE :entry:default@GeneratePkgContextInfo...  
+[2026-07-09T22:06:20.967] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgSdkInfo
+[2026-07-09T22:06:20.968] [DEBUG] debug-file - Task 'entry:default@GeneratePkgSdkInfo' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.968] [DEBUG] debug-file - entry : default@GeneratePkgSdkInfo cost memory 0.126556396484375
+[2026-07-09T22:06:20.968] [DEBUG] debug-file - runTaskFromQueue task cost before running: 72 ms 
+[2026-07-09T22:06:20.968] [INFO] debug-file - Finished :entry:default@GeneratePkgSdkInfo... after 1 ms 
+[2026-07-09T22:06:20.969] [DEBUG] debug-file - Executing task :entry:default@ProcessIntegratedHsp
+[2026-07-09T22:06:20.969] [DEBUG] debug-file - entry:default@ProcessIntegratedHsp is not up-to-date, since the output file 'E:\MyApplicationditu\build\cache\default\integrated_hsp\integratedHspCache.json' does not exist.
+[2026-07-09T22:06:20.969] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.969] [DEBUG] debug-file - entry : default@ProcessIntegratedHsp cost memory 0.05275726318359375
+[2026-07-09T22:06:20.969] [DEBUG] debug-file - runTaskFromQueue task cost before running: 74 ms 
+[2026-07-09T22:06:20.970] [INFO] debug-file - Finished :entry:default@ProcessIntegratedHsp... after 1 ms 
+[2026-07-09T22:06:20.970] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithCmake
+[2026-07-09T22:06:20.970] [DEBUG] debug-file - entry : default@BuildNativeWithCmake cost memory 0.014068603515625
+[2026-07-09T22:06:20.970] [DEBUG] debug-file - runTaskFromQueue task cost before running: 74 ms 
+[2026-07-09T22:06:20.970] [INFO] debug-file - Finished :entry:default@BuildNativeWithCmake... after 1 ms 
+[2026-07-09T22:06:20.970] [DEBUG] debug-file - Executing task :entry:default@MakePackInfo
+[2026-07-09T22:06:20.972] [DEBUG] debug-file - Incremental task entry:default@MakePackInfo pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.972] [DEBUG] debug-file - entry : default@MakePackInfo cost memory 0.12335205078125
+[2026-07-09T22:06:20.972] [INFO] debug-file - UP-TO-DATE :entry:default@MakePackInfo...  
+[2026-07-09T22:06:20.972] [DEBUG] debug-file - Executing task :entry:default@SyscapTransform
+[2026-07-09T22:06:20.972] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\src\main\syscap.json' from 'sysCapJsonPath' is not exists, just ignore.
+[2026-07-09T22:06:20.973] [DEBUG] debug-file - Task 'entry:default@SyscapTransform' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.974] [DEBUG] debug-file - entry:default@SyscapTransform is not up-to-date, since the output file 'E:\MyApplicationditu\entry\build\default\intermediates\syscap\default\rpcid.sc' does not exist.
+[2026-07-09T22:06:20.974] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform pre-execution cost: 2 ms .
+[2026-07-09T22:06:20.974] [DEBUG] debug-file - entry : default@SyscapTransform cost memory 0.1740264892578125
+[2026-07-09T22:06:20.974] [DEBUG] debug-file - runTaskFromQueue task cost before running: 78 ms 
+[2026-07-09T22:06:20.974] [INFO] debug-file - Finished :entry:default@SyscapTransform... after 3 ms 
+[2026-07-09T22:06:20.975] [DEBUG] debug-file - Executing task :entry:default@ProcessProfile
+[2026-07-09T22:06:20.975] [DEBUG] debug-file - Task 'entry:default@ProcessProfile' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.976] [DEBUG] debug-file - Incremental task entry:default@ProcessProfile pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.976] [DEBUG] debug-file - entry : default@ProcessProfile cost memory 0.1489715576171875
+[2026-07-09T22:06:20.976] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessProfile...  
+[2026-07-09T22:06:20.976] [DEBUG] debug-file - Executing task :entry:default@ProcessRouterMap
+[2026-07-09T22:06:20.977] [DEBUG] debug-file - Incremental task entry:default@ProcessRouterMap pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.977] [DEBUG] debug-file - entry : default@ProcessRouterMap cost memory 0.1411285400390625
+[2026-07-09T22:06:20.978] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessRouterMap...  
+[2026-07-09T22:06:20.979] [DEBUG] debug-file - Executing task :entry:default@ProcessShareConfig
+[2026-07-09T22:06:20.979] [DEBUG] debug-file - Incremental task entry:default@ProcessShareConfig pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.979] [DEBUG] debug-file - entry : default@ProcessShareConfig cost memory 0.11846923828125
+[2026-07-09T22:06:20.979] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessShareConfig...  
+[2026-07-09T22:06:20.980] [DEBUG] debug-file - Executing task :entry:default@ProcessStartupConfig
+[2026-07-09T22:06:20.980] [DEBUG] debug-file - Task 'entry:default@ProcessStartupConfig' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.980] [DEBUG] debug-file - entry:default@ProcessStartupConfig is not up-to-date, since the output file 'E:\MyApplicationditu\entry\build\default\intermediates\startup\default\startup_config.json' does not exist.
+[2026-07-09T22:06:20.980] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.980] [DEBUG] debug-file - entry : default@ProcessStartupConfig cost memory 0.12296295166015625
+[2026-07-09T22:06:20.980] [DEBUG] debug-file - runTaskFromQueue task cost before running: 85 ms 
+[2026-07-09T22:06:20.980] [INFO] debug-file - Finished :entry:default@ProcessStartupConfig... after 1 ms 
+[2026-07-09T22:06:20.981] [DEBUG] debug-file - Executing task :entry:default@BuildNativeWithNinja
+[2026-07-09T22:06:20.981] [DEBUG] debug-file - entry : default@BuildNativeWithNinja cost memory 0.019134521484375
+[2026-07-09T22:06:20.981] [DEBUG] debug-file - runTaskFromQueue task cost before running: 85 ms 
+[2026-07-09T22:06:20.981] [INFO] debug-file - Finished :entry:default@BuildNativeWithNinja... after 1 ms 
+[2026-07-09T22:06:20.981] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@ProcessResource
+[2026-07-09T22:06:20.982] [DEBUG] debug-file - Executing task :entry:default@ProcessResource
+[2026-07-09T22:06:20.982] [DEBUG] debug-file - Task 'entry:default@ProcessResource' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.983] [DEBUG] debug-file - Incremental task entry:default@ProcessResource pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.983] [DEBUG] debug-file - entry : default@ProcessResource cost memory 0.123382568359375
+[2026-07-09T22:06:20.984] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessResource...  
+[2026-07-09T22:06:20.984] [DEBUG] debug-file - Executing task :entry:default@GenerateLoaderJson
+[2026-07-09T22:06:20.985] [DEBUG] debug-file - Task 'entry:default@GenerateLoaderJson' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.987] [DEBUG] debug-file - Incremental task entry:default@GenerateLoaderJson pre-execution cost: 2 ms .
+[2026-07-09T22:06:20.987] [DEBUG] debug-file - entry : default@GenerateLoaderJson cost memory 0.4432220458984375
+[2026-07-09T22:06:20.988] [INFO] debug-file - UP-TO-DATE :entry:default@GenerateLoaderJson...  
+[2026-07-09T22:06:20.988] [DEBUG] debug-file - Executing task :entry:default@ProcessLibs
+[2026-07-09T22:06:20.989] [DEBUG] debug-file - Incremental task entry:default@ProcessLibs pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.989] [DEBUG] debug-file - entry : default@ProcessLibs cost memory 0.08873748779296875
+[2026-07-09T22:06:20.989] [INFO] debug-file - UP-TO-DATE :entry:default@ProcessLibs...  
+[2026-07-09T22:06:20.989] [DEBUG] debug-file - restool module names: entry; moduleName=entry, taskName=default@CompileResource
+[2026-07-09T22:06:20.990] [DEBUG] debug-file - Executing task :entry:default@CompileResource
+[2026-07-09T22:06:20.994] [DEBUG] debug-file - Incremental task entry:default@CompileResource pre-execution cost: 5 ms .
+[2026-07-09T22:06:20.994] [DEBUG] debug-file - entry : default@CompileResource cost memory 0.9114608764648438
+[2026-07-09T22:06:20.995] [INFO] debug-file - UP-TO-DATE :entry:default@CompileResource...  
+[2026-07-09T22:06:20.995] [DEBUG] debug-file - Executing task :entry:default@DoNativeStrip
+[2026-07-09T22:06:20.995] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\binxo\default' from 'doBinxoNativeLibs' is not exists, just ignore.
+[2026-07-09T22:06:20.995] [DEBUG] debug-file - Task 'entry:default@DoNativeStrip' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:20.996] [DEBUG] debug-file - Incremental task entry:default@DoNativeStrip pre-execution cost: 1 ms .
+[2026-07-09T22:06:20.996] [DEBUG] debug-file - entry : default@DoNativeStrip cost memory 0.08917236328125
+[2026-07-09T22:06:20.996] [INFO] debug-file - UP-TO-DATE :entry:default@DoNativeStrip...  
+[2026-07-09T22:06:20.996] [DEBUG] debug-file - Executing task :entry:default@CompileArkTS
+[2026-07-09T22:06:20.996] [DEBUG] debug-file - obfuscationOptions: undefined
+[2026-07-09T22:06:20.996] [DEBUG] debug-file - Task 'entry:default@CompileArkTS' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:21.001] [DEBUG] debug-file - build config:
+[2026-07-09T22:06:21.001] [DEBUG] debug-file - {
+  moduleType: 'entry',
+  perf: 0,
+  targetName: '.default',
+  packageManagerType: 'ohpm',
+  localPropertiesPath: 'E:\\MyApplicationditu\\local.properties',
+  isPreview: false,
+  isOhosTest: false,
+  isLocalTest: false,
+  buildMode: 'Debug',
+  hotReloadBuild: undefined,
+  watchMode: 'false',
+  aceProfilePath: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\resources\\base\\profile',
+  etsLoaderPath: 'D:\\DevEco Studio\\sdk\\default\\openharmony\\ets\\build-tools\\ets-loader',
+  modulePath: 'E:\\MyApplicationditu\\entry',
+  testFrameworkPar: {
+    testMode: undefined,
+    coveragePathFilter: undefined,
+    coverageMode: undefined
+  },
+  needCoverageInsert: false,
+  debugLine: false,
+  projectTopDir: 'E:\\MyApplicationditu',
+  compileSdkVersion: 24,
+  compatibleSdkVersion: 23,
+  originCompatibleSdkVersion: '6.1.0(23)',
+  compatibleSdkVersionStage: undefined,
+  bundleName: 'c***o',
+  etsLoaderVersion: '6.1.1.125',
+  etsLoaderReleaseType: 'Release',
+  aotCompileMode: 'type',
+  apPath: 'E:\\MyApplicationditu\\entry\\modules.ap',
+  entryModuleName: 'entry',
+  entryModuleVersion: '1.0.0',
+  entryPackageName: 'entry',
+  allModuleNameHash: '9d5501c7e833e614c89c69cbd708cd8da6f0ba00e9e01c6978a332aae8bda841',
+  externalApiPaths: [ 'D:\\DevEco Studio\\sdk\\default\\hms\\ets' ],
+  compilerTypes: [],
+  isCrossplatform: false,
+  hvigorPluginFile: undefined,
+  compilePluginPath: undefined,
+  buildGeneratedProfilePath: 'E:\\MyApplicationditu\\entry\\build\\default\\generated\\profile\\default',
+  bundleType: 'app',
+  arkTSVersion: undefined,
+  apiVersion: 24,
+  needCompleteSourcesMap: false,
+  isFaMode: false,
+  buildDir: 'E:\\MyApplicationditu\\entry\\build',
+  deviceTypes: [ 'phone' ],
+  pkgContextInfo: {
+    '@ohos/hypium': {
+      packageName: '@ohos/hypium',
+      bundleName: '*****',
+      moduleName: '',
+      version: '1.0.25',
+      entryPath: 'index.js',
+      isSO: false,
+      dependencyAlias: ''
+    },
+    '@ohos/hamock': {
+      packageName: '@ohos/hamock',
+      bundleName: '*****',
+      moduleName: '',
+      version: '1.0.0',
+      entryPath: 'index.ets',
+      isSO: false,
+      dependencyAlias: ''
+    },
+    entry: {
+      packageName: 'entry',
+      bundleName: '*****',
+      moduleName: '',
+      version: '',
+      entryPath: 'src/main/',
+      isSO: false,
+      dependencyAlias: ''
+    }
+  },
+  ohPackagePathMap: {},
+  dependencyAliasMap: {},
+  permission: {
+    requestPermissions: [ [Object], [Object], [Object], [Object], [Object], [Object] ],
+    definePermissions: undefined
+  },
+  useGetCurrentBundleName: false,
+  projectArkOption: undefined,
+  sourceMapDir: undefined,
+  branchElimination: false,
+  transformLib: undefined,
+  tsImportSendable: false,
+  resolveConflictMode: true,
+  depName2RootPath: {},
+  depName2DepInfo: {},
+  depName2OhExports: {},
+  rootPathSet: [ 'E:\\MyApplicationditu' ],
+  useNativeResolver: true,
+  shouldEmitJs: true,
+  useTscResolve: false,
+  singleFileEmit: false,
+  userProjectConfig: {
+    autoLazyImport: false,
+    allowEmptyBundleName: false,
+    reExportCheckMode: 'noCheck',
+    executionMode: 'memory',
+    usePathPlaceholder: false,
+    writeRollupCache: true,
+    isExpandImportEnabled: false,
+    expandImportExclude: '',
+    lazyImportExclude: '',
+    lazyImportInclude: '',
+    ignoreCrossplatformCheck: false,
+    isHarDeduplicateEnabled: false,
+    skipOhModulesLint: false,
+    enableStrictCheckOHModule: false,
+    disableSendableCheckRules: [],
+    useDeclarationFileSignature: false,
+    customizedOptions: undefined,
+    integratedHsp: false,
+    isPreloadSoEnabled: false
+  },
+  executionMode: 'memory',
+  arkCompileCachePath: 'E:\\MyApplicationditu\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule',
+  autoLazyFilter: undefined,
+  isHarDeduplicateEnabled: false,
+  intermediateHarDuplicateDirPath: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\har_duplicate\\default',
+  autoLazyImport: false,
+  allowEmptyBundleName: false,
+  reExportCheckMode: 'noCheck',
+  usePathPlaceholder: false,
+  writeRollupCache: true,
+  isExpandImportEnabled: false,
+  expandImportExclude: '',
+  lazyImportExclude: '',
+  lazyImportInclude: '',
+  ignoreCrossplatformCheck: false,
+  skipOhModulesLint: false,
+  enableStrictCheckOHModule: false,
+  disableSendableCheckRules: [],
+  useDeclarationFileSignature: false,
+  customizedOptions: undefined,
+  integratedHsp: false,
+  isPreloadSoEnabled: false,
+  strictMode: {
+    caseSensitiveCheck: true,
+    useNormalizedOHMUrl: true,
+    noExternalImportByPath: true
+  },
+  useNormalizedOHMUrl: true,
+  caseSensitiveCheck: true,
+  strictCheckerOnly: false,
+  aceModuleJsonPath: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\ark_module.json',
+  appResource: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\ResourceTable.txt',
+  rawFileResource: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\resources\\rawfile',
+  resourceTableHash: '4ea45fd4c44f1734057d26eaa1ab9e6b00dfbc614128ae29323db348bdc20d6d',
+  runtimeOS: 'HarmonyOS',
+  sdkInfo: 'false:24:6.1.1.125:Release',
+  aceModuleRoot: 'E:\\MyApplicationditu\\entry\\src\\main\\ets',
+  compileMode: 'esmodule',
+  aceSuperVisualPath: 'E:\\MyApplicationditu\\entry\\src\\main\\supervisual',
+  aceBuildJson: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader\\default\\loader.json',
+  cachePath: 'E:\\MyApplicationditu\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule\\debug',
+  aceModuleBuild: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out\\default\\ets',
+  supportChunks: true,
+  declaredFilesPath: undefined,
+  shouldCollectDirectImportees: false,
+  isByteCodeHarOptimize: false,
+  expandImportPath: undefined,
+  resourceTableTs: 'E:\\MyApplicationditu\\entry\\build\\default\\generated\\r\\default\\ResourceTable.ts',
+  moduleMetaInfoFiles: [
+    {
+      filePath: 'E:\\MyApplicationditu\\entry\\build\\default\\generated\\r\\default\\ResourceTable.ts',
+      ohmurl: '&entry/build/generated/r/ResourceTable&'
+    }
+  ],
+  pkgNameToPkgBriefInfo: {
+    entry: {
+      pkgRoot: 'E:\\MyApplicationditu\\entry',
+      originalSourceRoots: undefined,
+      sourceRoots: [Array],
+      pkgName: 'entry'
+    }
+  },
+  projectModel: {
+    'E:\\MyApplicationditu\\entry\\src\\main': {
+      moduleName: 'entry',
+      modulePkgPath: 'E:\\MyApplicationditu\\entry',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    },
+    'E:\\MyApplicationditu\\entry\\.test\\default\\intermediates\\src\\ohosTest\\ets': {
+      moduleName: 'entry_test',
+      modulePkgPath: 'E:\\MyApplicationditu\\entry',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    },
+    'E:\\MyApplicationditu\\entry\\src\\ohosTest': {
+      moduleName: 'entry_test',
+      modulePkgPath: 'E:\\MyApplicationditu\\entry',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    },
+    'E:\\MyApplicationditu\\entry': {
+      moduleName: 'entry',
+      modulePkgPath: 'E:\\MyApplicationditu\\entry',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    },
+    'E:\\MyApplicationditu': {
+      moduleName: 'MyApplicationditu',
+      modulePkgPath: 'E:\\MyApplicationditu',
+      belongProjectPath: 'E:\\MyApplicationditu'
+    }
+  },
+  pkgJsonFileHash: 'f2c36f4ba14724bb2b4e8067767fa90c4c5ce188f62f92589aca964baac48833',
+  allModulePaths: [ 'E:\\MyApplicationditu\\entry' ],
+  routerMap: {},
+  obfuscationOptions: undefined,
+  byteCodeHarToDependencyKeys: undefined,
+  compileBlockPkg: [],
+  mockParams: {
+    decorator: '@MockSetup',
+    packageName: '@ohos/hamock',
+    etsSourceRootPath: 'src/main/ets',
+    mockConfigPath: 'E:\\MyApplicationditu\\entry\\src\\mock\\mock-config.json5',
+    mockConfigKey2ModuleInfo: {},
+    source2ModuleIdMap: {}
+  },
+  copyCodeResourceEnable: false,
+  copyCodeResourceExcludes: [],
+  copyCodeResourceIncludes: undefined,
+  uiTransformOptimization: false,
+  sdkPath: 'D:/DevEco Studio/sdk',
+  needPreloadSoFileSet: {},
+  preloadSoFilePath: 'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\preload\\default\\preload.json',
+  useSourceHash: false,
+  localModuleParamMap: {},
+  otherPaths: {
+    'entry/*': [
+      '..\\*',
+      '..\\..\\..\\build\\default\\generated\\profile\\default\\*'
+    ]
+  },
+  collectImportersConfig: undefined
+}
+[2026-07-09T22:06:21.001] [DEBUG] debug-file - Compile arkts with external api path: D:\DevEco Studio\sdk\default\hms\ets
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - default@CompileArkTS work[6] is submitted.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - default@CompileArkTS work[6] is pushed to ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[15] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[14] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[13] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[12] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[11] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[10] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[9] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[8] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[7] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[6] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - A work dispatched to worker[5] failed because unable to get work from ready queue.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - default@CompileArkTS work[6] has been dispatched to worker[4].
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - default@CompileArkTS work[6] is dispatched.
+[2026-07-09T22:06:21.002] [DEBUG] debug-file - entry : default@CompileArkTS cost memory -0.6440505981445312
+[2026-07-09T22:06:21.003] [DEBUG] debug-file - Executing task :entry:default@BuildJS
+[2026-07-09T22:06:21.003] [DEBUG] debug-file - Task 'entry:default@BuildJS' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:21.004] [DEBUG] debug-file - entry : default@BuildJS cost memory 0.14046478271484375
+[2026-07-09T22:06:21.004] [DEBUG] debug-file - runTaskFromQueue task cost before running: 108 ms 
+[2026-07-09T22:06:21.004] [INFO] debug-file - Finished :entry:default@BuildJS... after 1 ms 
+[2026-07-09T22:06:21.004] [DEBUG] debug-file - Executing task :entry:default@CacheNativeLibs
+[2026-07-09T22:06:21.004] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\binxo\default' from 'cacheBinxoNativeLibs' is not exists, just ignore.
+[2026-07-09T22:06:21.004] [DEBUG] debug-file - Task 'entry:default@CacheNativeLibs' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:21.005] [DEBUG] debug-file - Incremental task entry:default@CacheNativeLibs pre-execution cost: 1 ms .
+[2026-07-09T22:06:21.005] [DEBUG] debug-file - entry : default@CacheNativeLibs cost memory 0.11350250244140625
+[2026-07-09T22:06:21.005] [INFO] debug-file - UP-TO-DATE :entry:default@CacheNativeLibs...  
+[2026-07-09T22:06:25.802] [WARN] debug-file - [33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:875:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:903:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:931:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:987:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1040:36
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1137:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1243:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1271:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1312:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1340:34
+ 'showToast' has been deprecated.
+[39m[39m
+[33mWARN: [33m[33mArkTS:WARN File: E:/MyApplicationditu/entry/src/main/ets/pages/Index.ets:1442:28
+ 'showToast' has been deprecated.
+[39m[39m
+
+[2026-07-09T22:06:25.803] [DEBUG] debug-file - Ark compile task finished.finished time is 1633546577142900
+[2026-07-09T22:06:25.803] [DEBUG] debug-file - worker[4] has one work done.
+[2026-07-09T22:06:25.803] [DEBUG] debug-file - default@CompileArkTS work[6] done.
+[2026-07-09T22:06:25.804] [INFO] debug-file - Finished :entry:default@CompileArkTS... after 4 s 806 ms 
+[2026-07-09T22:06:25.805] [DEBUG] debug-file - Executing task :entry:default@GeneratePkgModuleJson
+[2026-07-09T22:06:25.805] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\preload\default\preload.json' from 'preloadSoJsonPath' is not exists, just ignore.
+[2026-07-09T22:06:25.805] [DEBUG] debug-file - Error occurs while handling @Input 'shouldDeduplicateHar': The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+[2026-07-09T22:06:25.805] [DEBUG] debug-file - Task 'entry:default@GeneratePkgModuleJson' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:25.805] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgModuleJson pre-execution cost: 1 ms .
+[2026-07-09T22:06:25.805] [DEBUG] debug-file - entry : default@GeneratePkgModuleJson cost memory 0.09847259521484375
+[2026-07-09T22:06:25.805] [INFO] debug-file - UP-TO-DATE :entry:default@GeneratePkgModuleJson...  
+[2026-07-09T22:06:25.806] [DEBUG] debug-file - Executing task :entry:default@ProcessCompiledResources
+[2026-07-09T22:06:25.806] [DEBUG] debug-file - File: 'E:\MyApplicationditu\entry\build\default\intermediates\preload\default\preload.json' from 'preloadSoJsonPath' is not exists, just ignore.
+[2026-07-09T22:06:25.806] [DEBUG] debug-file - Task 'entry:default@ProcessCompiledResources' cost while wrapping incremental declarations: 1 ms 
+[2026-07-09T22:06:25.806] [DEBUG] debug-file - entry : default@ProcessCompiledResources cost memory 0.05481719970703125
+[2026-07-09T22:06:25.806] [DEBUG] debug-file - runTaskFromQueue task cost before running: 4 s 910 ms 
+[2026-07-09T22:06:25.806] [INFO] debug-file - Finished :entry:default@ProcessCompiledResources... after 1 ms 
+[2026-07-09T22:06:25.806] [DEBUG] debug-file - Executing task :entry:default@PackageHap
+[2026-07-09T22:06:25.809] [DEBUG] debug-file - entry:default@PackageHap is not up-to-date, since the input file 'E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets' has been changed.
+[2026-07-09T22:06:25.809] [DEBUG] debug-file - Incremental task entry:default@PackageHap pre-execution cost: 3 ms .
+[2026-07-09T22:06:25.809] [DEBUG] debug-file - Use tool [D:\DevEco Studio\sdk\default\openharmony\toolchains\lib\app_packing_tool.jar]
+ [
+  'java',
+  '-Dfile.encoding=GBK',
+  '-jar',
+  'D:\\DevEco Studio\\sdk\\default\\openharmony\\toolchains\\lib\\app_packing_tool.jar',
+  '--mode',
+  'hap',
+  '--force',
+  'true',
+  '--lib-path',
+  'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\stripped_native_libs\\default',
+  '--json-path',
+  'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\package\\default\\module.json',
+  '--resources-path',
+  'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\resources',
+  '--index-path',
+  'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\resources.index',
+  '--pack-info-path',
+  'E:\\MyApplicationditu\\entry\\build\\default\\outputs\\default\\pack.info',
+  '--out-path',
+  'E:\\MyApplicationditu\\entry\\build\\default\\outputs\\default\\entry-default-unsigned.hap',
+  '--ets-path',
+  'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out\\default\\ets',
+  '--pkg-context-path',
+  'E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader\\default\\pkgContextInfo.json'
+]
+[2026-07-09T22:06:25.810] [DEBUG] debug-file - default@PackageHap work[7] is submitted.
+[2026-07-09T22:06:25.810] [DEBUG] debug-file - default@PackageHap work[7] is pushed to ready queue.
+[2026-07-09T22:06:25.810] [DEBUG] debug-file - A work dispatched to worker[15] failed because unable to get work from ready queue.
+[2026-07-09T22:06:25.810] [DEBUG] debug-file - Create  resident worker with id: 14.
+[2026-07-09T22:06:25.812] [DEBUG] debug-file - default@PackageHap work[7] has been dispatched to worker[14].
+[2026-07-09T22:06:25.812] [DEBUG] debug-file - default@PackageHap work[7] is dispatched.
+[2026-07-09T22:06:25.813] [DEBUG] debug-file - entry : default@PackageHap cost memory -0.965911865234375
+[2026-07-09T22:06:28.771] [DEBUG] debug-file - current process  memoryUsage: {
+  rss: 459317248,
+  heapTotal: 81035264,
+  heapUsed: 49518432,
+  external: 2349604,
+  arrayBuffers: 107927
+} os memoryUsage :12.769676208496094
+[2026-07-09T22:06:30.716] [DEBUG] debug-file - worker[14] has one work done.
+[2026-07-09T22:06:30.716] [DEBUG] debug-file - default@PackageHap work[7] done.
+[2026-07-09T22:06:30.716] [DEBUG] debug-file - A work dispatched to worker[14] failed because unable to get work from ready queue.
+[2026-07-09T22:06:30.716] [INFO] debug-file - Finished :entry:default@PackageHap... after 1 s 954 ms 
+[2026-07-09T22:06:30.717] [DEBUG] debug-file - Executing task :entry:default@PackingCheck
+[2026-07-09T22:06:30.719] [DEBUG] debug-file - entry : default@PackingCheck cost memory 0.36785888671875
+[2026-07-09T22:06:30.719] [DEBUG] debug-file - runTaskFromQueue task cost before running: 9 s 824 ms 
+[2026-07-09T22:06:30.720] [INFO] debug-file - Finished :entry:default@PackingCheck... after 3 ms 
+[2026-07-09T22:06:30.720] [DEBUG] debug-file - Executing task :entry:default@SignHap
+[2026-07-09T22:06:30.721] [DEBUG] debug-file - entry:default@SignHap is not up-to-date, since the input file 'E:\MyApplicationditu\entry\build\default\outputs\default\entry-default-unsigned.hap' has been changed.
+[2026-07-09T22:06:30.722] [DEBUG] debug-file - Incremental task entry:default@SignHap pre-execution cost: 1 ms .
+[2026-07-09T22:06:30.735] [DEBUG] debug-file - java daemon socket close code:1006 reason:
+[2026-07-09T22:06:30.736] [DEBUG] debug-file - java daemon remote sign failed 1006 fallback to local java -jar sign
+[2026-07-09T22:06:30.742] [DEBUG] debug-file - current process  memoryUsage: {
+  rss: 457109504,
+  heapTotal: 123899904,
+  heapUsed: 118413304,
+  external: 3166245,
+  arrayBuffers: 138660
+} os memoryUsage :12.74032211303711
+[2026-07-09T22:06:32.018] [DEBUG] debug-file - 07-09 22:06:32.017  INFO - Start verify-profile
+
+[2026-07-09T22:06:32.179] [DEBUG] debug-file - 07-09 22:06:32.178  INFO - verify-profile success
+
+[2026-07-09T22:06:32.801] [DEBUG] debug-file - current process  memoryUsage: {
+  rss: 457224192,
+  heapTotal: 123899904,
+  heapUsed: 118665632,
+  external: 3166545,
+  arrayBuffers: 138100
+} os memoryUsage :12.820186614990234
+[2026-07-09T22:06:33.996] [DEBUG] debug-file - 07-09 22:06:33.994  INFO - Start sign-app
+
+[2026-07-09T22:06:34.129] [DEBUG] debug-file - 07-09 22:06:34.128  INFO - certificate in profile: 刘泽旭(1638625166638491329)\,Development
+
+[2026-07-09T22:06:34.160] [DEBUG] debug-file - 07-09 22:06:34.159  INFO - Start to sign code.
+
+[2026-07-09T22:06:34.163] [DEBUG] debug-file - 07-09 22:06:34.162  INFO - profile type is: debug
+
+[2026-07-09T22:06:34.178] [DEBUG] debug-file - 07-09 22:06:34.177  INFO - C:\Users\liuze\.ohos\config\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.p12 is exist. Try to load it with given passwd
+
+[2026-07-09T22:06:34.262] [DEBUG] debug-file - 07-09 22:06:34.261  INFO - Create a sign info successfully.
+
+[2026-07-09T22:06:34.268] [DEBUG] debug-file - 07-09 22:06:34.267  INFO - Create a sign info successfully.
+
+[2026-07-09T22:06:34.272] [DEBUG] debug-file - 07-09 22:06:34.271  INFO - No native libs.
+
+[2026-07-09T22:06:34.273] [DEBUG] debug-file - 07-09 22:06:34.273  INFO - Sign successfully.
+
+[2026-07-09T22:06:34.276] [DEBUG] debug-file - 07-09 22:06:34.276  INFO - Add sign data in sign info list success.
+
+[2026-07-09T22:06:34.279] [DEBUG] debug-file - 07-09 22:06:34.278  INFO - Generate signing block success, begin write it to output file
+
+[2026-07-09T22:06:34.280] [DEBUG] debug-file - 07-09 22:06:34.279  INFO - Sign Hap success!
+
+[2026-07-09T22:06:34.280] [DEBUG] debug-file - 07-09 22:06:34.279  INFO - sign-app success
+
+[2026-07-09T22:06:34.861] [DEBUG] debug-file - entry : default@SignHap cost memory -0.1707916259765625
+[2026-07-09T22:06:34.861] [DEBUG] debug-file - runTaskFromQueue task cost before running: 13 s 965 ms 
+[2026-07-09T22:06:34.862] [INFO] debug-file - Finished :entry:default@SignHap... after 4 s 141 ms 
+[2026-07-09T22:06:34.863] [DEBUG] debug-file - Executing task :entry:default@CollectDebugSymbol
+[2026-07-09T22:06:34.863] [DEBUG] debug-file - entry : default@CollectDebugSymbol cost memory 0.0754241943359375
+[2026-07-09T22:06:34.863] [DEBUG] debug-file - runTaskFromQueue task cost before running: 13 s 968 ms 
+[2026-07-09T22:06:34.864] [INFO] debug-file - Finished :entry:default@CollectDebugSymbol... after 1 ms 
+[2026-07-09T22:06:34.864] [DEBUG] debug-file - Executing task :entry:assembleHap
+[2026-07-09T22:06:34.864] [DEBUG] debug-file - entry : assembleHap cost memory 0.0123138427734375
+[2026-07-09T22:06:34.864] [DEBUG] debug-file - runTaskFromQueue task cost before running: 13 s 968 ms 
+[2026-07-09T22:06:34.864] [INFO] debug-file - Finished :entry:assembleHap... after 1 ms 
+[2026-07-09T22:06:35.095] [INFO] debug-file - BUILD SUCCESSFUL in 14 s 200 ms 
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@PreBuild is up-to-date.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - Update task entry:default@CreateModuleInfo output file:E:\MyApplicationditu\entry\build\default\generated\profile\default\ModuleInfo.ts cache.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - Incremental task entry:default@CreateModuleInfo post-execution cost:1 ms .
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateMetadata is up-to-date.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MergeProfile is up-to-date.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CreateBuildProfile is up-to-date.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GeneratePkgContextInfo is up-to-date.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - Update task entry:default@GeneratePkgSdkInfo output file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgSdkInfo.json cache.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgSdkInfo post-execution cost:1 ms .
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - Update task entry:default@ProcessIntegratedHsp output file:E:\MyApplicationditu\build\cache\default\integrated_hsp\integratedHspCache.json cache.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp post-execution cost:1 ms .
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MakePackInfo is up-to-date.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\toolchains\syscap_tool.exe cache by regenerate.
+[2026-07-09T22:06:35.096] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\ets\api\device-define cache by regenerate.
+[2026-07-09T22:06:35.097] [DEBUG] debug-file - Update task entry:default@SyscapTransform output file:E:\MyApplicationditu\entry\build\default\intermediates\syscap\default\rpcid.sc cache.
+[2026-07-09T22:06:35.097] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform post-execution cost:2 ms .
+[2026-07-09T22:06:35.097] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessProfile is up-to-date.
+[2026-07-09T22:06:35.097] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessRouterMap is up-to-date.
+[2026-07-09T22:06:35.097] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessShareConfig is up-to-date.
+[2026-07-09T22:06:35.097] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T22:06:35.098] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig output file:E:\MyApplicationditu\entry\build\default\intermediates\startup\default\startup_config.json cache.
+[2026-07-09T22:06:35.098] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig post-execution cost:1 ms .
+[2026-07-09T22:06:35.098] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessResource is up-to-date.
+[2026-07-09T22:06:35.098] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateLoaderJson is up-to-date.
+[2026-07-09T22:06:35.098] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessLibs is up-to-date.
+[2026-07-09T22:06:35.098] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CompileResource is up-to-date.
+[2026-07-09T22:06:35.098] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@DoNativeStrip is up-to-date.
+[2026-07-09T22:06:35.098] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-07-09T22:06:35.099] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-07-09T22:06:35.099] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-07-09T22:06:35.099] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-07-09T22:06:35.100] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\src\main\ets cache by regenerate.
+[2026-07-09T22:06:35.100] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T22:06:35.100] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\build\default\generated\profile\default\BuildProfile.ets cache by regenerate.
+[2026-07-09T22:06:35.100] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:E:\MyApplicationditu\entry\src\mock\mock-config.json5 cache by regenerate.
+[2026-07-09T22:06:35.100] [DEBUG] debug-file - Update task entry:default@CompileArkTS output file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets cache.
+[2026-07-09T22:06:35.101] [DEBUG] debug-file - Incremental task entry:default@CompileArkTS post-execution cost:3 ms .
+[2026-07-09T22:06:35.101] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-07-09T22:06:35.101] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-07-09T22:06:35.101] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-07-09T22:06:35.101] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-07-09T22:06:35.101] [DEBUG] debug-file - Update task entry:default@BuildJS input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T22:06:35.102] [DEBUG] debug-file - Update task entry:default@BuildJS output file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\js cache.
+[2026-07-09T22:06:35.102] [DEBUG] debug-file - Incremental task entry:default@BuildJS post-execution cost:1 ms .
+[2026-07-09T22:06:35.102] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CacheNativeLibs is up-to-date.
+[2026-07-09T22:06:35.102] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GeneratePkgModuleJson is up-to-date.
+[2026-07-09T22:06:35.102] [DEBUG] debug-file - Incremental task entry:default@ProcessCompiledResources post-execution cost:1 ms .
+[2026-07-09T22:06:35.102] [DEBUG] debug-file - Update task entry:default@PackageHap input file:E:\MyApplicationditu\entry\build\default\intermediates\stripped_native_libs\default cache by regenerate.
+[2026-07-09T22:06:35.102] [DEBUG] debug-file - Update task entry:default@PackageHap input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\module.json cache by regenerate.
+[2026-07-09T22:06:35.102] [DEBUG] debug-file - Update task entry:default@PackageHap input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\resources cache by regenerate.
+[2026-07-09T22:06:35.103] [DEBUG] debug-file - Update task entry:default@PackageHap input file:E:\MyApplicationditu\entry\build\default\intermediates\res\default\resources.index cache by regenerate.
+[2026-07-09T22:06:35.103] [DEBUG] debug-file - Update task entry:default@PackageHap input file:E:\MyApplicationditu\entry\build\default\outputs\default\pack.info cache by regenerate.
+[2026-07-09T22:06:35.103] [DEBUG] debug-file - Update task entry:default@PackageHap input file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets cache from map.
+[2026-07-09T22:06:35.103] [DEBUG] debug-file - Update task entry:default@PackageHap input file:E:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-09T22:06:35.104] [DEBUG] debug-file - Update task entry:default@PackageHap input file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets\sourceMaps.map cache by regenerate.
+[2026-07-09T22:06:35.104] [DEBUG] debug-file - Update task entry:default@PackageHap input file:E:\MyApplicationditu\entry\build\default\generated\profile\default\BuildProfile.ets cache by regenerate.
+[2026-07-09T22:06:35.104] [DEBUG] debug-file - Update task entry:default@PackageHap output file:E:\MyApplicationditu\entry\build\default\outputs\default\entry-default-unsigned.hap cache.
+[2026-07-09T22:06:35.104] [DEBUG] debug-file - Update task entry:default@PackageHap output file:E:\MyApplicationditu\entry\build\default\intermediates\source_map\default\sourceMaps.map cache.
+[2026-07-09T22:06:35.104] [DEBUG] debug-file - Update task entry:default@PackageHap output file:E:\MyApplicationditu\entry\build\default\outputs\default\mapping\sourceMaps.map cache.
+[2026-07-09T22:06:35.104] [DEBUG] debug-file - Incremental task entry:default@PackageHap post-execution cost:3 ms .
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@SignHap input file:C:\Users\liuze\.ohos\config\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.cer cache by regenerate.
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@SignHap input file:C:\Users\liuze\.ohos\config\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.p7b cache by regenerate.
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@SignHap input file:C:\Users\liuze\.ohos\config\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.p12 cache by regenerate.
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@SignHap input file:E:\MyApplicationditu\entry\build\default\outputs\default\entry-default-unsigned.hap cache from map.
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@SignHap output file:E:\MyApplicationditu\entry\build\default\outputs\default\entry-default-signed.hap cache.
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Incremental task entry:default@SignHap post-execution cost:1 ms .
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:E:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets\sourceMaps.map cache by regenerate.
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:E:\MyApplicationditu\entry\build\default\intermediates\libs\default cache by regenerate.
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol output file:E:\MyApplicationditu\entry\build\default\outputs\default\symbol cache.
+[2026-07-09T22:06:35.105] [DEBUG] debug-file - Incremental task entry:default@CollectDebugSymbol post-execution cost:1 ms .

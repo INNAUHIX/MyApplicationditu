@@ -31,7 +31,7 @@ struct Index {
   private locationCallback?: (location: geoLocationManager.Location) => void;
   private redDotIcon: image.PixelMap | null = null;
   private rdbStore: relationalStore.RdbStore | null = null;
-  @State displayMode: number = 0;
+  @State displayMode: number = 0; // 轨迹展示方式：0=折线，1=海量点（非夜间模式）
   private static readonly FOOTPRINT_DISTANCE: number = 80;
   private tabsController: HdsTabsController = new HdsTabsController();
   @State customMaterialLevel: hdsMaterial.MaterialLevel = hdsMaterial.MaterialLevel.EXQUISITE;
@@ -39,7 +39,7 @@ struct Index {
   @State hasLocation: boolean = false;
   @State hasBackgroundLocation: boolean = false;
   @State isShowSheet: boolean = false;
-  @State displayModeIndex: number = 0;
+  @State nightModeIndex: number = 0; // 地图日/夜间模式：0=跟随系统，1=普通，2=夜间
   @State showDisplayModePopup: boolean = false;
   @State pushSwitchOn: boolean = true;
   @State customSwitchOn: boolean = true;
@@ -52,7 +52,11 @@ struct Index {
   aboutToAppear(): void {
     this.initMapOptions();
     this.initMapCallback();
-    this.createRedDotIcon();
+    this.createRedDotIcon().then(() => {
+      if (this.displayMode === 1 && this.trackPoints.length > 0) {
+        this.updateMassPointOverlay();
+      }
+    });
     let materialTypes: Array<hdsMaterial.MaterialType> = hdsMaterial.getSystemMaterialTypes();
     if (materialTypes.indexOf(hdsMaterial.MaterialType.IMMERSIVE) < 0) {
       this.customMaterialLevel = hdsMaterial.MaterialLevel.SMOOTH;
@@ -243,15 +247,8 @@ struct Index {
   }
 
   private async checkAndRequestPermission(): Promise<void> {
-    let hasForeground = await this.checkAccessToken('ohos.permission.APPROXIMATELY_LOCATION');
-    this.hasApproximatelyLocation = hasForeground === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
-    
-    let hasLocation = await this.checkAccessToken('ohos.permission.LOCATION');
-    this.hasLocation = hasLocation === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
-    
-    let hasBackground = await this.checkAccessToken('ohos.permission.LOCATION_IN_BACKGROUND');
-    this.hasBackgroundLocation = hasBackground === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
-    
+    await this.refreshPermissionState();
+
     if (!this.hasApproximatelyLocation || !this.hasLocation) {
       this.requestPermissions();
       return;
@@ -540,6 +537,31 @@ struct Index {
     console.info(TAG, 'Track cleared');
   }
 
+  private applyNightMode(index: number): void {
+    if (!this.mapController) {
+      console.warn(TAG, 'mapController is null, night mode applies after map ready');
+      return;
+    }
+    let mode: mapCommon.DayNightMode;
+    switch (index) {
+      case 1:
+        mode = mapCommon.DayNightMode.DAY;
+        break;
+      case 2:
+        mode = mapCommon.DayNightMode.NIGHT;
+        break;
+      default:
+        mode = mapCommon.DayNightMode.AUTO;
+    }
+    try {
+      this.mapController.setDayNightMode(mode);
+      console.info(TAG, `Day night mode set to ${mode}`);
+    } catch (err) {
+      let error = err as BusinessError;
+      console.error(`Failed to set day night mode, code: ${error.code}, message: ${error.message}`);
+    }
+  }
+
   build() {
     HdsNavigation() {
       HdsTabs({ controller: this.tabsController }) {
@@ -766,7 +788,7 @@ struct Index {
                       .layoutWeight(1)
                       .alignItems(HorizontalAlign.Start)
                       Row() {
-                        Text(this.displayModeOptions[this.displayModeIndex])
+                        Text(this.displayModeOptions[this.nightModeIndex])
                           .fontSize(14)
                           .fontColor($r('sys.color.font_secondary'))
                           .maxFontScale(1.3)
@@ -1363,15 +1385,15 @@ struct Index {
                 .fontSize(24)
                 .fontColor([$r('sys.color.font_primary')])
                 .margin({ left: 4 })
-                .visibility(this.displayModeIndex === index ? Visibility.Visible : Visibility.Hidden)
+                .visibility(this.nightModeIndex === index ? Visibility.Visible : Visibility.Hidden)
             }
             .width('100%')
             .borderRadius(16)
             .padding(12)
             .onClick(() => {
-              this.displayModeIndex = index;
+              this.nightModeIndex = index;
               this.showDisplayModePopup = false;
-              promptAction.showToast({ message: '功能不可用' });
+              this.applyNightMode(index);
             })
           }
         }, (option: string, index: number) => `${index}`)
