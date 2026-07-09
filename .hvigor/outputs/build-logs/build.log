@@ -9759,3 +9759,13 @@ Require stack:
 [2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:E:\MyApplicationditu\entry\build\default\intermediates\libs\default cache by regenerate.
 [2026-07-09T22:06:35.105] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol output file:E:\MyApplicationditu\entry\build\default\outputs\default\symbol cache.
 [2026-07-09T22:06:35.105] [DEBUG] debug-file - Incremental task entry:default@CollectDebugSymbol post-execution cost:1 ms .
+[2026-07-09T22:06:35.343] [DEBUG] debug-file - Cleanup worker 14.
+[2026-07-09T22:06:35.343] [DEBUG] debug-file - Worker 14 has been cleaned up.
+[2026-07-09T22:06:35.343] [DEBUG] debug-file - Current idle worker size: 1.
+[2026-07-09T22:06:35.343] [DEBUG] debug-file - Current resident worker size: 2.
+[2026-07-09T22:06:35.343] [DEBUG] debug-file - hvigor build process will be closed.
+[2026-07-09T22:06:35.348] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-09T22:06:35.348] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-09T22:06:35.348] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T22:06:35.348] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-09T22:06:35.351] [DEBUG] debug-file - worker[14] exits with exit code 1.

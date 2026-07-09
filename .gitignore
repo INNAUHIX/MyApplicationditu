@@ -11,6 +11,9 @@ build/
 *.app
 *.hprof
 
+# hvigor 构建报告（每次构建自动生成，非源码）
+.hvigor/report/
+
 # 本地配置
 local.properties
 .DS_Store
