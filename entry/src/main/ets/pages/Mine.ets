@@ -2,7 +2,7 @@
 // UI 样式与结构照搬参考项目 FitnessCenter 的「我的」页：
 //   顶部视觉卡片 + 两组 CardItem 列表 + 白底圆角卡片 + 分隔线
 // 仅保留视觉，不接入任何真实功能（登录 / 提交反馈 / 跳转二级页等均已删除）
-//   - 设置：跳转到本项目自身的 SettingPage 二级页
+//   - 设置：打开本项目独立的「设置」半模态面板
 //   - 其余菜单项：纯展示，无二级页、无真实触发逻辑
 
 // NavPathStack 为 ArkUI 全局类型，无需显式 import（与 Index.ets 一致）
@@ -44,55 +44,12 @@ struct CardItem {
 
 @Component
 export struct Mine {
-  // 由 Index 半模态的 Navigation 栈传入，用于「设置」跳转
-  pathStack: NavPathStack = new NavPathStack();
-
-  // 顶部视觉卡片：头像 + 未登录占位，不接入真实登录
-  @Builder
-  topProfileCard() {
-    Row() {
-      Image($r('app.media.default_avatar'))
-        .width(48)
-        .height(48)
-        .backgroundColor(Color.White)
-        .borderRadius(48)
-        .draggable(false)
-        .margin({ right: 16 })
-      Column() {
-        Text('未登录')
-          .fontWeight(FontWeight.Medium)
-          .fontSize(18)
-          .fontColor('#e6000000')
-          .margin({ right: 8 })
-        Text('登录后享受更多服务')
-          .fontSize(12)
-          .fontColor('#e6000000')
-      }
-      .layoutWeight(1)
-      .height(48)
-      .alignItems(HorizontalAlign.Start)
-      Image($r('app.media.ic_arrow_right'))
-        .width(16)
-        .height(16)
-        .fillColor('#99000000')
-        .draggable(false)
-    }
-    .width('100%')
-    .backgroundColor(Color.White)
-    .borderRadius(16)
-    .padding(12)
-    .alignItems(VerticalAlign.Top)
-    .margin({ bottom: 12 })
-    .onClick(() => {
-      // 视觉卡片，不接入真实登录
-    })
-  }
+  // 点击「设置」时由 Index 打开独立的设置半模态面板
+  onSettingClick: () => void = () => {};
 
   build() {
     Scroll() {
       Column({ space: 16 }) {
-        this.topProfileCard()
-
         // 第一组：我的卡项 / 预约记录 / 我的课程 / 我的订单
         Column() {
           List() {
@@ -131,7 +88,7 @@ export struct Mine {
                 label: '设置',
                 symbol: $r('sys.symbol.gearshape'),
                 onClickEvent: () => {
-                  this.pathStack.pushPathByName('SettingPage', null);
+                  this.onSettingClick();
                 }
               })
             }

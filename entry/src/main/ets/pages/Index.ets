@@ -45,7 +45,9 @@ struct Index {
   @State customSwitchOn: boolean = true;
   @State customSelectIndex: number = 0;
   @State showCustomSelectPopup: boolean = false;
-  private sheetNavPathStack: NavPathStack = new NavPathStack();
+  @State isShowSettingSheet: boolean = false;
+  @State trackCount: number = 0;
+  private settingStack: NavPathStack = new NavPathStack();
   private displayModeOptions: string[] = ['跟随系统', '普通模式', '夜间模式'];
   private customSelectOptions: string[] = ['选项1', '选项2', '选项3'];
 
@@ -399,6 +401,7 @@ struct Index {
 
   private recordTrackPoint(latLng: mapCommon.LatLng): void {
     this.trackPoints.push(latLng);
+    this.trackCount = this.trackPoints.length;
     this.saveTrackPoint(latLng);
 
     if (this.shouldRecordFootprint(latLng)) {
@@ -523,6 +526,7 @@ struct Index {
       this.massPointOverlay = null;
     }
     this.trackPoints = [];
+    this.trackCount = 0;
     this.footprintPoints = [];
     this.lastFootprintPoint = null;
     if (this.rdbStore) {
@@ -535,6 +539,23 @@ struct Index {
       }
     }
     console.info(TAG, 'Track cleared');
+  }
+
+  private confirmClearTrack(): void {
+    promptAction.showDialog({
+      title: '删除轨迹',
+      message: `确定要删除全部 ${this.trackPoints.length} 条轨迹记录吗？此操作不可恢复。`,
+      buttons: [
+        { text: '取消', color: '#999999' },
+        { text: '删除', color: '#E64566' }
+      ]
+    }).then((result) => {
+      if (result.index === 1) {
+        this.clearTrack();
+      }
+    }).catch((err: BusinessError) => {
+      console.error(`showDialog failed, code: ${err.code}, message: ${err.message}`);
+    });
   }
 
   private applyNightMode(index: number): void {
@@ -642,15 +663,6 @@ struct Index {
             }
             .position({ x: '25%', y: 50 })
 
-            Button('清除轨迹')
-              .backgroundColor('#333333')
-              .width(120)
-              .height(40)
-              .borderRadius(20)
-              .position({ x: '35%', y: '85%' })
-              .onClick(() => {
-                this.clearTrack();
-              })
           }
           .width('100%')
           .height('100%')
@@ -708,37 +720,66 @@ struct Index {
           materialLevel: this.customMaterialLevel
         }
       })
-      .bindSheet($$this.isShowSheet, this.buildSheetContent(), {
-        height: SheetSize.LARGE,
-        dragBar: true,
-
-        onDisappear: () => {
-          this.isShowSheet = false;
-          this.sheetNavPathStack.clear();
-        }
-      })
     }
     .mode(NavigationMode.Stack)
     .hideTitleBar(true)
     .hideBackButton(true)
     .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM])
+    .bindSheet($$this.isShowSheet, this.buildSheetContent(), {
+      height: SheetSize.LARGE,
+      dragBar: true,
+      showClose: false,
+      onDisappear: () => {
+        this.isShowSheet = false;
+      }
+    })
   }
 
   @Builder
   buildSheetContent(): void {
-    Navigation(this.sheetNavPathStack) {
-      Mine({ pathStack: this.sheetNavPathStack })
+    Column() {
+      // 顶部占位：把 Navigation（含标题栏）整体下移到拖拽条下方，避免标题栏上移/与拖拽条重叠
+      Column().width('100%').height(6)
+      Navigation() {
+        Mine({ onSettingClick: () => { this.isShowSettingSheet = true; } })
+      }
+      .title('我的')
+      .titleMode(NavigationTitleMode.Mini)
+      .hideBackButton(true)
+      .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
+      .mode(NavigationMode.Stack)
+      .menus([
+        {
+          value: '',
+          symbolIcon: new SymbolGlyphModifier($r('sys.symbol.xmark'))
+            .fontSize(22)
+            .fontColor([$r('sys.color.font_primary')]),
+          action: () => {
+            this.isShowSheet = false;
+          }
+        }
+      ])
+      .width('100%')
+      .layoutWeight(1)
     }
-    .navDestination(this.SheetNavDestination)
-    .title('我的')
+    .width('100%')
+    .height('100%')
+    // 「设置」面板：嵌套半模态，浮在"我的"上方，不关闭"我的"
+    .bindSheet($$this.isShowSettingSheet, this.buildSettingSheetContent(), {
+      height: SheetSize.LARGE,
+      dragBar: true,
+      showClose: false,
+      onDisappear: () => {
+        this.isShowSettingSheet = false;
+        this.settingStack.clear();
+      }
+    })
   }
 
   @Builder
-  SheetNavDestination(name: string) {
-    if (name === 'SettingPage') {
-      NavDestination() {
-        Column() {
-          Scroll() {
+  settingRootContent() {
+    Column() {
+      Scroll() {
             Column({ space: 12 }) {
               Column() {
                 Row() {
@@ -846,7 +887,7 @@ struct Index {
                   ListItem() {
                     Row() {
                       Column({ space: 2 }) {
-                        Text('清理缓存')
+                        Text('删除轨迹')
                           .fontSize(16)
                           .fontColor($r('sys.color.font_primary'))
                           .fontWeight(FontWeight.Medium)
@@ -855,7 +896,7 @@ struct Index {
                       .layoutWeight(1)
                       .alignItems(HorizontalAlign.Start)
                       Row() {
-                        Text('0.00M')
+                        Text(`${this.trackCount}`)
                           .fontSize(14)
                           .fontColor($r('sys.color.font_secondary'))
                           .maxFontScale(1.3)
@@ -872,7 +913,7 @@ struct Index {
                     .constraintSize({ minHeight: 48 })
                     .borderRadius(16)
                     .onClick(() => {
-                      promptAction.showToast({ message: '功能不可用' });
+                      this.confirmClearTrack();
                     })
                   }
 
@@ -899,9 +940,6 @@ struct Index {
                     .padding({ top: 12, bottom: 12, left: 8, right: 8 })
                     .constraintSize({ minHeight: 48 })
                     .borderRadius(16)
-                    .onClick(() => {
-                      promptAction.showToast({ message: '功能不可用' });
-                    })
                   }
 
                   ListItem() {
@@ -927,9 +965,6 @@ struct Index {
                     .padding({ top: 12, bottom: 12, left: 8, right: 8 })
                     .constraintSize({ minHeight: 48 })
                     .borderRadius(16)
-                    .onClick(() => {
-                      promptAction.showToast({ message: '功能不可用' });
-                    })
                   }
 
                   ListItem() {
@@ -956,7 +991,7 @@ struct Index {
                     .constraintSize({ minHeight: 48 })
                     .borderRadius(16)
                     .onClick(() => {
-                      this.sheetNavPathStack.pushPathByName('PrivacySettingPage', null);
+                      this.settingStack.pushPathByName('privacy', null);
                     })
                   }
 
@@ -983,9 +1018,6 @@ struct Index {
                     .padding({ top: 12, bottom: 12, left: 8, right: 8 })
                     .constraintSize({ minHeight: 48 })
                     .borderRadius(16)
-                    .onClick(() => {
-                      promptAction.showToast({ message: '功能不可用' });
-                    })
                   }
                 }
                 .width('100%')
@@ -1036,9 +1068,6 @@ struct Index {
                     .padding({ top: 12, bottom: 12, left: 8, right: 8 })
                     .constraintSize({ minHeight: 48 })
                     .borderRadius(16)
-                    .onClick(() => {
-                      promptAction.showToast({ message: '功能不可用' });
-                    })
                   }
 
                   ListItem() {
@@ -1133,28 +1162,85 @@ struct Index {
                   .fontWeight(FontWeight.Medium)
                   .fontSize(16)
                   .padding({ top: 12, bottom: 12 })
-                  .onClick(() => {
-                    promptAction.showToast({ message: '功能不可用' });
-                  })
               }
               .margin({ top: 16 })
             }
             .padding({ top: 12 })
           }
           .layoutWeight(1)
+          .align(Alignment.Top)
+          .edgeEffect(EdgeEffect.Spring)
+          .scrollBar(BarState.Off)
         }
         .width('100%')
         .height('100%')
         .padding({ left: 16, right: 16 })
         .backgroundColor($r('sys.color.background_secondary'))
+  }
+
+
+  @Builder
+  buildSettingSheetContent(): void {
+    Column() {
+      // 顶部占位：把 Navigation（含标题栏）整体下移到拖拽条下方，避免标题栏上移/与拖拽条重叠
+      Column().width('100%').height(6)
+      Navigation(this.settingStack) {
+        this.settingRootContent()
       }
-      .title('设置')
-      .hideBackButton(false)
-    } else if (name === 'PrivacySettingPage') {
+      .title('设置', { backgroundColor: $r('sys.color.background_secondary') })
+      .titleMode(NavigationTitleMode.Mini)
+      .hideBackButton(true)
+      .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
+      .mode(NavigationMode.Stack)
+      .navDestination(this.pageMap)
+      .menus([
+        {
+          value: '',
+          symbolIcon: new SymbolGlyphModifier($r('sys.symbol.xmark'))
+            .fontSize(22)
+            .fontColor([$r('sys.color.font_primary')]),
+          action: () => {
+            this.isShowSettingSheet = false;
+          }
+        }
+      ])
+      .width('100%')
+      .layoutWeight(1)
+    }
+    .width('100%')
+    .height('100%')
+  }
+
+  @Builder
+  pageMap(name: string, param: Record<string, Object>) {
+    if (name === 'privacy') {
       NavDestination() {
-        Column() {
-          Scroll() {
-            Column({ space: 12 }) {
+        this.privacyRootContent()
+      }
+      .title('隐私设置', { backgroundColor: $r('sys.color.background_secondary') })
+      .menus([
+        {
+          value: '',
+          symbolIcon: new SymbolGlyphModifier($r('sys.symbol.xmark'))
+            .fontSize(22)
+            .fontColor([$r('sys.color.font_primary')]),
+          action: () => {
+            this.isShowSettingSheet = false;
+          }
+        }
+      ])
+      .onBackPressed(() => {
+        this.settingStack.pop();
+        return true;
+      })
+    }
+  }
+
+  @Builder
+  privacyRootContent() {
+    Column() {
+      Scroll() {
+        Column({ space: 12 }) {
               List() {
                 ListItem() {
                   Row() {
@@ -1239,9 +1325,6 @@ struct Index {
                   .padding({ top: 12, bottom: 12, left: 8, right: 8 })
                   .constraintSize({ minHeight: 48 })
                   .borderRadius(16)
-                  .onClick(() => {
-                    promptAction.showToast({ message: '功能不可用' });
-                  })
                 }
 
                 ListItem() {
@@ -1267,9 +1350,6 @@ struct Index {
                   .padding({ top: 12, bottom: 12, left: 8, right: 8 })
                   .constraintSize({ minHeight: 48 })
                   .borderRadius(16)
-                  .onClick(() => {
-                    promptAction.showToast({ message: '功能不可用' });
-                  })
                 }
               }
               .width('100%')
@@ -1308,9 +1388,6 @@ struct Index {
                   .padding({ top: 12, bottom: 12, left: 8, right: 8 })
                   .constraintSize({ minHeight: 48 })
                   .borderRadius(16)
-                  .onClick(() => {
-                    promptAction.showToast({ message: '功能不可用' });
-                  })
                 }
 
                 ListItem() {
@@ -1336,9 +1413,6 @@ struct Index {
                   .padding({ top: 12, bottom: 12, left: 8, right: 8 })
                   .constraintSize({ minHeight: 48 })
                   .borderRadius(16)
-                  .onClick(() => {
-                    promptAction.showToast({ message: '功能不可用' });
-                  })
                 }
               }
               .width('100%')
@@ -1356,15 +1430,14 @@ struct Index {
             .padding({ top: 12 })
           }
           .layoutWeight(1)
+          .align(Alignment.Top)
+          .edgeEffect(EdgeEffect.Spring)
+          .scrollBar(BarState.Off)
         }
         .width('100%')
         .height('100%')
         .padding({ left: 16, right: 16 })
         .backgroundColor($r('sys.color.background_secondary'))
-      }
-      .title('隐私设置')
-      .hideBackButton(false)
-    }
   }
 
   @Builder
@@ -1439,7 +1512,6 @@ struct Index {
             .onClick(() => {
               this.customSelectIndex = index;
               this.showCustomSelectPopup = false;
-              promptAction.showToast({ message: '功能不可用' });
             })
           }
         }, (option: string, index: number) => `${index}`)
