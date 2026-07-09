@@ -1,9 +1,3 @@
-import { AppStorageV2 } from '@kit.ArkUI';
-
-import { ConfigInfo } from '../common/ConfigModel';
-import { Constants } from '../common/Constant';
-import { SheetColumnModifier } from '../common/CustomModifier';
-
 @ComponentV2
 export struct ChooseDate {
   // 初始化传入的日期
@@ -13,17 +7,14 @@ export struct ChooseDate {
   // 关闭半模态
   @Event onClose: () => void = () => {
   };
-  @Local configInfo: ConfigInfo = AppStorageV2.connect(ConfigInfo, () => new ConfigInfo())!;
-  @Local sheetColumn: SheetColumnModifier = new SheetColumnModifier();
   @Local tempDate: Date = new Date();
-
 
   aboutToAppear(): void {
     this.tempDate = this.date || new Date();
   }
 
   build() {
-    Column({ space: Constants.PADDING_2XL }) {
+    Column({ space: 32 }) {
       Text() {
         Span(this.dateStr)
         Span(' ')
@@ -32,24 +23,24 @@ export struct ChooseDate {
       .fontSize($r('sys.float.Title_S'))
       .fontColor($r('sys.color.font_primary'))
       .fontWeight(FontWeight.Bold)
-      .padding(Constants.PADDING_L)
+      .padding(24)
 
       DatePicker({
         selected: this.date,
         start: new Date('1900-02-01'),
         end: new Date(),
       })
-        .selectedTextStyle({ color: this.configInfo.themeColor })
+        .selectedTextStyle({ color: '#0A59F7' })
         .onDateChange((date: Date) => {
           this.tempDate = date;
         })
 
       Blank()
 
-      Row({ space: Constants.SPACE_S }) {
+      Row({ space: 4 }) {
         Button('取消')
           .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .fontColor(this.configInfo.themeColor)
+          .fontColor('#0A59F7')
           .fontSize($r('sys.float.Body_L'))
           .layoutWeight(1)
           .onClick(() => {
@@ -57,16 +48,15 @@ export struct ChooseDate {
           })
         Button('确定')
           .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .fontColor(this.configInfo.themeColor)
+          .fontColor('#0A59F7')
           .fontSize($r('sys.float.Body_L'))
           .layoutWeight(1)
           .onClick(() => {
             this.onDateSelected(this.tempDate ?? new Date());
           })
       }
-      .width(Constants.FULL_PERCENT)
+      .width('100%')
     }
-    .attributeModifier(this.sheetColumn)
   }
 
   @Computed

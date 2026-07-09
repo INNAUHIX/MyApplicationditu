@@ -1,24 +1,21 @@
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { AggregatedLoginVM } from '../viewmodel/AggregatedLoginVM';
-import { Constants } from '../common/Constant';
-import { PrivacyContent } from '../model/Index';
-
 interface PrivacyTextItem {
   text?: string;
   type?: number;
   tag?: string;
 }
 
+interface PrivacyContent {
+  privacyLabel: ResourceStr;
+  privacyUrl: ResourceStr;
+  privacyTag: string;
+}
+
 @ComponentV2
 export struct AgreePrivacyBox {
-  @Local vm: AggregatedLoginVM = AggregatedLoginVM.getInstance(false);
   @Param themeColor: ResourceColor = '#0A59F7';
   @Param privacyContent: PrivacyContent[] = []
-  @Param routerModule: NavPathStack = new NavPathStack()
-  @Param isSheet: boolean = false;
-  @Param sheetType: SheetType = SheetType.BOTTOM;
-  selectedContent: PrivacyContent | undefined = new PrivacyContent()
-  privacyText: PrivacyTextItem[] = []
+  @Param isSelected: boolean = false;
+  @Local privacyText: PrivacyTextItem[] = []
 
   aboutToAppear(): void {
     this.privacyText = this.privacyContent.map(item => ({
@@ -29,18 +26,16 @@ export struct AgreePrivacyBox {
   }
 
   build() {
-    Row({ space: Constants.SPACE_M }) {
+    Row({ space: 8 }) {
       Checkbox({ name: 'privacyCheckbox', group: 'privacyCheckboxGroup' })
-        .width(Constants.BOX_WIDTH)
-        .height(Constants.BOX_HEIGHT)
+        .width(16)
+        .height(16)
         .focusable(true)
         .focusOnTouch(true)
         .selectedColor(this.themeColor)
-        .select(this.vm.isSelected)
-        .enabled(this.vm.enableStatus)
+        .select(this.isSelected)
         .onChange((value: boolean) => {
-          hilog.info(0x0001, 'CheckBoxComponent', `agreementChecked: ${value}`);
-          this.vm.agreePrivacyChange(value)
+          this.isSelected = value;
         });
 
       this.buildSelectView(this.themeColor)
@@ -67,7 +62,7 @@ export struct AgreePrivacyBox {
             })
         }, (item: PrivacyTextItem, index: number) => `${item.text}_${index}`)
       }
-      .width(Constants.FULL_PERCENT)
+      .width('100%')
     }
     .layoutWeight(1)
   }

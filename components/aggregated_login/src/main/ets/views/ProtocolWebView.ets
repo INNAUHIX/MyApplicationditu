@@ -1,5 +1,19 @@
-import { ProtocolRouterParams } from '../model/Index';
-import { Constants } from '../common/Constant';
+interface ProtocolRouterParams {
+  content: string;
+  isSheet?: boolean;
+  sheetType?: SheetType;
+}
+
+const UI = {
+  BACK_WIDTH: 20,
+  BACK_BACKGROUND_WIDTH: 32,
+  BACK_BACKGROUND_HEIGHT: 32,
+  FULL_PERCENT: '100%',
+  SPACE_S: 4,
+  PADDING_L: 24,
+  WINDOW_BOTTOM_PADDING: 0,
+  ZERO: 0,
+};
 
 @Builder
 export function ProtocolWebViewBuilder() {
@@ -19,10 +33,10 @@ struct ProtocolWebView {
       return undefined;
     }
     if (this.sheetType === SheetType.CENTER) {
-      return Constants.PADDING_L;
+      return UI.PADDING_L;
     }
     if (this.sheetType === SheetType.BOTTOM) {
-      return Constants.ZERO;
+      return UI.ZERO;
     }
     return 0;
   }
@@ -34,19 +48,17 @@ struct ProtocolWebView {
           Button({ type: ButtonType.Circle }) {
             SymbolGlyph($r('sys.symbol.chevron_backward'))
               .fontColor([$r('sys.color.icon_primary')])
-              .fontSize(Constants.BACK_WIDTH)
+              .fontSize(UI.BACK_WIDTH)
           }
-          .width(Constants.BACK_BACKGROUND_WIDTH)
-          .height(Constants.BACK_BACKGROUND_HEIGHT)
+          .width(UI.BACK_BACKGROUND_WIDTH)
+          .height(UI.BACK_BACKGROUND_HEIGHT)
           .backgroundColor($r('sys.color.comp_background_tertiary'))
           .onClick(() => {
             this.stack.pop();
           })
         }
-        .width(Constants.FULL_PERCENT)
-        .margin({
-          bottom: Constants.SPACE_S,
-        })
+        .width(UI.FULL_PERCENT)
+        .margin({ bottom: UI.SPACE_S })
 
         Scroll() {
           Text(this.content)
@@ -60,13 +72,13 @@ struct ProtocolWebView {
         .scrollBar(BarState.Off)
       }
       .padding({
-        left: Constants.PADDING_L,
-        right: Constants.PADDING_L,
-        bottom: this.isSheet ? Constants.WINDOW_BOTTOM_PADDING : Constants.ZERO,
+        left: UI.PADDING_L,
+        right: UI.PADDING_L,
+        bottom: this.isSheet ? UI.WINDOW_BOTTOM_PADDING : UI.ZERO,
         top: this.headerPaddingTop,
       })
-      .height(Constants.FULL_PERCENT)
-      .width(Constants.FULL_PERCENT)
+      .height(UI.FULL_PERCENT)
+      .width(UI.FULL_PERCENT)
       .backgroundColor($r('sys.color.background_secondary'))
     }
     .hideTitleBar(true)
