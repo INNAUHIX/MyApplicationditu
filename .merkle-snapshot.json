@@ -1,0 +1,184 @@
+{
+  "rootHash": "4b1b54b295061fd6917311dbc71aa9d26078e125d49a74ab13300cf7340ca951",
+  "timestamp": 1783329235326,
+  "fileCount": 10,
+  "files": [
+    {
+      "path": "hvigorfile.ts",
+      "hash": "8e19ea6d9c9bfbf4fe2e1d94809352d3f4b21e2a8c1f9fff2b381151d244710d",
+      "size": 227,
+      "modified": 1783302975233.468
+    },
+    {
+      "path": "entry\\hvigorfile.ts",
+      "hash": "68861686b8ec5a86558740daef3a89b1e868e4d81f01cf1cfb91705fb69b339d",
+      "size": 227,
+      "modified": 1783302975518.6184
+    },
+    {
+      "path": "entry\\src\\test\\List.test.ets",
+      "hash": "91800c41cb8600e9977a7f70debcfec95a4e850e933d61df8454708da5c5e5f0",
+      "size": 105,
+      "modified": 1783302975535.5808
+    },
+    {
+      "path": "entry\\src\\test\\LocalUnit.test.ets",
+      "hash": "c66ad30b06140151b7e5dbf63cc05f8a72f094176b91e3a100f03126bdb84e3c",
+      "size": 1624,
+      "modified": 1783302975550.7632
+    },
+    {
+      "path": "entry\\src\\ohosTest\\ets\\test\\Ability.test.ets",
+      "hash": "087a64ea36a3bab888ba5c1b185712abfccd2e020b18e109ac510b2fb542766b",
+      "size": 1734,
+      "modified": 1783302975592.8313
+    },
+    {
+      "path": "entry\\src\\ohosTest\\ets\\test\\List.test.ets",
+      "hash": "f0fe59a90e5137961d7eb70655e268a52f9ad9e0110c210620658548ed2460fb",
+      "size": 99,
+      "modified": 1783302975604.9238
+    },
+    {
+      "path": "entry\\src\\main\\ets\\pages\\Index.ets",
+      "hash": "4f357903efd4016acc36b8960c26c743e9a6691dfd6c6836252730e9e7441a72",
+      "size": 6787,
+      "modified": 1783327641392.7324
+    },
+    {
+      "path": "entry\\src\\main\\ets\\pages\\MapPage.ets",
+      "hash": "e3bacd672744400eb99190e589b923c2ebc5e47f06b8b09663e93add3951aa3d",
+      "size": 2706,
+      "modified": 1783313309760.7952
+    },
+    {
+      "path": "entry\\src\\main\\ets\\entrybackupability\\EntryBackupAbility.ets",
+      "hash": "35ba346ffae3752597fee512844767eaae6c96ec2163eb801203550319a8ac01",
+      "size": 522,
+      "modified": 1783302980159.8215
+    },
+    {
+      "path": "entry\\src\\main\\ets\\entryability\\EntryAbility.ets",
+      "hash": "f1ce44be60eb6e00d31a90c70207fb67468e22684b2d922d3ccf42e4c9e46839",
+      "size": 1770,
+      "modified": 1783302975827.9229
+    }
+  ],
+  "tree": {
+    "hash": "4b1b54b295061fd6917311dbc71aa9d26078e125d49a74ab13300cf7340ca951",
+    "left": {
+      "hash": "9963cfc79b65c2645c10160e586d5f0a80c1e34a7037924afa0670478e2ad185",
+      "left": {
+        "hash": "96eccbf7c17a40ae8e611a9cae332b157cebdc8d8dbb586d98ca29cae3cf879e",
+        "left": {
+          "hash": "d69da217ca1cd8b0075aab416c40d7272af9667c17e1ef989f8930488a831532",
+          "left": {
+            "hash": "68861686b8ec5a86558740daef3a89b1e868e4d81f01cf1cfb91705fb69b339d",
+            "file": {
+              "path": "entry\\hvigorfile.ts",
+              "hash": "68861686b8ec5a86558740daef3a89b1e868e4d81f01cf1cfb91705fb69b339d",
+              "size": 227,
+              "modified": 1783302975518.6184
+            }
+          },
+          "right": {
+            "hash": "f1ce44be60eb6e00d31a90c70207fb67468e22684b2d922d3ccf42e4c9e46839",
+            "file": {
+              "path": "entry\\src\\main\\ets\\entryability\\EntryAbility.ets",
+              "hash": "f1ce44be60eb6e00d31a90c70207fb67468e22684b2d922d3ccf42e4c9e46839",
+              "size": 1770,
+              "modified": 1783302975827.9229
+            }
+          }
+        },
+        "right": {
+          "hash": "4656aef625e5db85573b56b2ead0f4891d6b5d175de59e9afb977fa0136204cc",
+          "left": {
+            "hash": "35ba346ffae3752597fee512844767eaae6c96ec2163eb801203550319a8ac01",
+            "file": {
+              "path": "entry\\src\\main\\ets\\entrybackupability\\EntryBackupAbility.ets",
+              "hash": "35ba346ffae3752597fee512844767eaae6c96ec2163eb801203550319a8ac01",
+              "size": 522,
+              "modified": 1783302980159.8215
+            }
+          },
+          "right": {
+            "hash": "4f357903efd4016acc36b8960c26c743e9a6691dfd6c6836252730e9e7441a72",
+            "file": {
+              "path": "entry\\src\\main\\ets\\pages\\Index.ets",
+              "hash": "4f357903efd4016acc36b8960c26c743e9a6691dfd6c6836252730e9e7441a72",
+              "size": 6787,
+              "modified": 1783327641392.7324
+            }
+          }
+        }
+      },
+      "right": {
+        "hash": "eee8e3167f7b4f9a981b06f743becde44775020bd264fbc105e7ea3446c566b5",
+        "left": {
+          "hash": "776eac51b2ed9f77958cb4d06bce8fd5a324a04088c2937a5b083a859af74617",
+          "left": {
+            "hash": "e3bacd672744400eb99190e589b923c2ebc5e47f06b8b09663e93add3951aa3d",
+            "file": {
+              "path": "entry\\src\\main\\ets\\pages\\MapPage.ets",
+              "hash": "e3bacd672744400eb99190e589b923c2ebc5e47f06b8b09663e93add3951aa3d",
+              "size": 2706,
+              "modified": 1783313309760.7952
+            }
+          },
+          "right": {
+            "hash": "087a64ea36a3bab888ba5c1b185712abfccd2e020b18e109ac510b2fb542766b",
+            "file": {
+              "path": "entry\\src\\ohosTest\\ets\\test\\Ability.test.ets",
+              "hash": "087a64ea36a3bab888ba5c1b185712abfccd2e020b18e109ac510b2fb542766b",
+              "size": 1734,
+              "modified": 1783302975592.8313
+            }
+          }
+        },
+        "right": {
+          "hash": "7324779a695d25f96e607891092c66684f5bf4c2dd20e5a0e999581f3aa02b10",
+          "left": {
+            "hash": "f0fe59a90e5137961d7eb70655e268a52f9ad9e0110c210620658548ed2460fb",
+            "file": {
+              "path": "entry\\src\\ohosTest\\ets\\test\\List.test.ets",
+              "hash": "f0fe59a90e5137961d7eb70655e268a52f9ad9e0110c210620658548ed2460fb",
+              "size": 99,
+              "modified": 1783302975604.9238
+            }
+          },
+          "right": {
+            "hash": "91800c41cb8600e9977a7f70debcfec95a4e850e933d61df8454708da5c5e5f0",
+            "file": {
+              "path": "entry\\src\\test\\List.test.ets",
+              "hash": "91800c41cb8600e9977a7f70debcfec95a4e850e933d61df8454708da5c5e5f0",
+              "size": 105,
+              "modified": 1783302975535.5808
+            }
+          }
+        }
+      }
+    },
+    "right": {
+      "hash": "ff755705ff8ec9b3e3206ad56cf600b2f9222e077a8696a24d37fbb93efe114d",
+      "left": {
+        "hash": "c66ad30b06140151b7e5dbf63cc05f8a72f094176b91e3a100f03126bdb84e3c",
+        "file": {
+          "path": "entry\\src\\test\\LocalUnit.test.ets",
+          "hash": "c66ad30b06140151b7e5dbf63cc05f8a72f094176b91e3a100f03126bdb84e3c",
+          "size": 1624,
+          "modified": 1783302975550.7632
+        }
+      },
+      "right": {
+        "hash": "8e19ea6d9c9bfbf4fe2e1d94809352d3f4b21e2a8c1f9fff2b381151d244710d",
+        "file": {
+          "path": "hvigorfile.ts",
+          "hash": "8e19ea6d9c9bfbf4fe2e1d94809352d3f4b21e2a8c1f9fff2b381151d244710d",
+          "size": 227,
+          "modified": 1783302975233.468
+        }
+      }
+    }
+  }
+}

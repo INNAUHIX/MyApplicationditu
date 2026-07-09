@@ -1,0 +1,25 @@
+# 依赖
+oh_modules/
+node_modules/
+**/oh_modules/
+**/node_modules/
+
+# 构建产物
+**/build/
+build/
+*.hap
+*.app
+*.hprof
+
+# 本地配置
+local.properties
+.DS_Store
+Thumbs.db
+
+# 工作记忆（本地生成，非源码）
+.workbuddy/
+
+# IDE
+.idea/
+*.iml
+.vscode/

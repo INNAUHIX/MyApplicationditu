@@ -1,0 +1,32 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "足迹"
+    },
+    {
+      "name": "app_name",
+      "value": "足迹"
+    },
+    {
+      "name": "location_permission_reason",
+      "value": "用于记录您的运动轨迹和位置信息"
+    },
+    {
+      "name": "background_running_reason",
+      "value": "需要在后台持续记录您的运动轨迹"
+    },
+    {
+      "name": "background_location_reason",
+      "value": "需要在后台获取位置信息以持续记录运动轨迹"
+    }
+  ]
+}

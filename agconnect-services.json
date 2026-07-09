@@ -1,0 +1,14 @@
+{
+  "client": {
+    "client_id": "16387259027056866080",
+    "client_secret": "CF28FBB96E7E4CAF7C040EBC1CCE8CAD5EDAC80347BD64E...",
+    "app_id": "6917567485297155436",
+    "project_id": "461323198429740850",
+    "api_key": "DQEDAIB0x0x0ADSLd6d6fP6i/ZjyogMJx+wQS++RKZvzjsB90Vbch..."
+  },
+  "services": {
+    "map": {
+      "api_key": "DQEDAIB0x0x0ADSLd6d6fP6i/ZjyogMJx+wQS++RKZvzjsB90Vbch..."
+    }
+  }
+}

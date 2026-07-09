@@ -1,0 +1,32 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#000000"
+    },
+    {
+      "name": "primary_color",
+      "value": "#007DFF"
+    },
+    {
+      "name": "text_primary",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "text_secondary",
+      "value": "#B3FFFFFF"
+    },
+    {
+      "name": "bottom_gradient_start",
+      "value": "#99000000"
+    },
+    {
+      "name": "bottom_gradient_end",
+      "value": "#00000000"
+    },
+    {
+      "name": "location_info_bg",
+      "value": "#80000000"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BF378F349FBDB9858412739206D81BD14C17996B5054E743AF0926D14357FA4BE6A1F381C90CB80",
+          "profile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.p12",
+          "storePassword": "0000001B650F5B1DF7B2A5B0E4937D3729CD6E0AB3C0D2418F05968998A266178B4465AD5FBDC56112BEBE"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "6.1.0(23)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+
+    }
+  ]
+
+}

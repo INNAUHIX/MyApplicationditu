@@ -1,0 +1,14 @@
+{
+  "name": "mine",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "Index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "feedback": "file:../../components/feedback",
+    "module_base": "file:../../components/module_base",
+    "aggregated_login": "file:../../components/aggregated_login",
+    "collect_personal_info": "file:../../components/collect_personal_info"
+  }
+}
