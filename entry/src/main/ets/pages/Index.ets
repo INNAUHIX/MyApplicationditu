@@ -94,7 +94,25 @@ struct Index {
     buttonPadding: { top: 10, right: 4, bottom: 10, left: 4 }
   });
   @State display2SelectedIndexes: number[] = [0];
+  @State mapStyleSegmentOptions: SegmentButtonOptions = SegmentButtonOptions.capsule({
+    buttons: [
+      { text: '默认' },
+      { text: '自定义' }
+    ] as ItemRestriction<SegmentButtonTextItem>,
+    selectedBackgroundColor: '#007DFF',
+    fontColor: '#999999',
+    selectedFontColor: Color.White,
+    fontSize: 14,
+    selectedFontSize: 14,
+    fontWeight: FontWeight.Regular,
+    selectedFontWeight: FontWeight.Medium,
+    buttonPadding: { top: 10, right: 4, bottom: 10, left: 4 }
+  });
+  // 足迹点距离阈值：与上一个足迹点距离 >= 80米才记录，避免过密
   private static readonly FOOTPRINT_DISTANCE: number = 80;
+  // 折线轨迹距离阈值：新点与上一个轨迹点距离 < 5米时丢弃，过滤GPS漂移导致的原地锯齿线
+  private static readonly MIN_TRACK_DISTANCE: number = 5;
+
   private tabsController: HdsTabsController = new HdsTabsController();
   @State customMaterialLevel: hdsMaterial.MaterialLevel = hdsMaterial.MaterialLevel.EXQUISITE;
   @State hasApproximatelyLocation: boolean = false;
@@ -112,6 +130,8 @@ struct Index {
   @State isShowSettingSheet: boolean = false;
   @State isShowLocationSheet: boolean = false; // 定位权限半模态面板显隐
   @State isShowMapToolSheet: boolean = false; // 地图工具半模态面板显隐
+  @State mapStyleIndex: number = 0; // 地图样式：0=默认，1=自定义
+  @State mapStyle2SelectedIndexes: number[] = [0];
   @State trackCount: number = 0;
   private settingStack: NavPathStack = new NavPathStack();
   private displayModeOptions: string[] = ['跟随系统', '普通模式', '夜间模式'];
@@ -282,6 +302,7 @@ struct Index {
       tiltGesturesEnabled: true,
       rotateGesturesEnabled: true,
       sphereEnabled: true,
+
       dayNightMode: mapCommon.DayNightMode.AUTO // 与 nightModeIndex=0(跟随系统) 保持一致，避免首屏强制夜间
     };
   }
@@ -328,6 +349,9 @@ struct Index {
       }
     };
   }
+
+
+
 
   // 开启地图 3D 建筑显示效果
   private enable3DBuilding(): void {
@@ -514,6 +538,7 @@ struct Index {
       this.mapController.moveCamera(cameraPosition);
       console.info(TAG, `Camera moved to user location: ${gcj02Location.latitude}, ${gcj02Location.longitude}`);
 
+      // 定位策略：NAVIGATION场景，每秒回调1次，优先精度
       let locationRequest: geoLocationManager.LocationRequest = {
         priority: geoLocationManager.LocationRequestPriority.ACCURACY,
         scenario: geoLocationManager.LocationRequestScenario.NAVIGATION,
@@ -521,12 +546,21 @@ struct Index {
         distanceInterval: 0,
         maxAccuracy: 0
       };
+      // 定位回调：WGS84→GCJ02转换后，距离阈值过滤（<5米丢弃，过滤GPS漂移），再记录轨迹点
       this.locationCallback = (location: geoLocationManager.Location) => {
+
         map.convertCoordinate(
           mapCommon.CoordinateType.WGS84,
           mapCommon.CoordinateType.GCJ02,
           { latitude: location.latitude, longitude: location.longitude }
         ).then((gcj02: mapCommon.LatLng) => {
+          if (this.trackPoints.length > 0) {
+            let lastPoint: mapCommon.LatLng = this.trackPoints[this.trackPoints.length - 1];
+            let distance: number = this.calculateDistance(lastPoint, gcj02);
+            if (distance < Index.MIN_TRACK_DISTANCE) {
+              return;
+            }
+          }
           this.recordTrackPoint(gcj02);
         });
       };
@@ -538,7 +572,7 @@ struct Index {
     }
   }
 
-  // 定位回调核心：记录轨迹点(内存+落库)，按距离阈值补记「足迹」，并刷新当前展示模式的覆盖物
+  // 定位回调核心：记录折线轨迹点(内存+落库)，按80米距离阈值补记「足迹」，并刷新当前展示模式的覆盖物
   private recordTrackPoint(latLng: mapCommon.LatLng): void {
     this.trackPoints.push(latLng);
     this.trackCount = this.trackPoints.length;
@@ -577,7 +611,6 @@ struct Index {
     return R * c;
   }
 
-  // 折线模式：首次创建 MapPolyline，之后仅 setPoints 增量更新（红色、宽度 10）
   private updatePolyline(): void {
     if (!this.trackPolyline) {
       let polylineOption: mapCommon.MapPolylineOptions = {
@@ -731,6 +764,36 @@ struct Index {
     } catch (err) {
       let error = err as BusinessError;
       console.error(`Failed to set day night mode, code: ${error.code}, message: ${error.message}`);
+    }
+  }
+
+  private switchMapStyle(index: number): void {
+    if (this.mapStyleIndex === index) {
+      return;
+    }
+    this.mapStyleIndex = index;
+    this.mapStyle2SelectedIndexes = [index];
+    if (!this.mapController) {
+      return;
+    }
+    if (index === 1) {
+      let param: mapCommon.CustomMapStyleOptions = {
+        styleId: '1990072235049762688'
+      };
+      this.mapController.setCustomMapStyle(param).then(() => {
+        console.info(TAG, 'Custom map style applied');
+      }).catch((err: BusinessError) => {
+        console.error(`setCustomMapStyle failed, code: ${err.code}, message: ${err.message}`);
+      });
+    } else {
+      let param: mapCommon.CustomMapStyleOptions = {
+        styleContent: '[]'
+      };
+      this.mapController.setCustomMapStyle(param).then(() => {
+        console.info(TAG, 'Default map style restored');
+      }).catch((err: BusinessError) => {
+        console.error(`setCustomMapStyle failed, code: ${err.code}, message: ${err.message}`);
+      });
     }
   }
 
@@ -1366,6 +1429,34 @@ struct Index {
             selectedIndexes: $display2SelectedIndexes,
             onItemClicked: (index: number) => {
               this.switchDisplayMode(index);
+            }
+          })
+          .width(160)
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+        .alignItems(VerticalAlign.Center)
+        .padding({ top: 16, bottom: 16, left: 12, right: 12 })
+      }
+      .width('100%')
+      .backgroundColor($r('sys.color.comp_background_list_card'))
+      .borderRadius(16)
+      .margin({ bottom: 12 })
+
+      Column() {
+        Row() {
+          Text('地图样式')
+            .fontSize(16)
+            .fontColor($r('sys.color.font_primary'))
+            .fontWeight(FontWeight.Medium)
+
+          Blank()
+
+          SegmentButton({
+            options: this.mapStyleSegmentOptions,
+            selectedIndexes: $mapStyle2SelectedIndexes,
+            onItemClicked: (index: number) => {
+              this.switchMapStyle(index);
             }
           })
           .width(160)
