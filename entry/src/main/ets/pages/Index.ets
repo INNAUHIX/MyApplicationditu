@@ -1,22 +1,45 @@
+/**
+ * Index.ets —— 应用主页面（地图 / 轨迹记录 / 「我的」）
+ *
+ * 功能概览：
+ *  - 集成 @kit.MapKit 地图组件，展示用户当前位置并支持 3D 建筑、指南针等交互
+ *  - 通过定位服务（geoLocationManager）实时记录轨迹点，持久化到本地关系型数据库 footprint.db
+ *  - 轨迹支持两种展示模式：`折线轨迹`(displayMode=0) 与 `海量点`(displayMode=1)
+ *  - 地图日/夜模式可切换：跟随系统 / 普通 / 夜间（nightModeIndex）
+ *  - 底部 HdsTabs 两个 Tab：足迹（本页地图）/ 我的（以半模态面板承载 Mine 组件）
+ *
+ * 关键数据流：
+ *  定位回调 → recordTrackPoint → saveTrackPoint(落库) → 刷新折线/海量点覆盖物
+ *
+ * 注意：本组件在代码库早期原型中曾命名 MapPage，部分历史命名（如日志 TAG）已统一为 Index。
+ */
 import { MapComponent, mapCommon, map } from '@kit.MapKit';
 import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 import { abilityAccessCtrl, bundleManager, common, Permissions, Want } from '@kit.AbilityKit';
 import { geoLocationManager } from '@kit.LocationKit';
 import { image } from '@kit.ImageKit';
 import { relationalStore } from '@kit.ArkData';
-import { HdsNavigation, HdsTabs, HdsTabsController, hdsMaterial } from '@kit.UIDesignKit';
+import { HdsNavigation, HdsTabs, HdsTabsController, HdsAnimationMode, hdsMaterial } from '@kit.UIDesignKit';
 import { SymbolGlyphModifier, promptAction } from '@kit.ArkUI';
 import { Mine } from './Mine';
 
 
 
 
-const TAG: string = 'MapPage';
-const DB_NAME: string = 'footprint.db';
-const TABLE_NAME: string = 'track_points';
+// 日志 TAG：组件名为 Index，早期原型曾叫 MapPage，此处统一为 Index 以消除歧义
+const TAG: string = 'Index';
+
+// ===== 本地数据库（ArkData RdbStore）配置 =====
+const DB_NAME: string = 'footprint.db';    // 数据库文件名，存于应用沙箱
+const TABLE_NAME: string = 'track_points'; // 轨迹点表名
 const CREATE_TABLE_SQL: string =
+  // 建表语句：id 自增主键 + 经纬度；每次定位回调都会向该表插入一行
   `CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (id INTEGER PRIMARY KEY AUTOINCREMENT, latitude REAL, longitude REAL)`;
 
+/**
+ * 主页面组件 Index。
+ * 职责：地图渲染、实时轨迹记录（落库）、展示模式切换、日/夜模式、以及承载「我的」半模态面板。
+ */
 @Entry
 @Component
 struct Index {
@@ -42,15 +65,20 @@ struct Index {
   @State nightModeIndex: number = 0; // 地图日/夜间模式：0=跟随系统，1=普通，2=夜间
   @State showDisplayModePopup: boolean = false;
   @State pushSwitchOn: boolean = true;
+  private mapEventManager?: map.MapEventManager;
+  @State immersive: boolean = false; // 沉浸模式：true=隐藏叠加 UI，只显示地图
   @State customSwitchOn: boolean = true;
   @State customSelectIndex: number = 0;
   @State showCustomSelectPopup: boolean = false;
   @State isShowSettingSheet: boolean = false;
+  @State isShowLocationSheet: boolean = false; // 定位权限半模态面板显隐
   @State trackCount: number = 0;
   private settingStack: NavPathStack = new NavPathStack();
   private displayModeOptions: string[] = ['跟随系统', '普通模式', '夜间模式'];
   private customSelectOptions: string[] = ['选项1', '选项2', '选项3'];
 
+  // ===== 生命周期 =====
+  // 页面即将显示：初始化地图参数/回调、异步生成红点图标、按需初始化数据库、确定系统材质等级
   aboutToAppear(): void {
     this.initMapOptions();
     this.initMapCallback();
@@ -65,6 +93,7 @@ struct Index {
     }
   }
 
+  // 每次回到前台：恢复地图显示，并刷新三项定位权限状态
   onPageShow(): void {
     if (this.mapController) {
       this.mapController.show();
@@ -72,12 +101,14 @@ struct Index {
     this.refreshPermissionState();
   }
 
+  // 切到后台：隐藏地图以释放 GPU 资源
   onPageHide(): void {
     if (this.mapController) {
       this.mapController.hide();
     }
   }
 
+  // 页面销毁：反注册定位监听，避免后台持续定位与内存泄漏
   aboutToDisappear(): void {
     try {
       geoLocationManager.off('locationChange');
@@ -86,6 +117,7 @@ struct Index {
     }
   }
 
+  // 用 PixelMap 以代码绘制一个 12x12 的红色实心圆点，作为「足迹」海量点的图标（无需图片资源）
   private async createRedDotIcon(): Promise<void> {
     let size: number = 12;
     let imageSize: image.Size = { height: size, width: size };
@@ -122,6 +154,7 @@ struct Index {
     this.redDotIcon = pixelMap;
   }
 
+  // 初始化本地关系型数据库：获取 RdbStore、建表，并加载历史轨迹点
   private async initDatabase(): Promise<void> {
     try {
       let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
@@ -138,6 +171,7 @@ struct Index {
     }
   }
 
+  // 从数据库按 id 升序读取全部轨迹点，重建内存中的 trackPoints / footprintPoints，并刷新地图覆盖物
   private async loadTrackPoints(): Promise<void> {
     if (!this.rdbStore) {
       return;
@@ -172,6 +206,7 @@ struct Index {
     }
   }
 
+  // 将单个轨迹点（经纬度）插入数据库，实现轨迹持久化
   private async saveTrackPoint(latLng: mapCommon.LatLng): Promise<void> {
     if (!this.rdbStore) {
       return;
@@ -188,6 +223,9 @@ struct Index {
     }
   }
 
+  // 初始化地图初始参数：默认中心点(北京)、缩放级别、各类控件开关。
+  // dayNightMode 初始设为 AUTO，与 nightModeIndex 默认值 0(跟随系统) 保持一致；
+  // 用户可在「设置-夜间模式」改选普通/夜间，由 applyNightMode 实时生效。
   private initMapOptions(): void {
     this.mapOptions = {
       position: {
@@ -204,16 +242,44 @@ struct Index {
       tiltGesturesEnabled: true,
       rotateGesturesEnabled: true,
       sphereEnabled: true,
-      dayNightMode: mapCommon.DayNightMode.NIGHT
+      dayNightMode: mapCommon.DayNightMode.AUTO // 与 nightModeIndex=0(跟随系统) 保持一致，避免首屏强制夜间
     };
   }
 
+  // 构造地图初始化回调：地图就绪后保存 controller、开启 3D 建筑、初始化数据库、申请定位权限
   private initMapCallback(): void {
     this.callback = async (err, mapController) => {
       if (!err) {
         this.mapController = mapController;
 
+        // 底部留白：将缩放控件、"我的位置"按钮整体顶到悬浮 tab 栏上方，避免被遮挡
+        this.mapController.setPadding({
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 90
+        });
+
         console.info(TAG, 'Map initialized successfully');
+
+        // 点击地图空白区域切换沉浸模式：第一次进入纯净地图，再点一次恢复叠加 UI
+        this.mapEventManager = this.mapController.getEventManager();
+        this.mapEventManager.on('mapClick', () => {
+          this.immersive = !this.immersive;
+          // 沉浸模式隐藏 tab 栏时控件贴底；普通模式上移到 tab 栏上方
+          this.mapController?.setPadding({
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: this.immersive ? 0 : 90
+          });
+          // 沉浸模式：隐藏底部页签栏（含迷你栏），只保留纯净地图；再次点击恢复
+          if (this.immersive) {
+            this.tabsController.applyHideAnimation(HdsAnimationMode.CLICK_ANIMATION);
+          } else {
+            this.tabsController.applyShowAnimation(HdsAnimationMode.CLICK_ANIMATION);
+          }
+        });
         this.enable3DBuilding();
         await this.initDatabase();
         this.checkAndRequestPermission();
@@ -223,6 +289,7 @@ struct Index {
     };
   }
 
+  // 开启地图 3D 建筑显示效果
   private enable3DBuilding(): void {
     if (!this.mapController) {
       return;
@@ -236,6 +303,7 @@ struct Index {
     }
   }
 
+  // 读取三项定位权限(大致/精确/后台)的当前授权状态，更新对应 @State 供 UI 展示
   private async refreshPermissionState(): Promise<void> {
     let hasForeground = await this.checkAccessToken('ohos.permission.APPROXIMATELY_LOCATION');
     this.hasApproximatelyLocation = hasForeground === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
@@ -248,6 +316,7 @@ struct Index {
 
   }
 
+  // 权限编排：先刷新状态；缺前台定位则申请，否则缺后台定位则引导；均满足后开启我的位置
   private async checkAndRequestPermission(): Promise<void> {
     await this.refreshPermissionState();
 
@@ -262,6 +331,7 @@ struct Index {
   }
 
 
+  // 查询指定权限是否已授权：通过 bundleInfo 获取 tokenId，再调用 atManager.checkAccessToken
   private async checkAccessToken(permission: Permissions): Promise<abilityAccessCtrl.GrantStatus> {
     let atManager = abilityAccessCtrl.createAtManager();
     let grantStatus = abilityAccessCtrl.GrantStatus.PERMISSION_DENIED;
@@ -280,6 +350,7 @@ struct Index {
     return grantStatus;
   }
 
+  // 向前台定位权限(大致 + 精确)发起授权申请；结果返回后继续处理后后台定位并开启我的位置
   private requestPermissions(): void {
     let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
     let atManager = abilityAccessCtrl.createAtManager();
@@ -302,7 +373,10 @@ struct Index {
           }
           this.enableMyLocation();
         } else {
+          // 用户拒绝或此前已选「不再询问」导致系统不再弹授权框时，
+          // 弹出应用内引导对话框，避免点击后无任何反应
           console.warn(TAG, 'Location permission denied, please grant in Settings');
+          this.guideToLocationSettings();
         }
       })
       .catch((err: BusinessError) => {
@@ -310,6 +384,7 @@ struct Index {
       });
   }
 
+  // 弹窗引导用户去系统设置将定位改为「始终允许」，以支持后台持续记录轨迹
   private requestBackgroundLocationPermission(): void {
     let uiContext = this.getUIContext();
     uiContext.getPromptAction().showDialog({
@@ -328,6 +403,27 @@ struct Index {
     });
   }
 
+  // 前台定位权限被拒 / 系统不再弹授权框时，弹出应用内引导对话框，
+  // 提示并引导用户前往系统设置手动开启「大致位置」与「精确位置」
+  private guideToLocationSettings(): void {
+    promptAction.showDialog({
+      title: '定位权限未开启',
+      message: '请前往系统设置开启"大致位置"与"精确位置"。',
+      buttons: [
+        { text: '暂不', color: '#999999' },
+        { text: '前往设置', color: '#007DFF' }
+      ]
+    }).then((result) => {
+      if (result.index === 1) {
+        this.openPermissionSettings();
+      }
+    }).catch((err: BusinessError) => {
+      console.error(`showDialog failed. Code: ${err.code}, message: ${err.message}`);
+    });
+  }
+
+
+  // 跳转到系统「应用信息」设置页，便于用户手动修改定位权限
   private async openPermissionSettings(): Promise<void> {
     let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
     try {
@@ -346,6 +442,8 @@ struct Index {
     }
   }
 
+  // 开启「我的位置」图层：设置定位样式、移动相机到当前位置(WGS84→GCJ02 转换)，
+  // 并注册位置变化监听；每次回调都会把坐标转 GCJ02 后记录为轨迹点。
   private async enableMyLocation(): Promise<void> {
     if (!this.mapController) {
       console.warn(TAG, 'mapController is null');
@@ -399,6 +497,7 @@ struct Index {
     }
   }
 
+  // 定位回调核心：记录轨迹点(内存+落库)，按距离阈值补记「足迹」，并刷新当前展示模式的覆盖物
   private recordTrackPoint(latLng: mapCommon.LatLng): void {
     this.trackPoints.push(latLng);
     this.trackCount = this.trackPoints.length;
@@ -416,6 +515,7 @@ struct Index {
     }
   }
 
+  // 判断是否达到「足迹」记录阈值：与上一个足迹点距离 >= FOOTPRINT_DISTANCE(80m) 才记一次，避免过密
   private shouldRecordFootprint(current: mapCommon.LatLng): boolean {
     if (!this.lastFootprintPoint) {
       return true;
@@ -424,6 +524,7 @@ struct Index {
     return distance >= Index.FOOTPRINT_DISTANCE;
   }
 
+  // 使用 Haversine 公式估算两点间地表距离(米)
   private calculateDistance(from: mapCommon.LatLng, to: mapCommon.LatLng): number {
     let R: number = 6371000;
     let dLat: number = (to.latitude - from.latitude) * Math.PI / 180;
@@ -435,6 +536,7 @@ struct Index {
     return R * c;
   }
 
+  // 折线模式：首次创建 MapPolyline，之后仅 setPoints 增量更新（红色、宽度 10）
   private updatePolyline(): void {
     if (!this.trackPolyline) {
       let polylineOption: mapCommon.MapPolylineOptions = {
@@ -455,6 +557,7 @@ struct Index {
     }
   }
 
+  // 将 footprintPoints 转换为海量点所需的 MassPointItem 数组
   private buildMassPointItems(): mapCommon.MassPointItem[] {
     let items: mapCommon.MassPointItem[] = [];
     for (let i = 0; i < this.footprintPoints.length; i++) {
@@ -468,6 +571,7 @@ struct Index {
     return items;
   }
 
+  // 海量点模式：首次创建红色圆点覆盖物，之后仅 setItems 增量更新
   private updateMassPointOverlay(): void {
     if (!this.redDotIcon) {
       console.warn(TAG, 'redDotIcon is not ready');
@@ -491,6 +595,7 @@ struct Index {
     }
   }
 
+  // 切换展示模式(0 折线 / 1 海量点)：移除另一种模式的覆盖物，并重建当前模式
   private switchDisplayMode(mode: number): void {
     if (this.displayMode === mode) {
       return;
@@ -516,6 +621,7 @@ struct Index {
     }
   }
 
+  // 清空全部轨迹：移除地图覆盖物、清空内存数组、并删除数据库中的轨迹记录
   private async clearTrack(): Promise<void> {
     if (this.trackPolyline) {
       this.trackPolyline.remove();
@@ -541,6 +647,7 @@ struct Index {
     console.info(TAG, 'Track cleared');
   }
 
+  // 删除前二次确认弹窗，确认后调用 clearTrack
   private confirmClearTrack(): void {
     promptAction.showDialog({
       title: '删除轨迹',
@@ -558,6 +665,7 @@ struct Index {
     });
   }
 
+  // 根据 nightModeIndex(0 跟随系统 /1 普通 /2 夜间) 设置地图日夜模式
   private applyNightMode(index: number): void {
     if (!this.mapController) {
       console.warn(TAG, 'mapController is null, night mode applies after map ready');
@@ -583,6 +691,10 @@ struct Index {
     }
   }
 
+  // ===== UI 构建 =====
+  // 结构：HdsNavigation → HdsTabs(足迹 / 我的)
+  //  - 足迹 Tab：全屏地图 + 左上角权限状态条 + 顶部折线/海量点切换按钮
+  //  - 我的 Tab：点击时改为弹出半模态面板(buildSheetContent)，不切换整页
   build() {
     HdsNavigation() {
       HdsTabs({ controller: this.tabsController }) {
@@ -592,56 +704,7 @@ struct Index {
               .width('100%')
               .height('100%');
 
-            Column() {
-              Text('定位权限状态')
-                .fontSize(16)
-                .fontWeight(FontWeight.Bold)
-                .fontColor(Color.White)
-                .margin({ bottom: 8 })
-
-              Row({ space: 8 }) {
-                Text(`大致位置: ${this.hasApproximatelyLocation ? '✓' : '✗'}`)
-                  .fontSize(12)
-                  .fontColor(this.hasApproximatelyLocation ? '#4CAF50' : '#F44336')
-                  .backgroundColor('#80000000')
-                  .padding(4)
-                  .borderRadius(4)
-                  .onClick(() => {
-                    if (!this.hasApproximatelyLocation) {
-                      this.requestPermissions();
-                    }
-                  })
-
-                Text(`精确位置: ${this.hasLocation ? '✓' : '✗'}`)
-                  .fontSize(12)
-                  .fontColor(this.hasLocation ? '#4CAF50' : '#F44336')
-                  .backgroundColor('#80000000')
-                  .padding(4)
-                  .borderRadius(4)
-                  .onClick(() => {
-                    if (!this.hasLocation) {
-                      this.requestPermissions();
-                    }
-                  })
-
-                Text(`后台定位: ${this.hasBackgroundLocation ? '✓' : '✗'}`)
-                  .fontSize(12)
-                  .fontColor(this.hasBackgroundLocation ? '#4CAF50' : '#F44336')
-                  .backgroundColor('#80000000')
-                  .padding(4)
-                  .borderRadius(4)
-                  .onClick(() => {
-                    if (!this.hasBackgroundLocation) {
-                      this.requestBackgroundLocationPermission();
-                    }
-                  })
-              }
-            }
-            .position({ x: 10, y: 100 })
-            .backgroundColor('#80000000')
-            .padding(10)
-            .borderRadius(8)
-
+            if (!this.immersive) {
             Row({ space: 0 }) {
               Button('折线轨迹')
                 .fontSize(14)
@@ -662,6 +725,7 @@ struct Index {
                 .onClick(() => this.switchDisplayMode(1))
             }
             .position({ x: '25%', y: 50 })
+            }
 
           }
           .width('100%')
@@ -682,6 +746,7 @@ struct Index {
             ])
         }, '足迹'))
 
+        // 「我的」Tab：本体留空，仅作为 tab 按钮载体；点击交互由下方 onContentWillChange 拦截并弹出半模态面板
         TabContent() {
           Column()
             .width('100%')
@@ -706,6 +771,7 @@ struct Index {
       .vertical(false)
       .barPosition(BarPosition.End)
       .scrollable(false)
+      // 点「我的」(index=1) 时拦截整页切换，改为弹出半模态面板，返回 false 取消切换
       .onContentWillChange((_currentIndex: number, comingIndex: number) => {
         if (comingIndex === 1) {
           this.isShowSheet = true;
@@ -715,6 +781,9 @@ struct Index {
       })
       .barFloatingStyle({
         barBottomMargin: 28,
+        gradientMask: {
+          maskColor: Color.Transparent
+        },
         systemMaterialEffect: {
           materialType: hdsMaterial.MaterialType.ADAPTIVE,
           materialLevel: this.customMaterialLevel
@@ -735,13 +804,21 @@ struct Index {
     })
   }
 
+  // 「我的」半模态面板内容：内嵌 Navigation 承载 Mine 组件，并叠加「设置」二级半模态
   @Builder
   buildSheetContent(): void {
     Column() {
       // 顶部占位：把 Navigation（含标题栏）整体下移到拖拽条下方，避免标题栏上移/与拖拽条重叠
       Column().width('100%').height(6)
       Navigation() {
-        Mine({ onSettingClick: () => { this.isShowSettingSheet = true; } })
+        Mine({
+          onSettingClick: () => { this.isShowSettingSheet = true; },
+          onLocationPermissionClick: () => {
+            this.refreshPermissionState();
+            this.isShowLocationSheet = true;
+          },
+          locationAbnormal: !(this.hasApproximatelyLocation && this.hasLocation && this.hasBackgroundLocation)
+        })
       }
       .title('我的')
       .titleMode(NavigationTitleMode.Mini)
@@ -761,6 +838,15 @@ struct Index {
       ])
       .width('100%')
       .layoutWeight(1)
+      // 「定位权限」面板：嵌套半模态，绑在 Navigation 上，避免与下方设置面板的 bindSheet 冲突
+      .bindSheet($$this.isShowLocationSheet, this.buildLocationSheetContent(), {
+        height: SheetSize.LARGE,
+        dragBar: true,
+        showClose: false,
+        onDisappear: () => {
+          this.isShowLocationSheet = false;
+        }
+      })
     }
     .width('100%')
     .height('100%')
@@ -776,6 +862,7 @@ struct Index {
     })
   }
 
+  // 「设置」面板根内容：固定模板分组(字体大小/夜间模式/通知/删除轨迹/版本/关于/隐私/Web) + 自定义分组
   @Builder
   settingRootContent() {
     Column() {
@@ -1179,6 +1266,229 @@ struct Index {
   }
 
 
+  // 「定位权限」半模态面板容器：展示当前定位权限获取状态
+  @Builder
+  buildLocationSheetContent(): void {
+    Column() {
+      // 顶部占位：把 Navigation（含标题栏）整体下移到拖拽条下方
+      Column().width('100%').height(6)
+      Navigation() {
+        this.locationRootContent()
+      }
+      .title('定位权限', { backgroundColor: $r('sys.color.background_secondary') })
+      .titleMode(NavigationTitleMode.Mini)
+      .hideBackButton(true)
+      .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
+      .mode(NavigationMode.Stack)
+      .menus([
+        {
+          value: '',
+          symbolIcon: new SymbolGlyphModifier($r('sys.symbol.xmark'))
+            .fontSize(22)
+            .fontColor([$r('sys.color.font_primary')]),
+          action: () => {
+            this.isShowLocationSheet = false;
+          }
+        }
+      ])
+      .width('100%')
+      .layoutWeight(1)
+    }
+    .width('100%')
+    .height('100%')
+  }
+
+  // 「定位权限」面板根内容：三项权限状态（大致/精确/后台）+ 前往系统设置入口
+  @Builder
+  locationRootContent() {
+    Column() {
+      Scroll() {
+        Column({ space: 12 }) {
+          // 权限状态卡片
+          List() {
+            ListItem() {
+              Row() {
+                Column({ space: 6 }) {
+                  Text('大致位置')
+                    .fontSize(16)
+                    .fontColor($r('sys.color.font_primary'))
+                    .fontWeight(FontWeight.Medium)
+                    .textAlign(TextAlign.Start)
+                  Text('允许 App 获取您所在的城市 / 街区级别大致位置')
+                    .fontSize(12)
+                    .fontColor($r('sys.color.font_secondary'))
+                    .textAlign(TextAlign.Start)
+                }
+                .layoutWeight(1)
+                .alignItems(HorizontalAlign.Start)
+                Row() {
+                  Text(this.hasApproximatelyLocation ? '已授权' : '未授权')
+                    .fontSize(14)
+                    .fontColor(this.hasApproximatelyLocation ? '#4CAF50' : '#F44336')
+                  SymbolGlyph($r('sys.symbol.chevron_right'))
+                    .fontSize(24)
+                    .fontColor([$r('sys.color.font_fourth')])
+                    .margin({ left: 4 })
+                }
+                .justifyContent(FlexAlign.End)
+                .margin({ left: 16 })
+              }
+              .padding({ top: 16, bottom: 16, left: 12, right: 12 })
+              .constraintSize({ minHeight: 64 })
+              .borderRadius(16)
+              .onClick(() => {
+                if (!this.hasApproximatelyLocation) {
+                  this.requestPermissions();
+                } else {
+                  this.openPermissionSettings();
+                }
+              })
+            }
+
+            ListItem() {
+              Row() {
+                Column({ space: 6 }) {
+                  Text('精确位置')
+                    .fontSize(16)
+                    .fontColor($r('sys.color.font_primary'))
+                    .fontWeight(FontWeight.Medium)
+                    .textAlign(TextAlign.Start)
+                  Text('允许 App 获取精确 GPS 位置，用于地图标注与轨迹记录')
+                    .fontSize(12)
+                    .fontColor($r('sys.color.font_secondary'))
+                    .textAlign(TextAlign.Start)
+                }
+                .layoutWeight(1)
+                .alignItems(HorizontalAlign.Start)
+                Row() {
+                  Text(this.hasLocation ? '已授权' : '未授权')
+                    .fontSize(14)
+                    .fontColor(this.hasLocation ? '#4CAF50' : '#F44336')
+                  SymbolGlyph($r('sys.symbol.chevron_right'))
+                    .fontSize(24)
+                    .fontColor([$r('sys.color.font_fourth')])
+                    .margin({ left: 4 })
+                }
+                .justifyContent(FlexAlign.End)
+                .margin({ left: 16 })
+              }
+              .padding({ top: 16, bottom: 16, left: 12, right: 12 })
+              .constraintSize({ minHeight: 64 })
+              .borderRadius(16)
+              .onClick(() => {
+                if (!this.hasLocation) {
+                  this.requestPermissions();
+                } else {
+                  this.openPermissionSettings();
+                }
+              })
+            }
+
+            ListItem() {
+              Row() {
+                Column({ space: 6 }) {
+                  Text('后台定位')
+                    .fontSize(16)
+                    .fontColor($r('sys.color.font_primary'))
+                    .fontWeight(FontWeight.Medium)
+                    .textAlign(TextAlign.Start)
+                  Text('允许 App 在后台持续获取位置，用于后台轨迹记录')
+                    .fontSize(12)
+                    .fontColor($r('sys.color.font_secondary'))
+                    .textAlign(TextAlign.Start)
+                }
+                .layoutWeight(1)
+                .alignItems(HorizontalAlign.Start)
+                Row() {
+                  Text(this.hasBackgroundLocation ? '已授权' : '未授权')
+                    .fontSize(14)
+                    .fontColor(this.hasBackgroundLocation ? '#4CAF50' : '#F44336')
+                  SymbolGlyph($r('sys.symbol.chevron_right'))
+                    .fontSize(24)
+                    .fontColor([$r('sys.color.font_fourth')])
+                    .margin({ left: 4 })
+                }
+                .justifyContent(FlexAlign.End)
+                .margin({ left: 16 })
+              }
+              .padding({ top: 16, bottom: 16, left: 12, right: 12 })
+              .constraintSize({ minHeight: 64 })
+              .borderRadius(16)
+              .onClick(() => {
+                if (!this.hasBackgroundLocation) {
+                  this.requestBackgroundLocationPermission();
+                } else {
+                  this.openPermissionSettings();
+                }
+              })
+            }
+          }
+          .width('100%')
+          .height('auto')
+          .borderRadius(20)
+          .backgroundColor($r('sys.color.comp_background_list_card'))
+          .padding(4)
+          .divider({
+            strokeWidth: '1px',
+            color: $r('sys.color.comp_divider'),
+            startMargin: 12,
+            endMargin: 12
+          })
+
+          // 前往系统设置入口
+          List() {
+            ListItem() {
+              Row() {
+                Column({ space: 6 }) {
+                  Text('前往系统设置')
+                    .fontSize(16)
+                    .fontColor($r('sys.color.font_primary'))
+                    .fontWeight(FontWeight.Medium)
+                    .textAlign(TextAlign.Start)
+                  Text('若以上权限未授权或被拒绝，可在此前往系统设置手动开启')
+                    .fontSize(12)
+                    .fontColor($r('sys.color.font_secondary'))
+                    .textAlign(TextAlign.Start)
+                }
+                .layoutWeight(1)
+                .alignItems(HorizontalAlign.Start)
+                Row() {
+                  SymbolGlyph($r('sys.symbol.chevron_right'))
+                    .fontSize(24)
+                    .fontColor([$r('sys.color.font_fourth')])
+                    .margin({ left: 4 })
+                }
+                .justifyContent(FlexAlign.End)
+                .margin({ left: 16 })
+              }
+              .padding({ top: 16, bottom: 16, left: 12, right: 12 })
+              .constraintSize({ minHeight: 64 })
+              .borderRadius(16)
+              .onClick(() => {
+                this.openPermissionSettings();
+              })
+            }
+          }
+          .width('100%')
+          .height('auto')
+          .borderRadius(20)
+          .backgroundColor($r('sys.color.comp_background_list_card'))
+          .padding(4)
+        }
+        .width('100%')
+        .padding({ left: 16, right: 16, top: 12 })
+      }
+      .layoutWeight(1)
+      .align(Alignment.Top)
+      .edgeEffect(EdgeEffect.Spring)
+      .scrollBar(BarState.Off)
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor($r('sys.color.background_secondary'))
+  }
+
+  // 「设置」半模态面板容器：内嵌 Navigation(settingStack) 与页面路由 pageMap
   @Builder
   buildSettingSheetContent(): void {
     Column() {
@@ -1211,6 +1521,7 @@ struct Index {
     .height('100%')
   }
 
+  // NavDestination 路由表：当前仅 'privacy'(隐私设置) 一个二级页
   @Builder
   pageMap(name: string, param: Record<string, Object>) {
     if (name === 'privacy') {
@@ -1236,6 +1547,7 @@ struct Index {
     }
   }
 
+  // 「隐私设置」二级页内容：个性化推荐 / 通知 / 用户协议 / 隐私政策 / 第三方信息共享清单等
   @Builder
   privacyRootContent() {
     Column() {
@@ -1440,6 +1752,7 @@ struct Index {
         .backgroundColor($r('sys.color.background_secondary'))
   }
 
+  // 「夜间模式」弹窗内容：列出 跟随系统 / 普通模式 / 夜间模式 供选择，当前项打勾
   @Builder
   displayModePopupBuilder() {
     Column() {
@@ -1469,7 +1782,7 @@ struct Index {
               this.applyNightMode(index);
             })
           }
-        }, (option: string, index: number) => `${index}`)
+        }, (_option: string, index: number) => `dm_${index}`)
       }
       .width('100%')
       .padding(4)
@@ -1486,6 +1799,7 @@ struct Index {
     .backgroundColor($r('sys.color.comp_background_primary'))
   }
 
+  // 「下拉选择」弹窗内容（自定义分组示例项）
   @Builder
   customSelectPopupBuilder() {
     Column() {
@@ -1514,7 +1828,7 @@ struct Index {
               this.showCustomSelectPopup = false;
             })
           }
-        }, (option: string, index: number) => `${index}`)
+        }, (_option: string, index: number) => `cs_${index}`)
       }
       .width('100%')
       .padding(4)

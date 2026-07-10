@@ -13,6 +13,8 @@ struct CardItem {
   label: ResourceStr = '';
   symbol: Resource = $r('sys.symbol.gearshape');
   onClickEvent: () => void = () => {};
+  statusText: ResourceStr = '';
+  statusColor: ResourceStr = '#F44336';
 
   build() {
     Row() {
@@ -26,11 +28,19 @@ struct CardItem {
           .fontColor('#e6000000')
           .margin({ left: 12 })
       }
-      Image($r('app.media.ic_arrow_right'))
-        .width(16)
-        .height(16)
-        .fillColor('#99000000')
-        .margin({ right: 12 })
+      Row() {
+        if (this.statusText) {
+          Text(this.statusText)
+            .fontSize(13)
+            .fontColor(this.statusColor)
+            .margin({ right: 8 })
+        }
+        Image($r('app.media.ic_arrow_right'))
+          .width(16)
+          .height(16)
+          .fillColor('#99000000')
+          .margin({ right: 12 })
+      }
     }
     .width('100%')
     .height(56)
@@ -46,6 +56,10 @@ struct CardItem {
 export struct Mine {
   // 点击「设置」时由 Index 打开独立的设置半模态面板
   onSettingClick: () => void = () => {};
+  // 点击「定位权限」时由 Index 跳转到系统定位权限设置页
+  onLocationPermissionClick: () => void = () => {};
+  // 定位权限是否异常（无前台定位能力），用于在「定位权限」项右侧提示红色文案
+  locationAbnormal: boolean = false;
 
   build() {
     Scroll() {
@@ -60,7 +74,15 @@ export struct Mine {
               CardItem({ label: '预约记录', symbol: $r('sys.symbol.calendar') })
             }
             ListItem() {
-              CardItem({ label: '我的课程', symbol: $r('sys.symbol.book') })
+              CardItem({
+                label: '定位权限',
+                symbol: $r('sys.symbol.position_badge_exclamationmark'),
+                statusText: this.locationAbnormal ? '权限异常' : '',
+                statusColor: '#F44336',
+                onClickEvent: () => {
+                  this.onLocationPermissionClick();
+                }
+              })
             }
             ListItem() {
               CardItem({ label: '我的订单', symbol: $r('sys.symbol.bag') })

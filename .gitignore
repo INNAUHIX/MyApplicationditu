@@ -26,3 +26,9 @@ Thumbs.db
 .idea/
 *.iml
 .vscode/
+
+# Node 锁文件（HarmonyOS 工程使用 oh-package-lock.json5，根目录 package-lock.json 为冗余产物）
+package-lock.json
+
+# AI 辅助工具目录（会持续再生快照/缓存/设计稿，非源码，勿入库）
+.codeartsdoer/
