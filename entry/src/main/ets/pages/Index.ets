@@ -1407,10 +1407,9 @@ struct Index {
               selectedIndexes: $demoSelectedIndexes
             })
               .width('100%')
-              .height('100%')
+              .height(46)
           }
           .width(180)
-          .height(46)
           .alignItems(VerticalAlign.Center)
           .justifyContent(FlexAlign.End)
         }
