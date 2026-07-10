@@ -20,7 +20,7 @@ import { geoLocationManager } from '@kit.LocationKit';
 import { image } from '@kit.ImageKit';
 import { relationalStore } from '@kit.ArkData';
 import { HdsNavigation, HdsTabs, HdsTabsController, HdsAnimationMode, hdsMaterial } from '@kit.UIDesignKit';
-import { SymbolGlyphModifier, promptAction } from '@kit.ArkUI';
+import { SymbolGlyphModifier, SegmentButton, SegmentButtonOptions, ItemRestriction, SegmentButtonIconTextItem, SegmentButtonTextItem } from '@kit.ArkUI';
 import { Mine } from './Mine';
 
 
@@ -55,6 +55,44 @@ struct Index {
   private redDotIcon: image.PixelMap | null = null;
   private rdbStore: relationalStore.RdbStore | null = null;
   @State displayMode: number = 0; // 轨迹展示方式：0=折线，1=海量点（非夜间模式）
+  @State selectedIndexes: number[] = [0]; // 与 displayMode 同步，供 SegmentButton 的 @Link selectedIndexes 使用
+  // 轨迹类型分段按钮（官方 SegmentButton 组件）：0=折线轨迹，1=海量点
+  @State trajectorySegmentOptions: SegmentButtonOptions = SegmentButtonOptions.capsule({
+    buttons: [
+      {
+        icon: $r('app.media.ic_trajectory_line'),
+        selectedIcon: $r('app.media.ic_trajectory_line_selected'),
+        text: '折线轨迹'
+      },
+      {
+        icon: $r('app.media.ic_trajectory_points'),
+        selectedIcon: $r('app.media.ic_trajectory_points_selected'),
+        text: '海量点'
+      }
+    ] as ItemRestriction<SegmentButtonIconTextItem>,
+    selectedBackgroundColor: '#007DFF',
+    fontColor: '#999999',
+    selectedFontColor: Color.White,
+    fontSize: 14,
+    selectedFontSize: 14,
+    fontWeight: FontWeight.Regular,
+    selectedFontWeight: FontWeight.Medium
+  });
+  // 演示用分段按钮（左侧标题 + 右侧分段切换）：不绑定实际切换效果，仅展示组合样式
+  @State demoSegmentOptions: SegmentButtonOptions = SegmentButtonOptions.capsule({
+    buttons: [
+      { text: '列表' },
+      { text: '网格' }
+    ] as ItemRestriction<SegmentButtonTextItem>,
+    selectedBackgroundColor: '#007DFF',
+    fontColor: '#999999',
+    selectedFontColor: Color.White,
+    fontSize: 16,
+    selectedFontSize: 16,
+    fontWeight: FontWeight.Regular,
+    selectedFontWeight: FontWeight.Medium
+  });
+  @State demoSelectedIndexes: number[] = [0]; // 仅用于演示分段控件的高亮态，不影响实际逻辑
   private static readonly FOOTPRINT_DISTANCE: number = 80;
   private tabsController: HdsTabsController = new HdsTabsController();
   @State customMaterialLevel: hdsMaterial.MaterialLevel = hdsMaterial.MaterialLevel.EXQUISITE;
@@ -72,6 +110,7 @@ struct Index {
   @State showCustomSelectPopup: boolean = false;
   @State isShowSettingSheet: boolean = false;
   @State isShowLocationSheet: boolean = false; // 定位权限半模态面板显隐
+  @State isShowMapToolSheet: boolean = false; // 地图工具半模态面板显隐
   @State trackCount: number = 0;
   private settingStack: NavPathStack = new NavPathStack();
   private displayModeOptions: string[] = ['跟随系统', '普通模式', '夜间模式'];
@@ -406,19 +445,20 @@ struct Index {
   // 前台定位权限被拒 / 系统不再弹授权框时，弹出应用内引导对话框，
   // 提示并引导用户前往系统设置手动开启「大致位置」与「精确位置」
   private guideToLocationSettings(): void {
-    promptAction.showDialog({
+    AlertDialog.show({
       title: '定位权限未开启',
       message: '请前往系统设置开启"大致位置"与"精确位置"。',
-      buttons: [
-        { text: '暂不', color: '#999999' },
-        { text: '前往设置', color: '#007DFF' }
-      ]
-    }).then((result) => {
-      if (result.index === 1) {
-        this.openPermissionSettings();
+      primaryButton: {
+        value: '暂不',
+        action: () => {}
+      },
+      secondaryButton: {
+        value: '前往设置',
+        fontColor: '#007DFF',
+        action: () => {
+          this.openPermissionSettings();
+        }
       }
-    }).catch((err: BusinessError) => {
-      console.error(`showDialog failed. Code: ${err.code}, message: ${err.message}`);
     });
   }
 
@@ -601,6 +641,7 @@ struct Index {
       return;
     }
     this.displayMode = mode;
+    this.selectedIndexes = [mode];
 
     if (mode === 0) {
       if (this.massPointOverlay) {
@@ -649,19 +690,20 @@ struct Index {
 
   // 删除前二次确认弹窗，确认后调用 clearTrack
   private confirmClearTrack(): void {
-    promptAction.showDialog({
+    AlertDialog.show({
       title: '删除轨迹',
       message: `确定要删除全部 ${this.trackPoints.length} 条轨迹记录吗？此操作不可恢复。`,
-      buttons: [
-        { text: '取消', color: '#999999' },
-        { text: '删除', color: '#E64566' }
-      ]
-    }).then((result) => {
-      if (result.index === 1) {
-        this.clearTrack();
+      primaryButton: {
+        value: '取消',
+        action: () => {}
+      },
+      secondaryButton: {
+        value: '删除',
+        fontColor: '#E64566',
+        action: () => {
+          this.clearTrack();
+        }
       }
-    }).catch((err: BusinessError) => {
-      console.error(`showDialog failed, code: ${err.code}, message: ${err.message}`);
     });
   }
 
@@ -693,7 +735,7 @@ struct Index {
 
   // ===== UI 构建 =====
   // 结构：HdsNavigation → HdsTabs(足迹 / 我的)
-  //  - 足迹 Tab：全屏地图 + 左上角权限状态条 + 顶部折线/海量点切换按钮
+  //  - 足迹 Tab：全屏地图 + 左上角权限状态条；轨迹类型切换改由「地图工具」面板内的官方 SegmentButton 承载
   //  - 我的 Tab：点击时改为弹出半模态面板(buildSheetContent)，不切换整页
   build() {
     HdsNavigation() {
@@ -704,32 +746,37 @@ struct Index {
               .width('100%')
               .height('100%');
 
-            if (!this.immersive) {
-            Row({ space: 0 }) {
-              Button('折线轨迹')
-                .fontSize(14)
-                .fontColor(this.displayMode === 0 ? Color.White : '#999999')
-                .backgroundColor(this.displayMode === 0 ? '#007DFF' : '#333333')
-                .borderRadius({ topLeft: 20, bottomLeft: 20, topRight: 0, bottomRight: 0 })
-                .width(110)
-                .height(40)
-                .onClick(() => this.switchDisplayMode(0))
 
-              Button('海量点')
-                .fontSize(14)
-                .fontColor(this.displayMode === 1 ? Color.White : '#999999')
-                .backgroundColor(this.displayMode === 1 ? '#007DFF' : '#333333')
-                .borderRadius({ topLeft: 0, bottomLeft: 0, topRight: 20, bottomRight: 20 })
-                .width(110)
-                .height(40)
-                .onClick(() => this.switchDisplayMode(1))
+            // 自定义悬浮按钮：显示在系统缩放控件上方，点击打开地图工具半模态面板（功能内容待补充）
+            Button({ type: ButtonType.Circle }) {
+              SymbolGlyph($r('sys.symbol.paintpalette_fill'))
+                .fontSize(22)
+                .fontColor([Color.White])
             }
-            .position({ x: '25%', y: 50 })
-            }
+            .width(44)
+            .height(44)
+            .backgroundColor('#007DFF')
+            .shadow({ radius: 6, color: '#33000000', offsetX: 0, offsetY: 2 })
+            .position({ x: '100%', y: '100%' })
+            .translate({ x: -60, y: -240 })
+            .onClick(() => {
+              this.isShowMapToolSheet = true;
+            })
+
 
           }
           .width('100%')
           .height('100%')
+          // 地图工具面板：由地图 Stack 承载（仅「足迹」Tab），与「我的」半模态分离宿主组件，避免同一根组件挂两个 bindSheet 冲突闪退
+          .bindSheet($$this.isShowMapToolSheet, this.buildMapToolSheetContent(), {
+            detents: [SheetSize.MEDIUM, SheetSize.LARGE],
+            title: { title: '地图工具' },
+            dragBar: true,
+            showClose: true,
+            onDisappear: () => {
+              this.isShowMapToolSheet = false;
+            }
+          })
         }
         .tabBar(new BottomTabBarStyle({
           normal: new SymbolGlyphModifier($r('sys.symbol.figure_running'))
@@ -1298,6 +1345,94 @@ struct Index {
     .height('100%')
   }
 
+  // 「地图工具」半模态面板内容：标题栏与关闭按钮由半模态系统自带
+  @Builder
+  buildMapToolSheetContent(): void {
+    Column() {
+      // === 容器A（独立）：轨迹类型 —— 左侧标题 + 右侧分段按钮 ===
+      Column() {
+        Row() {
+          // 左侧：标题容器
+          Row() {
+            Text('轨迹类型')
+              .fontSize(16)
+              .fontColor($r('sys.color.font_primary'))
+              .fontWeight(FontWeight.Medium)
+          }
+          .layoutWeight(1)
+          .justifyContent(FlexAlign.Start)
+
+          // 右侧：分段按钮容器（限定宽度，按钮只在容器内铺满）
+          Row() {
+            SegmentButton({
+              options: this.trajectorySegmentOptions,
+              selectedIndexes: $selectedIndexes,
+              onItemClicked: (index: number) => {
+                this.switchDisplayMode(index);
+              }
+            })
+              .width('100%')
+          }
+          .width(240)
+          .justifyContent(FlexAlign.End)
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+        .alignItems(VerticalAlign.Center)
+        .padding({ top: 16, bottom: 16, left: 12, right: 12 })
+        .constraintSize({ minHeight: 64 })
+      }
+      .width('100%')
+      .backgroundColor($r('sys.color.comp_background_list_card'))
+      .borderRadius(12)
+      .margin({ top: 16, bottom: 12 })
+
+      // === 容器B（独立）：显示样式（演示，不绑定切换）—— 左侧标题 + 右侧分段按钮 ===
+      Column() {
+        Row() {
+          // 左侧：标题容器
+          Row() {
+            Text('显示样式')
+              .fontSize(16)
+              .fontColor($r('sys.color.font_primary'))
+              .fontWeight(FontWeight.Medium)
+          }
+          .layoutWeight(1)
+          .justifyContent(FlexAlign.Start)
+
+          // 右侧：分段按钮容器（限定宽度，按钮只在容器内铺满）
+          Row() {
+            SegmentButton({
+              options: this.demoSegmentOptions,
+              selectedIndexes: $demoSelectedIndexes
+            })
+              .width('100%')
+              .height('100%')
+          }
+          .width(180)
+          .height(46)
+          .alignItems(VerticalAlign.Center)
+          .justifyContent(FlexAlign.End)
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+        .alignItems(VerticalAlign.Center)
+        .padding({ top: 16, bottom: 16, left: 12, right: 12 })
+        .constraintSize({ minHeight: 64 })
+      }
+      .width('100%')
+      .backgroundColor($r('sys.color.comp_background_list_card'))
+      .borderRadius(12)
+      .margin({ bottom: 12 })
+
+      // TODO: 在此追加更多独立容器（每个容器内部均为：左标题 + 右控件）
+    }
+    .width('100%')
+    .height('100%')
+    .padding({ left: 16, right: 16 })
+    .backgroundColor($r('sys.color.background_secondary'))
+  }
+
   // 「定位权限」面板根内容：三项权限状态（大致/精确/后台）+ 前往系统设置入口
   @Builder
   locationRootContent() {
@@ -1523,7 +1658,7 @@ struct Index {
 
   // NavDestination 路由表：当前仅 'privacy'(隐私设置) 一个二级页
   @Builder
-  pageMap(name: string, param: Record<string, Object>) {
+  pageMap(name: string, _param: Record<string, Object>) {
     if (name === 'privacy') {
       NavDestination() {
         this.privacyRootContent()
