@@ -2,49 +2,49 @@
   "version": 1,
   "ohos-module-entry": {
     "SELECT_TARGET": "default",
-    "MODULE_BUILD_DIR": "D:\\MyApplicationditu\\entry\\build",
+    "MODULE_BUILD_DIR": "E:\\MyApplicationditu\\entry\\build",
     "TARGETS": {
       "default": {
-        "SOURCE_ROOT": "D:\\MyApplicationditu\\entry\\src\\main",
+        "SOURCE_ROOT": "E:\\MyApplicationditu\\entry\\src\\main",
         "RESOURCES_PATH": [
-          "D:\\MyApplicationditu\\entry\\src\\main\\resources"
+          "E:\\MyApplicationditu\\entry\\src\\main\\resources"
         ],
         "BUILD_PATH": {
-          "OUTPUT_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\outputs\\default",
-          "INTERMEDIA_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates",
-          "JS_ASSETS_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out\\default",
-          "JS_LITE_ASSETS_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out_lite\\default",
-          "RES_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default",
-          "RES_PROFILE_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\resources\\base\\profile",
-          "ETS_SUPER_VISUAL_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule",
-          "JS_SUPER_VISUAL_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\cache\\default\\default@CompileJS\\jsbundle",
-          "WORKER_LOADER": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader\\default\\loader.json",
-          "MANIFEST_JSON": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\manifest\\default",
-          "OUTPUT_METADATA_JSON": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\hap_metadata\\default\\output_metadata.json",
-          "SOURCE_MAP_DIR": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\source_map\\default"
+          "OUTPUT_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\outputs\\default",
+          "INTERMEDIA_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates",
+          "JS_ASSETS_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out\\default",
+          "JS_LITE_ASSETS_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out_lite\\default",
+          "RES_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default",
+          "RES_PROFILE_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\default\\resources\\base\\profile",
+          "ETS_SUPER_VISUAL_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule",
+          "JS_SUPER_VISUAL_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\cache\\default\\default@CompileJS\\jsbundle",
+          "WORKER_LOADER": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader\\default\\loader.json",
+          "MANIFEST_JSON": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\manifest\\default",
+          "OUTPUT_METADATA_JSON": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\hap_metadata\\default\\output_metadata.json",
+          "SOURCE_MAP_DIR": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\source_map\\default"
         },
         "BUILD_OPTION": {
           "debuggable": true
         }
       },
       "ohosTest": {
-        "SOURCE_ROOT": "D:\\MyApplicationditu\\entry\\src\\ohosTest",
+        "SOURCE_ROOT": "E:\\MyApplicationditu\\entry\\src\\ohosTest",
         "RESOURCES_PATH": [
-          "D:\\MyApplicationditu\\entry\\src\\ohosTest\\resources"
+          "E:\\MyApplicationditu\\entry\\src\\ohosTest\\resources"
         ],
         "BUILD_PATH": {
-          "OUTPUT_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\outputs\\ohosTest",
-          "INTERMEDIA_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates",
-          "JS_ASSETS_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out\\ohosTest",
-          "JS_LITE_ASSETS_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out_lite\\ohosTest",
-          "RES_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\ohosTest",
-          "RES_PROFILE_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\ohosTest\\resources\\base\\profile",
-          "ETS_SUPER_VISUAL_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\cache\\ohosTest\\ohosTest@OhosTestCompileArkTS\\esmodule",
-          "JS_SUPER_VISUAL_PATH": "D:\\MyApplicationditu\\entry\\build\\default\\cache\\ohosTest\\ohosTest@OhosTestCompileJS\\jsbundle",
-          "WORKER_LOADER": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader\\ohosTest\\loader.json",
-          "MANIFEST_JSON": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\manifest\\ohosTest",
-          "OUTPUT_METADATA_JSON": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\hap_metadata\\ohosTest\\output_metadata.json",
-          "SOURCE_MAP_DIR": "D:\\MyApplicationditu\\entry\\build\\default\\intermediates\\source_map\\ohosTest"
+          "OUTPUT_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\outputs\\ohosTest",
+          "INTERMEDIA_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates",
+          "JS_ASSETS_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out\\ohosTest",
+          "JS_LITE_ASSETS_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader_out_lite\\ohosTest",
+          "RES_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\ohosTest",
+          "RES_PROFILE_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\res\\ohosTest\\resources\\base\\profile",
+          "ETS_SUPER_VISUAL_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\cache\\ohosTest\\ohosTest@OhosTestCompileArkTS\\esmodule",
+          "JS_SUPER_VISUAL_PATH": "E:\\MyApplicationditu\\entry\\build\\default\\cache\\ohosTest\\ohosTest@OhosTestCompileJS\\jsbundle",
+          "WORKER_LOADER": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\loader\\ohosTest\\loader.json",
+          "MANIFEST_JSON": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\manifest\\ohosTest",
+          "OUTPUT_METADATA_JSON": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\hap_metadata\\ohosTest\\output_metadata.json",
+          "SOURCE_MAP_DIR": "E:\\MyApplicationditu\\entry\\build\\default\\intermediates\\source_map\\ohosTest"
         },
         "BUILD_OPTION": {
           "debuggable": true
@@ -110,18 +110,18 @@
   },
   "ohos-project": {
     "SELECT_PRODUCT_NAME": "default",
-    "MODULE_BUILD_DIR": "D:\\MyApplicationditu\\build",
+    "MODULE_BUILD_DIR": "E:\\MyApplicationditu\\build",
     "BUNDLE_NAME": "com.footprintapp.pro",
     "VERSION_CODE": 1000000,
     "VERSION_NAME": "1.0.0",
     "BUILD_VERSION": "1",
     "BUILD_PATH": {
-      "OUTPUT_PATH": "D:\\MyApplicationditu\\build\\outputs\\default"
+      "OUTPUT_PATH": "E:\\MyApplicationditu\\build\\outputs\\default"
     },
     "MODULES": [
       {
         "name": "entry",
-        "srcPath": "D:\\MyApplicationditu\\entry",
+        "srcPath": "E:\\MyApplicationditu\\entry",
         "targets": [
           {
             "name": "default",
@@ -130,7 +130,7 @@
             ]
           }
         ],
-        "belongProjectPath": "D:\\MyApplicationditu"
+        "belongProjectPath": "E:\\MyApplicationditu"
       }
     ],
     "PROFILE_OPT": {
@@ -140,13 +140,13 @@
             "name": "default",
             "type": "HarmonyOS",
             "material": {
-              "certpath": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.cer",
+              "certpath": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.cer",
               "keyAlias": "debugKey",
-              "keyPassword": "0000001BC0C32AB29AECF8437643A002999333588FF0A605E7F245325FCFA567655DDFA1A9BE38098AD7F6",
-              "profile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.p7b",
+              "keyPassword": "0000001A8F9F3CBEFB8D9603A95D1BFDC635A3CB5A565D9C4C1927E6696A1DE6B735F85A7A8D11ED5920",
+              "profile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.p7b",
               "signAlg": "SHA256withECDSA",
-              "storeFile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.p12",
-              "storePassword": "0000001B631CD7FB085B00FB29F65E89F89C4D621054E4211899497079DFEA0CD158D16F3D4726D48612ED"
+              "storeFile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.p12",
+              "storePassword": "0000001A686C440A76FDDECB00E9222825ECBBCBD877ABD82FCE4D58C71C1F6EF2360FE0F3E9A9259233"
             }
           }
         ],
@@ -195,7 +195,7 @@
       "hvigor.keepDependency": true
     },
     "OVERALL_PROJECT_PATHS": [
-      "D:\\MyApplicationditu"
+      "E:\\MyApplicationditu"
     ],
     "BUILD_CACHE_DIR": ""
   }

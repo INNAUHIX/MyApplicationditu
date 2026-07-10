@@ -78,21 +78,22 @@ struct Index {
     fontWeight: FontWeight.Regular,
     selectedFontWeight: FontWeight.Medium
   });
-  // 演示用分段按钮（左侧标题 + 右侧分段切换）：不绑定实际切换效果，仅展示组合样式
-  @State demoSegmentOptions: SegmentButtonOptions = SegmentButtonOptions.capsule({
+  @State demoSelectedIndex: number = 0;
+  @State display2SegmentOptions: SegmentButtonOptions = SegmentButtonOptions.capsule({
     buttons: [
-      { text: '列表' },
-      { text: '网格' }
+      { text: '折线' },
+      { text: '海量点' }
     ] as ItemRestriction<SegmentButtonTextItem>,
     selectedBackgroundColor: '#007DFF',
     fontColor: '#999999',
     selectedFontColor: Color.White,
-    fontSize: 16,
-    selectedFontSize: 16,
+    fontSize: 14,
+    selectedFontSize: 14,
     fontWeight: FontWeight.Regular,
-    selectedFontWeight: FontWeight.Medium
+    selectedFontWeight: FontWeight.Medium,
+    buttonPadding: { top: 10, right: 4, bottom: 10, left: 4 }
   });
-  @State demoSelectedIndexes: number[] = [0]; // 仅用于演示分段控件的高亮态，不影响实际逻辑
+  @State display2SelectedIndexes: number[] = [0];
   private static readonly FOOTPRINT_DISTANCE: number = 80;
   private tabsController: HdsTabsController = new HdsTabsController();
   @State customMaterialLevel: hdsMaterial.MaterialLevel = hdsMaterial.MaterialLevel.EXQUISITE;
@@ -1349,79 +1350,34 @@ struct Index {
   @Builder
   buildMapToolSheetContent(): void {
     Column() {
-      // === 容器A（独立）：轨迹类型 —— 左侧标题 + 右侧分段按钮 ===
+
+      // === 容器C（独立）：显示2 —— 左侧标题 + 右侧 SegmentButton ===
       Column() {
         Row() {
-          // 左侧：标题容器
-          Row() {
-            Text('轨迹类型')
-              .fontSize(16)
-              .fontColor($r('sys.color.font_primary'))
-              .fontWeight(FontWeight.Medium)
-          }
-          .layoutWeight(1)
-          .justifyContent(FlexAlign.Start)
+          Text('轨迹切换')
+            .fontSize(16)
+            .fontColor($r('sys.color.font_primary'))
+            .fontWeight(FontWeight.Medium)
 
-          // 右侧：分段按钮容器（限定宽度，按钮只在容器内铺满）
-          Row() {
-            SegmentButton({
-              options: this.trajectorySegmentOptions,
-              selectedIndexes: $selectedIndexes,
-              onItemClicked: (index: number) => {
-                this.switchDisplayMode(index);
-              }
-            })
-              .width('100%')
-          }
-          .width(240)
-          .justifyContent(FlexAlign.End)
+          Blank()
+
+          SegmentButton({
+            options: this.display2SegmentOptions,
+            selectedIndexes: $display2SelectedIndexes,
+            onItemClicked: (index: number) => {
+              this.switchDisplayMode(index);
+            }
+          })
+          .width(160)
         }
         .width('100%')
         .justifyContent(FlexAlign.SpaceBetween)
         .alignItems(VerticalAlign.Center)
         .padding({ top: 16, bottom: 16, left: 12, right: 12 })
-        .constraintSize({ minHeight: 64 })
       }
       .width('100%')
       .backgroundColor($r('sys.color.comp_background_list_card'))
-      .borderRadius(12)
-      .margin({ top: 16, bottom: 12 })
-
-      // === 容器B（独立）：显示样式（演示，不绑定切换）—— 左侧标题 + 右侧分段按钮 ===
-      Column() {
-        Row() {
-          // 左侧：标题容器
-          Row() {
-            Text('显示样式')
-              .fontSize(16)
-              .fontColor($r('sys.color.font_primary'))
-              .fontWeight(FontWeight.Medium)
-          }
-          .layoutWeight(1)
-          .justifyContent(FlexAlign.Start)
-
-          // 右侧：分段按钮容器（限定宽度，按钮只在容器内铺满）
-          Row() {
-            SegmentButton({
-              options: this.demoSegmentOptions,
-              selectedIndexes: $demoSelectedIndexes
-            })
-              .width('100%')
-              .height(46)
-          }
-          .width(180)
-          .alignItems(VerticalAlign.Center)
-          .justifyContent(FlexAlign.End)
-        }
-        .width('100%')
-        .justifyContent(FlexAlign.SpaceBetween)
-        .alignItems(VerticalAlign.Center)
-        .padding({ top: 16, bottom: 16, left: 12, right: 12 })
-        .constraintSize({ minHeight: 64 })
-      }
-      .width('100%')
-      .backgroundColor($r('sys.color.comp_background_list_card'))
-      .borderRadius(12)
+      .borderRadius(16)
       .margin({ bottom: 12 })
 
       // TODO: 在此追加更多独立容器（每个容器内部均为：左标题 + 右控件）
