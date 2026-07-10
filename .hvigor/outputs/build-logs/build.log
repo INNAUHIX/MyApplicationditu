@@ -4313,3 +4313,114 @@ Require stack:
 [2026-07-10T14:39:46.522] [DEBUG] debug-file - default@PackageHap work[44] has been dispatched to worker[4].
 [2026-07-10T14:39:46.522] [DEBUG] debug-file - default@PackageHap work[44] is dispatched.
 [2026-07-10T14:39:46.527] [DEBUG] debug-file - entry : default@PackageHap cost memory -0.9724884033203125
+[2026-07-10T14:39:46.525] [DEBUG] debug-file - current process  memoryUsage: {
+  rss: 404475904,
+  heapTotal: 383062016,
+  heapUsed: 343880488,
+  external: 7454259,
+  arrayBuffers: 3486778
+} os memoryUsage :13.839168548583984
+[2026-07-10T14:39:47.203] [DEBUG] debug-file - worker[4] has one work done.
+[2026-07-10T14:39:47.204] [DEBUG] debug-file - default@PackageHap work[44] done.
+[2026-07-10T14:39:47.204] [DEBUG] debug-file - A work dispatched to worker[4] failed because unable to get work from ready queue.
+[2026-07-10T14:39:47.206] [INFO] debug-file - Finished :entry:default@PackageHap... after 700 ms 
+[2026-07-10T14:39:47.208] [DEBUG] debug-file - Executing task :entry:default@PackingCheck
+[2026-07-10T14:39:47.214] [DEBUG] debug-file - entry : default@PackingCheck cost memory 0.3603057861328125
+[2026-07-10T14:39:47.214] [DEBUG] debug-file - runTaskFromQueue task cost before running: 3 s 931 ms 
+[2026-07-10T14:39:47.215] [INFO] debug-file - Finished :entry:default@PackingCheck... after 6 ms 
+[2026-07-10T14:39:47.217] [DEBUG] debug-file - Executing task :entry:default@SignHap
+[2026-07-10T14:39:47.220] [DEBUG] debug-file - entry:default@SignHap is not up-to-date, since the input file 'D:\MyApplicationditu\entry\build\default\outputs\default\entry-default-unsigned.hap' has been changed.
+[2026-07-10T14:39:47.220] [DEBUG] debug-file - Incremental task entry:default@SignHap pre-execution cost: 3 ms .
+[2026-07-10T14:39:47.272] [DEBUG] debug-file - java daemon socket received message:{"code":0,"message":"verify profile success"}
+[2026-07-10T14:39:47.276] [DEBUG] debug-file - java daemon socket close code:1000 reason:close by user
+[2026-07-10T14:39:47.408] [DEBUG] debug-file - java daemon socket received message:{"code":0,"message":"sign app success"}
+[2026-07-10T14:39:47.409] [DEBUG] debug-file - entry : default@SignHap cost memory 0.535980224609375
+[2026-07-10T14:39:47.409] [DEBUG] debug-file - runTaskFromQueue task cost before running: 4 s 126 ms 
+[2026-07-10T14:39:47.410] [INFO] debug-file - Finished :entry:default@SignHap... after 193 ms 
+[2026-07-10T14:39:47.412] [DEBUG] debug-file - Executing task :entry:default@CollectDebugSymbol
+[2026-07-10T14:39:47.414] [DEBUG] debug-file - entry : default@CollectDebugSymbol cost memory 0.07462310791015625
+[2026-07-10T14:39:47.415] [DEBUG] debug-file - runTaskFromQueue task cost before running: 4 s 131 ms 
+[2026-07-10T14:39:47.415] [INFO] debug-file - Finished :entry:default@CollectDebugSymbol... after 3 ms 
+[2026-07-10T14:39:47.415] [DEBUG] debug-file - Executing task :entry:assembleHap
+[2026-07-10T14:39:47.415] [DEBUG] debug-file - entry : assembleHap cost memory 0.011749267578125
+[2026-07-10T14:39:47.415] [DEBUG] debug-file - runTaskFromQueue task cost before running: 4 s 132 ms 
+[2026-07-10T14:39:47.415] [INFO] debug-file - Finished :entry:assembleHap... after 1 ms 
+[2026-07-10T14:39:47.429] [INFO] debug-file - BUILD SUCCESSFUL in 4 s 145 ms 
+[2026-07-10T14:39:47.429] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@PreBuild is up-to-date.
+[2026-07-10T14:39:47.429] [DEBUG] debug-file - Update task entry:default@CreateModuleInfo output file:D:\MyApplicationditu\entry\build\default\generated\profile\default\ModuleInfo.ts cache.
+[2026-07-10T14:39:47.430] [DEBUG] debug-file - Incremental task entry:default@CreateModuleInfo post-execution cost:1 ms .
+[2026-07-10T14:39:47.430] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateMetadata is up-to-date.
+[2026-07-10T14:39:47.430] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MergeProfile is up-to-date.
+[2026-07-10T14:39:47.430] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CreateBuildProfile is up-to-date.
+[2026-07-10T14:39:47.430] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GeneratePkgContextInfo is up-to-date.
+[2026-07-10T14:39:47.430] [DEBUG] debug-file - Update task entry:default@GeneratePkgSdkInfo output file:D:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgSdkInfo.json cache.
+[2026-07-10T14:39:47.431] [DEBUG] debug-file - Incremental task entry:default@GeneratePkgSdkInfo post-execution cost:1 ms .
+[2026-07-10T14:39:47.431] [DEBUG] debug-file - Update task entry:default@ProcessIntegratedHsp output file:D:\MyApplicationditu\build\cache\default\integrated_hsp\integratedHspCache.json cache.
+[2026-07-10T14:39:47.432] [DEBUG] debug-file - Incremental task entry:default@ProcessIntegratedHsp post-execution cost:1 ms .
+[2026-07-10T14:39:47.434] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@MakePackInfo is up-to-date.
+[2026-07-10T14:39:47.434] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\toolchains\syscap_tool.exe cache by regenerate.
+[2026-07-10T14:39:47.434] [DEBUG] debug-file - Update task entry:default@SyscapTransform input file:D:\DevEco Studio\sdk\default\openharmony\ets\api\device-define cache by regenerate.
+[2026-07-10T14:39:47.436] [DEBUG] debug-file - Update task entry:default@SyscapTransform output file:D:\MyApplicationditu\entry\build\default\intermediates\syscap\default\rpcid.sc cache.
+[2026-07-10T14:39:47.437] [DEBUG] debug-file - Incremental task entry:default@SyscapTransform post-execution cost:4 ms .
+[2026-07-10T14:39:47.437] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessProfile is up-to-date.
+[2026-07-10T14:39:47.437] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessRouterMap is up-to-date.
+[2026-07-10T14:39:47.437] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessShareConfig is up-to-date.
+[2026-07-10T14:39:47.438] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig input file:D:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-10T14:39:47.438] [DEBUG] debug-file - Update task entry:default@ProcessStartupConfig output file:D:\MyApplicationditu\entry\build\default\intermediates\startup\default\startup_config.json cache.
+[2026-07-10T14:39:47.439] [DEBUG] debug-file - Incremental task entry:default@ProcessStartupConfig post-execution cost:2 ms .
+[2026-07-10T14:39:47.439] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessResource is up-to-date.
+[2026-07-10T14:39:47.439] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GenerateLoaderJson is up-to-date.
+[2026-07-10T14:39:47.439] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@ProcessLibs is up-to-date.
+[2026-07-10T14:39:47.439] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CompileResource is up-to-date.
+[2026-07-10T14:39:47.439] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@DoNativeStrip is up-to-date.
+[2026-07-10T14:39:47.443] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:D:\MyApplicationditu\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-07-10T14:39:47.444] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\rawfile cache by regenerate.
+[2026-07-10T14:39:47.445] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-07-10T14:39:47.445] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-07-10T14:39:47.445] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-07-10T14:39:47.446] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:D:\MyApplicationditu\entry\src\main\ets cache from map.
+[2026-07-10T14:39:47.446] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:D:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-10T14:39:47.447] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:D:\MyApplicationditu\entry\build\default\generated\profile\default\BuildProfile.ets cache by regenerate.
+[2026-07-10T14:39:47.448] [DEBUG] debug-file - Update task entry:default@CompileArkTS input file:D:\MyApplicationditu\entry\src\mock\mock-config.json5 cache by regenerate.
+[2026-07-10T14:39:47.449] [DEBUG] debug-file - Update task entry:default@CompileArkTS output file:D:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets cache.
+[2026-07-10T14:39:47.450] [DEBUG] debug-file - Incremental task entry:default@CompileArkTS post-execution cost:12 ms .
+[2026-07-10T14:39:47.453] [DEBUG] debug-file - Update task entry:default@BuildJS input file:D:\MyApplicationditu\entry\build\default\intermediates\loader\default cache by regenerate.
+[2026-07-10T14:39:47.454] [DEBUG] debug-file - Update task entry:default@BuildJS input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\rawfile cache by regenerate.
+[2026-07-10T14:39:47.454] [DEBUG] debug-file - Update task entry:default@BuildJS input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\ResourceTable.txt cache by regenerate.
+[2026-07-10T14:39:47.454] [DEBUG] debug-file - Update task entry:default@BuildJS input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\ark_module.json cache by regenerate.
+[2026-07-10T14:39:47.455] [DEBUG] debug-file - Update task entry:default@BuildJS input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\resources\base\profile cache by regenerate.
+[2026-07-10T14:39:47.456] [DEBUG] debug-file - Update task entry:default@BuildJS input file:D:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-10T14:39:47.456] [DEBUG] debug-file - Update task entry:default@BuildJS output file:D:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\js cache.
+[2026-07-10T14:39:47.457] [DEBUG] debug-file - Incremental task entry:default@BuildJS post-execution cost:7 ms .
+[2026-07-10T14:39:47.457] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@CacheNativeLibs is up-to-date.
+[2026-07-10T14:39:47.457] [DEBUG] debug-file - There is no need to refresh cache, since the incremental task entry:default@GeneratePkgModuleJson is up-to-date.
+[2026-07-10T14:39:47.457] [DEBUG] debug-file - Incremental task entry:default@ProcessCompiledResources post-execution cost:1 ms .
+[2026-07-10T14:39:47.458] [DEBUG] debug-file - Update task entry:default@PackageHap input file:D:\MyApplicationditu\entry\build\default\intermediates\stripped_native_libs\default cache by regenerate.
+[2026-07-10T14:39:47.459] [DEBUG] debug-file - Update task entry:default@PackageHap input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\module.json cache by regenerate.
+[2026-07-10T14:39:47.459] [DEBUG] debug-file - Update task entry:default@PackageHap input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\resources cache by regenerate.
+[2026-07-10T14:39:47.467] [DEBUG] debug-file - Update task entry:default@PackageHap input file:D:\MyApplicationditu\entry\build\default\intermediates\res\default\resources.index cache by regenerate.
+[2026-07-10T14:39:47.467] [DEBUG] debug-file - Update task entry:default@PackageHap input file:D:\MyApplicationditu\entry\build\default\outputs\default\pack.info cache by regenerate.
+[2026-07-10T14:39:47.468] [DEBUG] debug-file - Update task entry:default@PackageHap input file:D:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets cache from map.
+[2026-07-10T14:39:47.468] [DEBUG] debug-file - Update task entry:default@PackageHap input file:D:\MyApplicationditu\entry\build\default\intermediates\loader\default\pkgContextInfo.json cache by regenerate.
+[2026-07-10T14:39:47.469] [DEBUG] debug-file - Update task entry:default@PackageHap input file:D:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets\sourceMaps.map cache by regenerate.
+[2026-07-10T14:39:47.469] [DEBUG] debug-file - Update task entry:default@PackageHap input file:D:\MyApplicationditu\entry\build\default\generated\profile\default\BuildProfile.ets cache by regenerate.
+[2026-07-10T14:39:47.469] [DEBUG] debug-file - Update task entry:default@PackageHap output file:D:\MyApplicationditu\entry\build\default\outputs\default\entry-default-unsigned.hap cache.
+[2026-07-10T14:39:47.470] [DEBUG] debug-file - Update task entry:default@PackageHap output file:D:\MyApplicationditu\entry\build\default\intermediates\source_map\default\sourceMaps.map cache.
+[2026-07-10T14:39:47.470] [DEBUG] debug-file - Update task entry:default@PackageHap output file:D:\MyApplicationditu\entry\build\default\outputs\default\mapping\sourceMaps.map cache.
+[2026-07-10T14:39:47.470] [DEBUG] debug-file - Incremental task entry:default@PackageHap post-execution cost:14 ms .
+[2026-07-10T14:39:47.471] [DEBUG] debug-file - Update task entry:default@SignHap input file:C:\Users\liuze\.ohos\config\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.cer cache by regenerate.
+[2026-07-10T14:39:47.471] [DEBUG] debug-file - Update task entry:default@SignHap input file:C:\Users\liuze\.ohos\config\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.p7b cache by regenerate.
+[2026-07-10T14:39:47.471] [DEBUG] debug-file - Update task entry:default@SignHap input file:C:\Users\liuze\.ohos\config\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.p12 cache by regenerate.
+[2026-07-10T14:39:47.471] [DEBUG] debug-file - Update task entry:default@SignHap input file:D:\MyApplicationditu\entry\build\default\outputs\default\entry-default-unsigned.hap cache from map.
+[2026-07-10T14:39:47.472] [DEBUG] debug-file - Update task entry:default@SignHap output file:D:\MyApplicationditu\entry\build\default\outputs\default\entry-default-signed.hap cache.
+[2026-07-10T14:39:47.472] [DEBUG] debug-file - Incremental task entry:default@SignHap post-execution cost:2 ms .
+[2026-07-10T14:39:47.472] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:D:\MyApplicationditu\entry\build\default\intermediates\loader_out\default\ets\sourceMaps.map cache by regenerate.
+[2026-07-10T14:39:47.473] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol input file:D:\MyApplicationditu\entry\build\default\intermediates\libs\default cache by regenerate.
+[2026-07-10T14:39:47.473] [DEBUG] debug-file - Update task entry:default@CollectDebugSymbol output file:D:\MyApplicationditu\entry\build\default\outputs\default\symbol cache.
+[2026-07-10T14:39:47.473] [DEBUG] debug-file - Incremental task entry:default@CollectDebugSymbol post-execution cost:2 ms .
+[2026-07-10T14:39:47.498] [DEBUG] debug-file - hvigor build process will be closed.
+[2026-07-10T14:39:47.499] [DEBUG] debug-file - java daemon socket close code:1000 reason:close by user
+[2026-07-10T14:39:47.507] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-10T14:39:47.507] [DEBUG] debug-file - session manager: send message to worker process.
+[2026-07-10T14:39:47.508] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
+[2026-07-10T14:39:47.508] [DEBUG] debug-file - watch worker: worker id should be larger than 0. Nothing will be sent to any worker thread.
