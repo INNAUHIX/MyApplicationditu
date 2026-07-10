@@ -70,23 +70,16 @@
     "BUILD_ANALYSIS_MODE": "normal",
     "TASK_TIME": {
       "923fe53966c6cd9343e11af776cd4b05be315ea4b200b02e4d5dfb0f929b73bf": {
-        "CreateModuleInfo": 872500,
-        "ConfigureCmake": 342700,
-        "PreCheckSyscap": 525800,
-        "GeneratePkgSdkInfo": 6052200,
-        "ProcessIntegratedHsp": 1083200,
-        "BuildNativeWithCmake": 385100,
-        "SyscapTransform": 4706300,
-        "ProcessStartupConfig": 3994900,
-        "BuildNativeWithNinja": 1034800,
-        "BuildJS": 5706000,
-        "CompileArkTS": 3014980800,
-        "ProcessCompiledResources": 1934100,
-        "PackageHap": 615949300,
-        "PackingCheck": 8980900,
-        "SignHap": 171077400,
-        "CollectDebugSymbol": 1871000,
-        "assembleHap": 308500
+        "CreateModuleInfo": 1650300,
+        "ConfigureCmake": 445700,
+        "PreCheckSyscap": 423300,
+        "GeneratePkgSdkInfo": 4740500,
+        "ProcessIntegratedHsp": 1085400,
+        "BuildNativeWithCmake": 1130300,
+        "SyscapTransform": 4996100,
+        "ProcessStartupConfig": 5225300,
+        "BuildNativeWithNinja": 1974300,
+        "BuildJS": 9102300
       }
     },
     "CUSTOM_TASK_TIME": {},
@@ -99,7 +92,74 @@
       "ENABLE_CPP_FUNCTION_LEVEL_INCREMENTAL": false
     },
     "CONFIG_PROPERTIES": {},
-    "TOTAL_TIME": 4169096200,
-    "BUILD_ID": "202607101846320370"
+    "TOTAL_TIME": 3293307700,
+    "BUILD_ID": "202607101857026990",
+    "ERROR_MESSAGE": [
+      {
+        "CODE": "10605038",
+        "STACK": "...\n10605038 ArkTS Compiler Error\n...\n10505001 ArkTS Compiler Error\n...\n    at runArkPack (***\\tools\\hvigor\\hvigor-ohos-plugin\\node_modules\\@ohos\\hvigor-arkts-compose\\dist\\src\\ar***k.js:1:5143)\n...\n    at throwArkTsCompilerError (***\\tools\\hvigor\\hvigor-ohos-plugin\\node_modules\\@ohos\\hvigor-arkts-compose\\dist\\src\\data\\co***r.js:1:423)\n    at throwErrorIfHasErrorInfo (***\\tools\\hvigor\\hvigor-ohos-plugin\\node_modules\\@ohos\\hvigor-arkts-compose\\dist\\src\\plugins\\co***n.js:1:4923)\n    at Object.handler (***\\tools\\hvigor\\hvigor-ohos-plugin\\node_modules\\@ohos\\hvigor-arkts-compose\\dist\\src\\plugins\\co***n.js:1:3018)\n    at ***\\tools\\hvigor\\hvigor-ohos-plugin\\node_modules\\@ohos\\hvigor-arkts-base\\node_modules\\rollup\\dist\\shared\\ro***p.js:27864:40",
+        "PROJECT_CONFIG": {
+          "buildMode": "Debug",
+          "compileMode": "esmodule",
+          "moduleType": "entry",
+          "targetName": ".default",
+          "packageManagerType": "ohpm",
+          "isLocalTest": false,
+          "needCoverageInsert": false,
+          "debugLine": false,
+          "compileSdkVersion": 24,
+          "compatibleSdkVersion": 23,
+          "originCompatibleSdkVersion": "6.1.0(23)",
+          "etsLoaderVersion": "6.1.1.125",
+          "etsLoaderReleaseType": "Release",
+          "aotCompileMode": "type",
+          "isCrossplatform": false,
+          "bundleType": "app",
+          "apiVersion": 24,
+          "isFaMode": false,
+          "deviceTypes": [
+            "phone"
+          ],
+          "integratedHsp": false,
+          "branchElimination": false,
+          "tsImportSendable": false,
+          "resolveConflictMode": true,
+          "useNativeResolver": true,
+          "shouldEmitJs": true,
+          "useTscResolve": false,
+          "singleFileEmit": false,
+          "executionMode": "memory",
+          "isHarDeduplicateEnabled": false,
+          "autoLazyImport": false,
+          "allowEmptyBundleName": false,
+          "reExportCheckMode": "noCheck",
+          "usePathPlaceholder": false,
+          "writeRollupCache": true,
+          "isExpandImportEnabled": false,
+          "ignoreCrossplatformCheck": false,
+          "skipOhModulesLint": false,
+          "enableStrictCheckOHModule": false,
+          "useDeclarationFileSignature": false,
+          "isPreloadSoEnabled": false,
+          "strictMode.caseSensitiveCheck": true,
+          "strictMode.useNormalizedOHMUrl": true,
+          "strictMode.noExternalImportByPath": true,
+          "runtimeOS": "HarmonyOS",
+          "sdkInfo": "false:24:6.1.1.125:Release",
+          "useSourceHash": false,
+          "isByteCodeHarOptimize": false,
+          "copyCodeResourceEnable": false,
+          "uiTransformOptimization": false
+        }
+      },
+      {
+        "CODE": "10605038",
+        "TIMESTAMP": "1783681025983"
+      },
+      {
+        "CODE": "10505001",
+        "TIMESTAMP": "1783681025983"
+      }
+    ]
   }
 }
