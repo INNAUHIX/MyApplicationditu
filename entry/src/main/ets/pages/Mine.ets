@@ -14,18 +14,18 @@ struct CardItem {
   symbol: Resource = $r('sys.symbol.gearshape');
   onClickEvent: () => void = () => {};
   statusText: ResourceStr = '';
-  statusColor: ResourceStr = '#F44336';
+  statusColor: ResourceStr = $r('sys.color.ohos_id_color_warning');
 
   build() {
     Row() {
       Row() {
         SymbolGlyph(this.symbol)
           .fontSize(24)
-          .fontColor(['#e6000000'])
+          .fontColor([$r('sys.color.font_primary')])
           .margin({ left: 12 })
         Text(this.label)
           .fontSize(16)
-          .fontColor('#e6000000')
+          .fontColor($r('sys.color.font_primary'))
           .margin({ left: 12 })
       }
       Row() {
@@ -35,10 +35,9 @@ struct CardItem {
             .fontColor(this.statusColor)
             .margin({ right: 8 })
         }
-        Image($r('app.media.ic_arrow_right'))
-          .width(16)
-          .height(16)
-          .fillColor('#99000000')
+        SymbolGlyph($r('sys.symbol.chevron_right'))
+          .fontSize(24)
+          .fontColor([$r('sys.color.font_fourth')])
           .margin({ right: 12 })
       }
     }
@@ -60,6 +59,12 @@ export struct Mine {
   onLocationPermissionClick: () => void = () => {};
   // 定位权限是否异常（无前台定位能力），用于在「定位权限」项右侧提示红色文案
   locationAbnormal: boolean = false;
+  // 当前定位记录模式（0=省电,1=平衡,2=耗电），由 Index 传入用于显示当前档位
+  @State recordMode: number = 1;
+  // 点击「定位模式」时由 Index 打开定位模式半模态面板（参考「定位权限」做法）
+  onRecordModeClick: () => void = () => {};
+  // 模式选项文案（用于右侧显示当前档位名）
+  modeOptions: string[] = ['省电', '平衡', '耗电'];
 
   build() {
     Scroll() {
@@ -68,7 +73,15 @@ export struct Mine {
         Column() {
           List() {
             ListItem() {
-              CardItem({ label: '我的卡项', symbol: $r('sys.symbol.creditcard') })
+              CardItem({
+                label: '定位模式',
+                symbol: $r('sys.symbol.local_badge_gearshape'),
+                statusText: this.modeOptions[this.recordMode],
+                statusColor: $r('sys.color.font_secondary'),
+                onClickEvent: () => {
+                  this.onRecordModeClick();
+                }
+              })
             }
             ListItem() {
               CardItem({ label: '预约记录', symbol: $r('sys.symbol.calendar') })
@@ -78,7 +91,7 @@ export struct Mine {
                 label: '定位权限',
                 symbol: $r('sys.symbol.position_badge_exclamationmark'),
                 statusText: this.locationAbnormal ? '权限异常' : '',
-                statusColor: '#F44336',
+                statusColor: $r('sys.color.ohos_id_color_warning'),
                 onClickEvent: () => {
                   this.onLocationPermissionClick();
                 }
@@ -97,7 +110,7 @@ export struct Mine {
           })
         }
         .borderRadius(20)
-        .backgroundColor(Color.White)
+        .backgroundColor($r('sys.color.comp_background_list_card'))
 
         // 第二组：意见反馈 / 设置（设置跳本项目自身二级页）
         Column() {
@@ -124,7 +137,7 @@ export struct Mine {
           })
         }
         .borderRadius(20)
-        .backgroundColor(Color.White)
+        .backgroundColor($r('sys.color.comp_background_list_card'))
       }
       .margin({ bottom: 80 })
       .padding({ left: 16, right: 16, top: 12 })
@@ -133,6 +146,6 @@ export struct Mine {
     .align(Alignment.Top)
     .edgeEffect(EdgeEffect.Spring)
     .scrollBar(BarState.Off)
-    .backgroundColor($r('sys.color.background_secondary'))
+      .backgroundColor($r('sys.color.background_secondary'))
   }
 }
