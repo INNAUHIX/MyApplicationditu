@@ -5,7 +5,7 @@
  * 供 data / location / map / state / util 各层共享，避免重复定义。
  */
 
-// 日志 TAG：组件名为 Index，早期原型曾叫 MapPage，此处统一为 Index 以消除歧义
+// 日志 TAG：默认值 'Index'，各模块可自行定义局部 TAG 常量替代此共享常量
 export const TAG: string = 'Index';
 
 // 定位模式面板「防漂移与性能策略」展示项结构
@@ -23,25 +23,22 @@ export interface VisibleRange {
 // ===== 定位记录模式（按功耗分级，Option B）=====
 export enum RecordMode {
   POWER_SAVING = 0, // 省电
-  BALANCED = 1,     // 平衡（默认）
+  BALANCED = 1,     // 均衡（默认）
   HIGH_POWER = 2    // 耗电
 }
 
-// 各档参数：timeInterval=定位回调间隔(秒)；distanceInterval=足迹点记录距离门槛(米，仅控海量点稀疏度)；
-//          maxAccuracy=精度门槛(米，超出则丢弃漂移点)
+// 各档参数：timeInterval=定位回调间隔(秒)
 export interface RecordModeConfig {
   timeInterval: number;
-  distanceInterval: number;
-  maxAccuracy: number;
   label: string;
 }
 
-// 三档参数：省电 / 平衡(默认) / 耗电
-// 折线防漂：timeInterval 采样 + 精度过滤 + 5m 位移地板 + 速度门槛(静止判定) + 30m 静止迟滞；distanceInterval 仅用来给足迹点(海量点)降密度
+// 三档参数：省电 / 均衡(默认) / 耗电
+// 折线防漂：timeInterval 采样 + 5m 位移地板 + 速度门槛(静止判定) + 30m 静止迟滞
 export const MODE_CONFIG: RecordModeConfig[] = [
-  { timeInterval: 60, distanceInterval: 200, maxAccuracy: 200, label: '省电' },
-  { timeInterval: 15, distanceInterval: 50,  maxAccuracy: 100, label: '平衡' },
-  { timeInterval: 5,  distanceInterval: 20,  maxAccuracy: 30,  label: '耗电' }
+  { timeInterval: 60, label: '省电' },
+  { timeInterval: 15, label: '均衡' },
+  { timeInterval: 5,  label: '耗电' }
 ];
 
 // 待写入数据库的轨迹点记录（含精度/速度/时间戳）
@@ -89,6 +86,12 @@ export const PREF_KEY_MAP_STYLE: string = 'mapStyleIndex';
 export const PREF_KEY_TIME_VIEW: string = 'timeViewIndex';
 export const PREF_KEY_CUSTOM_START: string = 'customStartTs';
 export const PREF_KEY_CUSTOM_END: string = 'customEndTs';
+// 轻量偏好存储：持久化记录规则（0=省电 / 1=均衡 / 2=耗电）
+export const PREF_KEY_RECORD_MODE: string = 'recordModeIndex';
+// 轻量偏好存储：持久化夜间模式（0=跟随系统 / 1=普通模式 / 2=夜间模式）
+export const PREF_KEY_NIGHT_MODE: string = 'nightModeIndex';
+// 轻量偏好存储：持久化抖动地板阈值（0=5米 / 1=10米 / 2=15米）
+export const PREF_KEY_SHAKE_FLOOR: string = 'shakeFloorIndex';
 
 // 时间范围视图索引常量
 export const TIME_VIEW_OVERVIEW: number = 0; // 总览（仅海量点）

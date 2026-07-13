@@ -142,11 +142,11 @@
             "material": {
               "certpath": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.cer",
               "keyAlias": "debugKey",
-              "keyPassword": "0000001A8F9F3CBEFB8D9603A95D1BFDC635A3CB5A565D9C4C1927E6696A1DE6B735F85A7A8D11ED5920",
+              "keyPassword": "0000001AA9AA3D4F904906DB528A24DAD24048F85B19D35C2B40E6CC8C3567CDB7B323CF61A69BF5755C",
               "profile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.p7b",
               "signAlg": "SHA256withECDSA",
               "storeFile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.p12",
-              "storePassword": "0000001A686C440A76FDDECB00E9222825ECBBCBD877ABD82FCE4D58C71C1F6EF2360FE0F3E9A9259233"
+              "storePassword": "0000001A987F54E4888C7C1ED23E31C565B0E953CFBF31F26C21C400C4A47FB5A75015CB37D978CEA4B4"
             }
           }
         ],

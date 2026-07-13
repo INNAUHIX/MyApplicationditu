@@ -1,15 +1,4 @@
-/**
- * MapStyleTest.ets —— 「测试」地图自定义样式（浅色极简风）
- *
- * 说明：
- *  - 该样式为用户提供的自定义样式 JSON（共 89 条要素规则），整体为浅色极简风格。
- *  - 保留：道路及路名文字、水系、绿地、建筑、铁路/轮渡/机场线。
- *  - 隐藏：POI、行政区文字、公交文字、道路文字与编号图标、门牌号、购物中心/学校/酒店/商务区等文字（保留其色块）等。
- *  - 以 JSON 字符串形式保存，供 map.MapComponentController.setCustomMapStyle({ styleContent }) 本地注入，
- *    无需在 Petal Maps Studio 发布云端样式 ID。
- */
-export const MAP_STYLE_TEST: string = `[
-    {
+[{
         "mapFeature": "all",
         "options": "geometry",
         "paint": {
@@ -592,5 +581,4 @@ export const MAP_STYLE_TEST: string = `[
         "mapFeature": "landcover.human-made.hotel",
         "options": "labels.text",
         "visibility": false
-    }
-]`;
+    }]

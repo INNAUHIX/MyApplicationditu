@@ -2,17 +2,20 @@
  * MapOverlayManager.ets —— 地图覆盖物与样式管理服务
  *
  * 从 Index 原 createRedDotIcon / initMapOptions / initMapCallback / enable3DBuilding /
- * rebuildOverlay / updatePolyline / updateLivePolyline / buildMassPointItems /
+ * rebuildOverlay / updatePolyline / buildMassPointItems /
  * updateMassPointOverlay / refreshOverlayOptimized / switchDisplayMode / applyNightMode /
  * applyMapStyleToMap 抽取。
  * 持有 mapController 与全部覆盖物引用、红点图标、绘制节流计数，提供纯数据入参的覆盖物
  * 刷新与样式/昼夜切换接口；沉浸模式、Tab 动画等 UI 行为通过回调交还页面处理。
+ *
+ * 已删除策略：实时连线（livePolyline + updateLivePolyline 已移除）
  */
 
 import { MapComponent, mapCommon, map } from '@kit.MapKit';
 import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
 import { image } from '@kit.ImageKit';
-import { MAP_STYLE_TEST } from '../pages/MapStyleTest';
+import { util } from '@kit.ArkTS';
 import {
   TIME_VIEW_OVERVIEW,
   MAP_STYLE_DARK_ID,
@@ -27,8 +30,6 @@ export class MapOverlayManager {
   private mapController?: map.MapComponentController;
   private trackPolyline: map.MapPolyline | null = null;
   private massPointOverlay: map.MassPointOverlay | null = null;
-  // 实时位置连线：把已确认折线末端连到当前实时位置，消除「已确认点 → 真实位置」之间的空白与终点断点
-  private livePolyline: map.MapPolyline | null = null;
   private redDotIcon: image.PixelMap | null = null;
   private mapEventManager?: map.MapEventManager;
 
@@ -36,6 +37,7 @@ export class MapOverlayManager {
   private navBarHeight: number = 0;
   private statusBarHeight: number = 0;
   private initialMapStyleIndex: number = 0;
+  private context?: common.UIAbilityContext;
 
   // 覆盖物节流刷新计数/时间戳
   private lastPolylineUpdatePointCount: number = 0;
@@ -57,6 +59,10 @@ export class MapOverlayManager {
 
   setInitialMapStyle(index: number): void {
     this.initialMapStyleIndex = index;
+  }
+
+  setContext(ctx: common.UIAbilityContext): void {
+    this.context = ctx;
   }
 
   setController(controller: map.MapComponentController): void {
@@ -198,8 +204,7 @@ export class MapOverlayManager {
   }
 
   // 移除现有覆盖物并依据当前展示模式重建（基于可见集 trackPoints / footprintPoints）
-  rebuildOverlay(displayMode: number, trackPoints: mapCommon.LatLng[], footprintPoints: mapCommon.LatLng[],
-    liveLocation: mapCommon.LatLng | null): void {
+  rebuildOverlay(displayMode: number, trackPoints: mapCommon.LatLng[], footprintPoints: mapCommon.LatLng[]): void {
     if (this.trackPolyline) {
       this.trackPolyline.remove();
       this.trackPolyline = null;
@@ -208,16 +213,11 @@ export class MapOverlayManager {
       this.massPointOverlay.remove();
       this.massPointOverlay = null;
     }
-    if (this.livePolyline) {
-      this.livePolyline.remove();
-      this.livePolyline = null;
-    }
     if (trackPoints.length === 0) {
       return;
     }
     if (displayMode === 0) {
       this.updatePolyline(trackPoints);
-      this.updateLivePolyline(liveLocation, displayMode, trackPoints);
     } else {
       this.updateMassPointOverlay(footprintPoints);
     }
@@ -243,42 +243,6 @@ export class MapOverlayManager {
     }
     // 同步节流计数：本次已把全部折线点刷新到地图
     this.lastPolylineUpdatePointCount = trackPoints.length;
-  }
-
-  // 实时连线：把已确认折线的末端连到当前实时位置 liveLocation，让红线始终延伸到脚下
-  updateLivePolyline(liveLocation: mapCommon.LatLng | null, displayMode: number,
-    trackPoints: mapCommon.LatLng[]): void {
-    if (!liveLocation || displayMode !== 0) {
-      return;
-    }
-    // 尚无任何确认点、或实时位置与末端确认点几乎重合（已停下）时不成线，避免零长线段
-    if (trackPoints.length === 0) {
-      return;
-    }
-    let lastConfirmed: mapCommon.LatLng = trackPoints[trackPoints.length - 1];
-    let dx = lastConfirmed.latitude - liveLocation.latitude;
-    let dy = lastConfirmed.longitude - liveLocation.longitude;
-    if (Math.sqrt(dx * dx + dy * dy) * 6371000 * Math.PI / 180 < 1) {
-      return;
-    }
-    let points: mapCommon.LatLng[] = [lastConfirmed, liveLocation];
-    if (!this.livePolyline) {
-      let option: mapCommon.MapPolylineOptions = {
-        points: points,
-        width: 6,
-        color: 0xFFFF0000,
-        geodesic: false
-      };
-      this.mapController?.addPolyline(option).then((polyline) => {
-        if (polyline) {
-          this.livePolyline = polyline;
-        }
-      }).catch((err: BusinessError) => {
-        console.error(`addLivePolyline failed, code: ${err.code}, message: ${err.message}`);
-      });
-    } else {
-      this.livePolyline.setPoints(points);
-    }
   }
 
   // 将 footprintPoints 转换为海量点所需的 MassPointItem 数组
@@ -351,7 +315,7 @@ export class MapOverlayManager {
 
   // 切换展示模式(0 折线 / 1 海量点)：移除另一种模式的覆盖物，并重建当前模式
   switchDisplayMode(mode: number, timeViewIndex: number, trackPoints: mapCommon.LatLng[],
-    footprintPoints: mapCommon.LatLng[], liveLocation: mapCommon.LatLng | null): void {
+    footprintPoints: mapCommon.LatLng[]): void {
     // 总览视图仅支持海量点（避免跨天连线杂乱、卡顿），禁止切到折线
     if (timeViewIndex === TIME_VIEW_OVERVIEW && mode === 0) {
       return;
@@ -363,16 +327,11 @@ export class MapOverlayManager {
       }
       if (trackPoints.length > 0) {
         this.updatePolyline(trackPoints);
-        this.updateLivePolyline(liveLocation, mode, trackPoints);
       }
     } else {
       if (this.trackPolyline) {
         this.trackPolyline.remove();
         this.trackPolyline = null;
-      }
-      if (this.livePolyline) {
-        this.livePolyline.remove();
-        this.livePolyline = null;
       }
       if (trackPoints.length > 0) {
         this.updateMassPointOverlay(footprintPoints);
@@ -389,10 +348,6 @@ export class MapOverlayManager {
     if (this.massPointOverlay) {
       this.massPointOverlay.remove();
       this.massPointOverlay = null;
-    }
-    if (this.livePolyline) {
-      this.livePolyline.remove();
-      this.livePolyline = null;
     }
   }
 
@@ -452,9 +407,10 @@ export class MapOverlayManager {
         console.error(`setCustomMapStyle failed, code: ${err.code}, message: ${err.message}`);
       });
     } else if (index === 3) {
-      // 测试样式：固定白天模式 + 套用本地自定义浅色极简样式（JSON 字符串注入）
+      // 测试样式：固定白天模式 + 套用本地自定义浅色极简样式（从 rawfile 读取 JSON 字符串注入）
       controller.setDayNightMode(mapCommon.DayNightMode.DAY);
-      let param: mapCommon.CustomMapStyleOptions = { styleContent: MAP_STYLE_TEST };
+      let styleContent: string = this.readMapStyleTestJson();
+      let param: mapCommon.CustomMapStyleOptions = { styleContent: styleContent };
       controller.setCustomMapStyle(param).then(() => {
         console.info(TAG, 'Test map style applied');
       }).catch((err: BusinessError) => {
@@ -468,6 +424,22 @@ export class MapOverlayManager {
       }).catch((err: BusinessError) => {
         console.error(`setCustomMapStyle failed, code: ${err.code}, message: ${err.message}`);
       });
+    }
+  }
+
+  // 从 rawfile 同步读取地图测试样式 JSON 字符串
+  private readMapStyleTestJson(): string {
+    if (!this.context) {
+      console.error(`${TAG} readMapStyleTestJson: context is null`);
+      return '[]';
+    }
+    try {
+      let rawContent: Uint8Array = this.context.resourceManager.getRawFileContentSync('map_style_test.json');
+      let decoder: util.TextDecoder = util.TextDecoder.create('utf-8');
+      return decoder.decodeToString(rawContent);
+    } catch (e) {
+      console.error(`${TAG} readMapStyleTestJson failed: ${JSON.stringify(e)}`);
+      return '[]';
     }
   }
 }

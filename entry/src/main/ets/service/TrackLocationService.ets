@@ -3,9 +3,11 @@
  *
  * 从 Index 原 enableMyLocation 的定位订阅回调、detectStationary / getRecentCentroid /
  * getModeInterval / switchMode / switchLocationInterval 抽取。
- * 职责：WGS84→GCJ02 转换、最近窗口驻留检测（防漂移）、按档位切换定位频率、
- * 精度过滤，最终把「干净采样点」通过回调 onSample 交给页面做后续记录。
+ * 职责：WGS84→GCJ02 转换、最近窗口驻留检测（静止降频）、按档位切换定位频率，
+ * 最终把「干净采样点」通过回调 onSample 交给页面做后续记录。
  * 不持有地图 controller 与轨迹点数组，保持与 UI / 地图解耦。
+ *
+ * 已删除策略：漂移过滤（maxAccuracy 精度门槛过滤已移除）
  */
 
 import { geoLocationManager } from '@kit.LocationKit';
@@ -20,6 +22,7 @@ import {
   STATIONARY_EXIT_RADIUS,
   TAG
 } from '../model/TrackTypes';
+import { calculateDistance } from '../common/TrackUtils';
 
 // 干净采样点回调：经转换 / 驻留 / 精度过滤后的点（accuracy / speed 原样透传）
 export interface LocationHandlers {
@@ -45,8 +48,17 @@ export class TrackLocationService {
     return MODE_CONFIG[this.currentMode].timeInterval;
   }
 
-  // 开启定位订阅：注册 locationChange，回调内完成转换 / 驻留 / 精度过滤后回调 onSample
+  // 开启定位订阅：先注销旧监听再注册新监听，防止重复注册；注册 locationChange，回调内完成转换 / 驻留 / 精度过滤后回调 onSample
   startLocation(handlers: LocationHandlers): void {
+    // 先注销已有监听，防止重复注册导致回调叠加（不清空驻留状态和窗口缓冲，保留防漂移上下文）
+    if (this.locationCallback) {
+      try {
+        geoLocationManager.off('locationChange', this.locationCallback);
+      } catch (err) {
+        console.warn(TAG, 'Failed to unsubscribe old locationChange listener');
+      }
+      this.locationCallback = undefined;
+    }
     let locationRequest: geoLocationManager.LocationRequest = {
       priority: geoLocationManager.LocationRequestPriority.ACCURACY,
       scenario: geoLocationManager.LocationRequestScenario.NAVIGATION,
@@ -77,15 +89,11 @@ export class TrackLocationService {
         // 仅当新点明显远离常驻簇（超过退出半径）才判为真正离开，否则仍视为原地抖动
         if (this.isStationary) {
           let centroid: mapCommon.LatLng | null = this.getRecentCentroid();
-          if (centroid !== null && this.calculateCentroidDistance(gcj02, centroid) < STATIONARY_EXIT_RADIUS) {
+          if (centroid !== null && calculateDistance(gcj02, centroid) < STATIONARY_EXIT_RADIUS) {
             return;
           }
           this.isStationary = false;
           this.switchLocationInterval(this.getModeInterval());
-        }
-        // 精度过滤：超出当前模式精度门槛的漂移点整体丢弃（折线/足迹点都不记）
-        if (location.accuracy > MODE_CONFIG[this.currentMode].maxAccuracy) {
-          return;
         }
         let speed: number = location.speed !== undefined ? location.speed : 0;
         handlers.onSample(gcj02, location.accuracy, speed);
@@ -161,7 +169,7 @@ export class TrackLocationService {
       longitude: sumLon / this.recentPoints.length
     };
     for (let point of this.recentPoints) {
-      if (this.calculateCentroidDistance(point, centroid) >= STATIONARY_RADIUS) {
+      if (calculateDistance(point, centroid) >= STATIONARY_RADIUS) {
         return false;
       }
     }
@@ -185,15 +193,4 @@ export class TrackLocationService {
     };
   }
 
-  // 两点距离（Haversine），用于静止簇心判断
-  private calculateCentroidDistance(from: mapCommon.LatLng, to: mapCommon.LatLng): number {
-    let R: number = 6371000;
-    let dLat: number = (to.latitude - from.latitude) * Math.PI / 180;
-    let dLon: number = (to.longitude - from.longitude) * Math.PI / 180;
-    let a: number = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(from.latitude * Math.PI / 180) * Math.cos(to.latitude * Math.PI / 180) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    let c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
 }

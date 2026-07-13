@@ -64,7 +64,7 @@ export class TrackDatabase {
     }
   }
 
-  // 按时间范围从数据库查询轨迹点（命中 idx_ts 索引），返回含 timestamp 的完整记录（accuracy/speed 旧数据补 0）
+  // 按时间范围从数据库查询轨迹点（命中 idx_ts 索引），返回含 accuracy/speed 的完整记录
   async queryByRange(startTs: number, endTs: number): Promise<TrackPointRecord[]> {
     let records: TrackPointRecord[] = [];
     if (!this.rdbStore) {
@@ -74,14 +74,14 @@ export class TrackDatabase {
       let predicates = new relationalStore.RdbPredicates(TABLE_NAME);
       predicates.between('timestamp', startTs, endTs).orderByAsc('id');
       let resultSet = await this.rdbStore.query(predicates,
-        ['latitude', 'longitude', 'timestamp']);
+        ['latitude', 'longitude', 'timestamp', 'accuracy', 'speed']);
       while (resultSet.goToNextRow()) {
         records.push({
           latitude: resultSet.getDouble(resultSet.getColumnIndex('latitude')),
           longitude: resultSet.getDouble(resultSet.getColumnIndex('longitude')),
           timestamp: resultSet.getLong(resultSet.getColumnIndex('timestamp')),
-          accuracy: 0,
-          speed: 0
+          accuracy: resultSet.getDouble(resultSet.getColumnIndex('accuracy')),
+          speed: resultSet.getDouble(resultSet.getColumnIndex('speed'))
         });
       }
       resultSet.close();
@@ -136,6 +136,7 @@ export class TrackDatabase {
   }
 
   // 批量落库：用 batchInsert 一次性写入缓冲中的全部轨迹点，降低 DB 写入频率
+  // 写入失败时保留缓冲，避免数据丢失（下次定时落库或页面销毁时重试）
   private flushBatch(): void {
     if (!this.rdbStore || this.pendingPoints.length === 0) {
       return;
@@ -153,11 +154,13 @@ export class TrackDatabase {
     this.rdbStore.batchInsert(TABLE_NAME, values)
       .then((count: number) => {
         console.info(TAG, `flushBatch inserted ${count} points`);
+        // 仅写入成功后才清空缓冲
+        this.pendingPoints = [];
       })
       .catch((err: BusinessError) => {
         console.error(`flushBatch failed, code: ${err.code}, message: ${err.message}`);
+        // 写入失败保留缓冲，下次定时落库或页面销毁时重试
       });
-    this.pendingPoints = [];
   }
 
   // 清空数据库中的全部轨迹记录（内存数组由调用方负责重置）

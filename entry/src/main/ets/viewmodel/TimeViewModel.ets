@@ -13,8 +13,8 @@ import { mapCommon } from '@kit.MapKit';
 import { preferences } from '@kit.ArkData';
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { TrackPointRecord, VisibleRange, TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY, ONE_DAY_MS, PREF_NAME, PREF_KEY_TIME_VIEW, PREF_KEY_CUSTOM_START, PREF_KEY_CUSTOM_END, TAG } from '../model/TrackTypes';
-import { getDayStartTs, getDayEndTs, getDayKey } from '../util/TrackUtils';
+import { TrackPointRecord, VisibleRange, TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY, PREF_NAME, PREF_KEY_TIME_VIEW, PREF_KEY_CUSTOM_START, PREF_KEY_CUSTOM_END, TAG } from '../model/TrackTypes';
+import { getDayStartTs, getDayEndTs, getDayKey, calculateDistance } from '../common/TrackUtils';
 
 // applyTimeView 计算出的可见集（纯数据，供页面写入 @State 并驱动地图重绘）
 export interface VisibleData {
@@ -88,8 +88,8 @@ export class TimeViewModel {
   }
 
   // 根据当前 timeViewIndex 重建「可见集」：从全量缓存按时间范围过滤，
-  // 重算足迹点(海量点)与里程。footprintDistanceInterval 为当前记录模式的足迹点距离门槛。
-  applyTimeView(footprintDistanceInterval: number): VisibleData {
+  // 重算足迹点(海量点)与里程。删除足迹降密策略后所有轨迹点都记为足迹点。
+  applyTimeView(): VisibleData {
     let range = this.getVisibleRange();
     this.visibleStartTs = range.start;
     this.visibleEndTs = range.end;
@@ -107,73 +107,34 @@ export class TimeViewModel {
       let latLng: mapCommon.LatLng = { latitude: rec.latitude, longitude: rec.longitude };
       trackPoints.push(latLng);
       if (prev) {
-        let dx = latLng.latitude - prev.latitude;
-        let dy = latLng.longitude - prev.longitude;
-        totalDistance += (Math.sqrt(dx * dx + dy * dy) * 6371000 * Math.PI / 180);
+        totalDistance += calculateDistance(prev, latLng);
       }
       prev = latLng;
-      // 足迹点：仅当距上一个足迹点的直线距离 ≥ 当前模式 distanceInterval 才记
-      if (!lastFootprintPoint || this.distanceBetween(lastFootprintPoint, latLng) >= footprintDistanceInterval) {
-        footprintPoints.push(latLng);
-        lastFootprintPoint = latLng;
-      }
+      // 足迹降密已删除：所有轨迹点都记为足迹点
+      footprintPoints.push(latLng);
+      lastFootprintPoint = latLng;
     }
     console.info(TAG, `applyTimeView(${this.timeViewIndex}) -> visible ${trackPoints.length} points, ` +
       `distance ${Math.round(totalDistance)}m`);
     return { trackPoints, footprintPoints, totalDistance, lastFootprintPoint };
   }
 
-  private distanceBetween(from: mapCommon.LatLng, to: mapCommon.LatLng): number {
-    let R: number = 6371000;
-    let dLat: number = (to.latitude - from.latitude) * Math.PI / 180;
-    let dLon: number = (to.longitude - from.longitude) * Math.PI / 180;
-    let a: number = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(from.latitude * Math.PI / 180) * Math.cos(to.latitude * Math.PI / 180) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    let c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-
-  // 切换时间视图：总览 / 自定义 / 今日。自定义时弹出日期选择，完成后由 onComplete 触发页面重绘
-  onTimeViewSelected(index: number, onComplete: () => void): void {
+  // 切换时间视图：总览 / 自定义 / 今日。自定义时返回 true 表示需要日期选择，由页面层弹 DatePicker；
+  // 非自定义视图直接切换并持久化，返回 false
+  onTimeViewSelected(index: number): boolean {
     this.timeViewIndex = index;
     if (index === TIME_VIEW_CUSTOM) {
-      this.openCustomDatePicker(onComplete);
-    } else {
-      onComplete();
-      this.savePrefs();
+      return true;
     }
+    this.savePrefs();
+    return false;
   }
 
-  // 自定义日期选择：依次弹出「起始日期」「结束日期」两个 DatePickerDialog
-  private openCustomDatePicker(onComplete: () => void): void {
-    let todayStart: number = getDayStartTs(Date.now());
-    let todayEnd: number = getDayEndTs(Date.now());
-    let startInit: number = this.customStartTs > 0 ? this.customStartTs : todayStart;
-    DatePickerDialog.show({
-      start: new Date(todayStart - 365 * ONE_DAY_MS),
-      end: new Date(todayEnd),
-      selected: new Date(startInit),
-      onAccept: (value: DatePickerResult) => {
-        let s: number = getDayStartTs(new Date(value.year, (value.month ?? 1) - 1, value.day ?? 1).getTime());
-        this.customStartTs = s;
-        let endInit: number = this.customEndTs > 0 ? this.customEndTs : Date.now();
-        DatePickerDialog.show({
-          start: new Date(s),
-          end: new Date(todayEnd),
-          selected: new Date(endInit),
-          onAccept: (value2: DatePickerResult) => {
-            let e: number = getDayEndTs(new Date(value2.year, (value2.month ?? 1) - 1, value2.day ?? 1).getTime());
-            if (e < s) {
-              e = getDayEndTs(s);
-            }
-            this.customEndTs = e;
-            onComplete();
-            this.savePrefs();
-          }
-        });
-      }
-    });
+  // 页面层弹完 DatePicker 后调用此方法设置自定义范围并持久化
+  setCustomRange(start: number, end: number): void {
+    this.customStartTs = start;
+    this.customEndTs = end;
+    this.savePrefs();
   }
 
   // 启动跨日检测定时器：每分钟比对日期 key，跨过午夜时刷新今日视图
