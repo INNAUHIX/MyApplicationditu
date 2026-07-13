@@ -11,7 +11,7 @@
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { preferences } from '@kit.ArkData';
-import { HdsNavigation, HdsTabs, HdsTabsController, HdsAnimationMode, hdsMaterial } from '@kit.UIDesignKit';
+import { HdsTabs, HdsTabsController, HdsAnimationMode, hdsMaterial } from '@kit.UIDesignKit';
 import { SymbolGlyphModifier, window } from '@kit.ArkUI';
 
 import { TrackDatabase } from '../data/TrackDatabase';
@@ -23,6 +23,7 @@ import { MapStyleViewModel } from '../viewmodel/MapStyleViewModel';
 import { FootprintTab } from './FootprintTab';
 import { StatsTab } from './StatsTab';
 import { Mine } from './Mine';
+import { StrategyLabPanel } from '../components/StrategyLabPanel';
 
 import { RecordMode, TAG, PREF_NAME, PREF_KEY_RECORD_MODE, PREF_KEY_NIGHT_MODE, PREF_KEY_SHAKE_FLOOR } from '../model/TrackTypes';
 
@@ -50,13 +51,24 @@ struct Index {
   @State totalDistance: number = 0;
   @State @Watch('watchNightMode') nightModeIndex: number = 0;
   @State @Watch('watchShakeFloor') shakeFloorIndex: number = 0;
+  @State @Watch('watchImmersive') immersive: boolean = false;
+
+  private watchImmersive(): void {
+    if (this.immersive) {
+      this.tabsController.applyHideAnimation(HdsAnimationMode.CLICK_ANIMATION);
+    } else {
+      this.tabsController.applyShowAnimation(HdsAnimationMode.CLICK_ANIMATION);
+    }
+  }
   @State timeViewIndex: number = 2;
   @State hasApproximatelyLocation: boolean = false;
   @State hasLocation: boolean = false;
   @State hasBackgroundLocation: boolean = false;
+  private pageNavStack: NavPathStack = new NavPathStack();
 
   // ===== 生命周期 =====
   aboutToAppear(): void {
+
     let ctx = getContext(this) as common.UIAbilityContext;
     this.mapStyleVM.setContext(ctx);
 
@@ -208,7 +220,7 @@ struct Index {
 
   // ===== UI 构建 =====
   build() {
-    HdsNavigation() {
+    Navigation(this.pageNavStack) {
       Stack({ alignContent: Alignment.TopStart }) {
         HdsTabs({ controller: this.tabsController }) {
           TabContent() {
@@ -230,7 +242,8 @@ struct Index {
               hasApproximatelyLocation: $hasApproximatelyLocation,
               hasLocation: $hasLocation,
               hasBackgroundLocation: $hasBackgroundLocation,
-              nightModeIndex: $nightModeIndex
+              nightModeIndex: $nightModeIndex,
+              immersive: $immersive
             })
           }
           .tabBar(new BottomTabBarStyle({
@@ -266,9 +279,10 @@ struct Index {
           })
 
           TabContent() {
-            Navigation() {
+            Column() {
               Mine({
                 permSvc: this.permSvc,
+                pageNavStack: this.pageNavStack,
                 recordMode: $currentMode,
                 hasApproximatelyLocation: $hasApproximatelyLocation,
                 hasLocation: $hasLocation,
@@ -282,15 +296,9 @@ struct Index {
                 onRecordModeChange: (mode: number) => { this.onRecordModeChange(mode); }
               })
             }
-            .title('我的', { backgroundColor: $r('sys.color.background_secondary') })
-            .titleMode(NavigationTitleMode.Mini)
-            .hideBackButton(true)
-            .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
-            .padding({ top: this.statusBarHeight })
-            .backgroundColor($r('sys.color.background_secondary'))
-            .mode(NavigationMode.Stack)
             .width('100%')
             .height('100%')
+            .padding({ top: this.statusBarHeight })
           }
           .tabBar(new BottomTabBarStyle({
             normal: new SymbolGlyphModifier($r('sys.symbol.person_crop_circle_fill_1'))
@@ -305,6 +313,8 @@ struct Index {
         .vertical(false)
         .barPosition(BarPosition.End)
         .scrollable(false)
+
+
         .onContentWillChange((_currentIndex: number, comingIndex: number) => {
           if (comingIndex === 1) {
             // StatsTab 切入时刷新统计
@@ -325,9 +335,42 @@ struct Index {
       .width('100%')
       .height('100%')
     }
+    .navDestination(this.buildPageNavDest)
     .mode(NavigationMode.Stack)
     .hideTitleBar(true)
     .hideBackButton(true)
     .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM])
+  }
+
+  @Builder
+  private buildPageNavDest(name: string, param: Object) {
+    if (name === 'StrategyLab') {
+      this.buildStrategyLabDest(name, param);
+    } else if (name === 'LogRecords') {
+      this.buildLogRecordsDest(name, param);
+    }
+  }
+
+  @Builder
+  private buildStrategyLabDest(_name: string, _param: Object) {
+    NavDestination() {
+      StrategyLabPanel({
+        shakeFloorIndex: $shakeFloorIndex
+      })
+    }
+    .title('策略实验室')
+    .backgroundColor($r('sys.color.background_secondary'))
+  }
+
+  @Builder
+  private buildLogRecordsDest(_name: string, _param: Object) {
+    NavDestination() {
+      Column()
+        .width('100%')
+        .height('100%')
+        .backgroundColor($r('sys.color.background_secondary'))
+    }
+    .title('日志记录')
+    .backgroundColor($r('sys.color.background_secondary'))
   }
 }

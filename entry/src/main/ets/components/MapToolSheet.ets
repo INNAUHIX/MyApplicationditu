@@ -75,7 +75,7 @@ export struct MapToolSheet {
               this.onSwitchDisplayMode(index);
             }
           })
-          .width(160)
+          .width(220)
           .enabled(this.timeViewIndex !== TIME_VIEW_OVERVIEW)
           .opacity(this.timeViewIndex === TIME_VIEW_OVERVIEW ? 0.4 : 1)
         }

@@ -24,21 +24,27 @@ export interface VisibleRange {
 export enum RecordMode {
   POWER_SAVING = 0, // 省电
   BALANCED = 1,     // 均衡（默认）
-  HIGH_POWER = 2    // 耗电
+  HIGH_POWER = 2,   // 耗电
+  SMART = 3         // 智能采样
 }
 
 // 各档参数：timeInterval=定位回调间隔(秒)
 export interface RecordModeConfig {
   timeInterval: number;
+  distanceInterval: number;
+  priority: number;
   label: string;
 }
 
-// 三档参数：省电 / 均衡(默认) / 耗电
-// 折线防漂：timeInterval 采样 + 5m 位移地板 + 速度门槛(静止判定) + 30m 静止迟滞
+export const SMART_DISTANCE_INTERVAL: number = 100;
+export const SMART_TIME_INTERVAL: number = 120;
+
+// 四档参数：省电 / 均衡(默认) / 耗电 / 智能采样
 export const MODE_CONFIG: RecordModeConfig[] = [
-  { timeInterval: 60, label: '省电' },
-  { timeInterval: 15, label: '均衡' },
-  { timeInterval: 5,  label: '耗电' }
+  { timeInterval: 60, distanceInterval: 0, priority: 0, label: '省电' },
+  { timeInterval: 20, distanceInterval: 100, priority: 0, label: '均衡' },
+  { timeInterval: 5,  distanceInterval: 0, priority: 0, label: '耗电' },
+  { timeInterval: SMART_TIME_INTERVAL, distanceInterval: SMART_DISTANCE_INTERVAL, priority: 1, label: '智能采样' }
 ];
 
 // 待写入数据库的轨迹点记录（含精度/速度/时间戳）
@@ -109,16 +115,16 @@ export const MAP_STYLE_LIGHT_ID: string = '1992216939216384896';
 // 折线轨迹距离地板：新点与上一个轨迹点距离 < 阈值时丢弃，过滤GPS漂移导致的原地锯齿线
 export const MIN_TRACK_DISTANCE: number = 5;
 // 抖动地板可选阈值（米）：默认 5 米，支持在策略实验室面板切换为 10 / 15 米
-export const SHAKE_FLOOR_OPTIONS: number[] = [5, 10, 15];
+export const SHAKE_FLOOR_OPTIONS: number[] = [0, 5, 10, 15];
 // 静止检测：最近窗口大小
 export const STATIONARY_WINDOW: number = 10;
 // 静止检测：窗口内所有点到质心距离 < 15米则判定为静止
 export const STATIONARY_RADIUS: number = 15;
 // 静止时定位频率（秒），降低频率减少漂移点产生（覆盖各模式间隔）
 export const STATIONARY_INTERVAL: number = 30;
-// 静止速度门槛（米/秒）：定位上报速度低于此值视为原地未移动（≈3.6km/h，低于步行），
+// 静止速度门槛（米/秒）：定位上报速度低于此值视为原地未移动（≈1.8km/h，低于慢速步行），
 // 用于过滤静止时的位置漂移（室内网络定位/弱信号下位置会原地乱跳，但速度常近似 0）
-export const STATIONARY_SPEED: number = 1.0;
+export const STATIONARY_SPEED: number = 0.5;
 // 静止退出半径（米）：已判定为常驻后，仅当新点明显远离常驻簇超过此值才视为真正离开并恢复记录
 // （迟滞，防止抖动误把常驻点判成「在动」而漏记飘线）
 export const STATIONARY_EXIT_RADIUS: number = 30;

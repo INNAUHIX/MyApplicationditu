@@ -4,8 +4,8 @@
  * 从 1223 行瘦身至 ≤200 行，具体措施：
  *   - 移除全部占位/未实现功能项（字体大小/页面跳转/Web页面/关于我们/检测版本/
  *     我的订单/意见反馈/退出登录/自定义开关/自定义下拉）
- *   - 4 个半模态面板拆为独立 @Component 子组件
- *   - 接口从 9@Link+7回调 精简为 7@Link+3回调
+ *   - 3 个半模态面板拆为独立 @Component 子组件
+ *   - 策略实验室改为正常页面导航跳转
  */
 
 import { RecordMode } from '../model/TrackTypes';
@@ -13,13 +13,13 @@ import { CardItem } from '../components/CardItem';
 import { RecordModePanel } from '../components/RecordModePanel';
 import { LocationPermPanel } from '../components/LocationPermPanel';
 import { SettingPanel } from '../components/SettingPanel';
-import { StrategyLabPanel } from '../components/StrategyLabPanel';
 import { PermissionService } from '../service/PermissionService';
 
 @Component
 export struct Mine {
   // ===== 服务实例（由 Index 传入，共享同一实例）=====
   permSvc: PermissionService = new PermissionService();
+  pageNavStack: NavPathStack = new NavPathStack();
 
   // ===== 实时业务状态（@Link 双向同步 Index 的 @State）=====
   @Link recordMode: RecordMode;
@@ -39,7 +39,7 @@ export struct Mine {
   onNightModeChange: (index: number) => void = () => {};
   onRecordModeChange: (mode: number) => void = () => {};
 
-  recordModeNames: string[] = ['省电', '均衡', '耗电'];
+  recordModeNames: string[] = ['省电', '均衡', '耗电', '智能采样'];
 
   // 布局
   safeBottom: number = 80;
@@ -48,7 +48,6 @@ export struct Mine {
   @State isShowRecordMode: boolean = false;
   @State isShowLocation: boolean = false;
   @State isShowSetting: boolean = false;
-  @State isShowStrategyLab: boolean = false;
 
   // 综合判断：三档位置权限是否异常
   private isLocationAbnormal(): boolean {
@@ -56,7 +55,8 @@ export struct Mine {
   }
 
   build() {
-    Scroll() {
+    Navigation() {
+      Scroll() {
       Column({ space: 16 }) {
         // 第一组：定位模式 / 策略实验室 / 定位权限
         Column() {
@@ -72,7 +72,7 @@ export struct Mine {
             CardItem({
               label: '策略实验室',
               symbol: $r('sys.symbol.person_shield_fill'),
-              onClickEvent: () => { this.isShowStrategyLab = true; }
+              onClickEvent: () => { this.pageNavStack.pushPath({ name: 'StrategyLab' }); }
             })
             Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
             CardItem({
@@ -84,6 +84,12 @@ export struct Mine {
                 this.onRefreshPermission();
                 this.isShowLocation = true;
               }
+            })
+            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
+            CardItem({
+              label: '日志记录',
+              symbol: $r('sys.symbol.doc_text'),
+              onClickEvent: () => { this.pageNavStack.pushPath({ name: 'LogRecords' }); }
             })
           }
           .width('100%')
@@ -105,7 +111,7 @@ export struct Mine {
         .borderRadius(16)
         .backgroundColor($r('sys.color.comp_background_list_card'))
 
-        // 四个半模态面板绑定宿主
+        // 三个半模态面板绑定宿主
         Column() {
           Column()
             .width(0)
@@ -128,13 +134,6 @@ export struct Mine {
               title: { title: '设置' }, height: SheetSize.LARGE, dragBar: true, showClose: true,
               onDisappear: () => { this.isShowSetting = false; }
             })
-          Column()
-            .width(0)
-            .height(0)
-            .bindSheet($$this.isShowStrategyLab, this.strategyLabSheet(), {
-              title: { title: '策略实验室' }, height: SheetSize.LARGE, dragBar: true, showClose: true,
-              onDisappear: () => { this.isShowStrategyLab = false; }
-            })
         }
         .width(0)
         .height(0)
@@ -146,6 +145,12 @@ export struct Mine {
     .align(Alignment.Top)
     .edgeEffect(EdgeEffect.Spring)
     .scrollBar(BarState.Off)
+    }
+    .title('我的')
+    .titleMode(NavigationTitleMode.Mini)
+    .hideBackButton(true)
+    .width('100%')
+    .height('100%')
     .backgroundColor($r('sys.color.background_secondary'))
   }
 
@@ -178,13 +183,6 @@ export struct Mine {
       trackCount: $trackCount,
       onClearTrack: () => { this.onClearTrack(); },
       onNightModeChange: (i: number) => { this.onNightModeChange(i); }
-    })
-  }
-
-  @Builder
-  private strategyLabSheet(): void {
-    StrategyLabPanel({
-      shakeFloorIndex: $shakeFloorIndex
     })
   }
 }

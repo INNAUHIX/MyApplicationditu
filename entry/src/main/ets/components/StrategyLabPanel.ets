@@ -1,7 +1,7 @@
 /**
  * StrategyLabPanel.ets —— 策略实验室面板子组件
  *
- * 从 Mine.buildStrategyLabSheet() 提取的独立 @Component，
+ * 从 Mine 策略实验室页面提取的独立 @Component，
  * 承载自动生效策略列表 + 抖动地板阈值切换。
  *
  * 已移除策略：足迹降密、实时连线、漂移过滤
@@ -23,17 +23,16 @@ export struct StrategyLabPanel {
 
   private recordStrategyItems: RecordStrategyItem[] = [
     { title: '静止降频', desc: '连续定位点均落在小范围内（≤15米）判定为静止，自动把定位间隔降到30秒或档位间隔的较大值省电；仅当明显远离（>30米）才视为真正移动并恢复档位间隔。' },
-    { title: '静止不记', desc: '定位上报速度低于步行速度（约3.6km/h）时视为原地未动，不记录，避免静止漂移画蛇添足。' },
+    { title: '静止不记', desc: '定位上报速度低于慢速步行（约1.8km/h）时视为原地未动，不记录，避免静止漂移画蛇添足。' },
     { title: '抖动地板', desc: '与上一个折线点距离不足当前阈值视为原地抖动，直接丢弃，防止轨迹回绕。点击右侧可查看详情并切换阈值。' },
     { title: '批量落库', desc: '轨迹点先进缓冲，每8秒定时一次性写入数据库，降低存储写入频率。' },
     { title: '绘制节流', desc: '折线每新增50点、海量点每新增20点且最多每30秒刷新一次，避免高频重绘卡顿。' }
   ];
-  private shakeFloorOptions: string[] = ['5米', '10米', '15米'];
+  private shakeFloorOptions: string[] = ['关闭', '5米', '10米', '15米'];
 
   build() {
     Scroll() {
       Column({ space: 12 }) {
-        // 说明区
         Column() {
           Text('自动生效策略')
             .fontSize(14)
@@ -52,7 +51,6 @@ export struct StrategyLabPanel {
         .borderRadius(16)
         .backgroundColor($r('sys.color.comp_background_list_card'))
 
-        // 策略卡片
         ForEach(this.recordStrategyItems,
           (item: RecordStrategyItem, index: number) => {
             if (item.title === '抖动地板') {
@@ -80,14 +78,14 @@ export struct StrategyLabPanel {
                     .fontColor([$r('sys.color.font_fourth')])
                 }
                 .justifyContent(FlexAlign.End)
-                .onClick(() => { this.isShowShakeSheet = true; })
               }
               .padding(16)
               .borderRadius(16)
               .backgroundColor($r('sys.color.comp_background_list_card'))
+              .onClick(() => { this.isShowShakeSheet = true; })
               .bindSheet($$this.isShowShakeSheet, this.shakeFloorSheet(), {
                 title: { title: '抖动地板阈值' },
-                detents: [SheetSize.MEDIUM],
+                detents: [SheetSize.LARGE],
                 dragBar: true, showClose: true,
                 onDisappear: () => { this.isShowShakeSheet = false; }
               })
@@ -134,7 +132,6 @@ export struct StrategyLabPanel {
   private shakeFloorSheet(): void {
     Scroll() {
       Column({ space: 12 }) {
-        // 抖动地板介绍
         Column() {
           Text('什么是抖动地板？')
             .fontSize(16)
@@ -153,14 +150,12 @@ export struct StrategyLabPanel {
         .borderRadius(16)
         .backgroundColor($r('sys.color.comp_background_list_card'))
 
-        // 选项标题
         Text('选择抖动阈值')
           .fontSize(14)
           .fontColor($r('sys.color.font_primary'))
           .fontWeight(FontWeight.Medium)
           .width('100%')
 
-        // 选项卡片
         ForEach(this.shakeFloorOptions, (option: string, idx: number) => {
           Row() {
             Column({ space: 6 }) {
@@ -220,9 +215,10 @@ export struct StrategyLabPanel {
 
   private getShakeFloorDesc(idx: number): string {
     switch (idx) {
-      case 0: return '默认值。过滤轻微的 GPS 随机抖动，轨迹平滑，适合大部分日常场景。';
-      case 1: return '加大过滤力度，显著减少漂移毛刺，但弯道处的轨迹可能略被拉直。';
-      case 2: return '最强过滤，仅记录明显的位置变化，轨迹最平滑但细节损失较多。';
+      case 0: return '关闭抖动地板过滤，所有定位点都会被记录，轨迹可能出现原地锯齿线。';
+      case 1: return '默认值。过滤轻微的 GPS 随机抖动，轨迹平滑，适合大部分日常场景。';
+      case 2: return '加大过滤力度，显著减少漂移毛刺，但弯道处的轨迹可能略被拉直。';
+      case 3: return '最强过滤，仅记录明显的位置变化，轨迹最平滑但细节损失较多。';
       default: return '';
     }
   }

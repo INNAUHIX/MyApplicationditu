@@ -33,13 +33,11 @@ export class MapOverlayManager {
   private redDotIcon: image.PixelMap | null = null;
   private mapEventManager?: map.MapEventManager;
 
-  // 页面侧展示相关尺寸，供初始回调内 setPadding / 指南针定位使用
   private navBarHeight: number = 0;
   private statusBarHeight: number = 0;
   private initialMapStyleIndex: number = 0;
   private context?: common.UIAbilityContext;
 
-  // 覆盖物节流刷新计数/时间戳
   private lastPolylineUpdatePointCount: number = 0;
   private lastFootprintUpdateCount: number = 0;
   private lastOverlayUpdateTs: number = 0;
@@ -69,9 +67,9 @@ export class MapOverlayManager {
     this.mapController = controller;
   }
 
-  // 用 PixelMap 以代码绘制一个 12x12 的红色实心圆点，作为「足迹」海量点的图标（无需图片资源）
+  // 用 PixelMap 以代码绘制一个 9x9 的红色实心圆点，作为「足迹」海量点的图标（无需图片资源）
   async createRedDotIcon(): Promise<void> {
-    let size: number = 12;
+    let size: number = 9;
     let imageSize: image.Size = { height: size, width: size };
     let imageOptions: image.InitializationOptions = {
       editable: true,
@@ -316,7 +314,6 @@ export class MapOverlayManager {
   // 切换展示模式(0 折线 / 1 海量点)：移除另一种模式的覆盖物，并重建当前模式
   switchDisplayMode(mode: number, timeViewIndex: number, trackPoints: mapCommon.LatLng[],
     footprintPoints: mapCommon.LatLng[]): void {
-    // 总览视图仅支持海量点（避免跨天连线杂乱、卡顿），禁止切到折线
     if (timeViewIndex === TIME_VIEW_OVERVIEW && mode === 0) {
       return;
     }
@@ -333,7 +330,7 @@ export class MapOverlayManager {
         this.trackPolyline.remove();
         this.trackPolyline = null;
       }
-      if (trackPoints.length > 0) {
+      if (footprintPoints.length > 0) {
         this.updateMassPointOverlay(footprintPoints);
       }
     }

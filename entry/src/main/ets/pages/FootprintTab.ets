@@ -61,7 +61,7 @@ export struct FootprintTab {
   @State footprintPoints: mapCommon.LatLng[] = [];
   private lastFootprintPoint: mapCommon.LatLng | null = null;
   @State displayMode: number = 0;
-  @State immersive: boolean = false;
+  @Link immersive: boolean;
   @State isShowMapToolSheet: boolean = false;
   @State myLocationOn: boolean = true;
   @State mapStyleIndex: number = 0;
@@ -144,6 +144,11 @@ export struct FootprintTab {
     let next: boolean = !this.immersive;
     animateTo({ duration: 300, curve: Curve.EaseInOut }, () => { this.immersive = next; });
     this.mapManager.setBottomPadding(next);
+    let controller = this.mapManager.controller;
+    if (controller) {
+      controller.setMyLocationEnabled(!next);
+      this.myLocationOn = !next;
+    }
   }
 
   private async permissionFlow(ctx: common.UIAbilityContext): Promise<void> {
@@ -331,20 +336,22 @@ export struct FootprintTab {
         .transition({ type: TransitionType.All, opacity: 0, translate: { x: 0, y: -16 } })
       }
 
-      // 右下角地图工具入口
-      Row() {
-        SymbolGlyph($r('sys.symbol.paintpalette_fill')).fontSize(20).fontColor([$r('sys.color.font_primary')])
+      // 右侧地图工具入口
+      if (!this.immersive) {
+        Row() {
+          SymbolGlyph($r('sys.symbol.paintpalette_fill')).fontSize(20).fontColor([$r('sys.color.font_primary')])
+        }
+        .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
+        .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
+        .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
+        .onClick(() => { this.isShowMapToolSheet = true; })
+        .bindSheet($$this.isShowMapToolSheet, this.buildMapToolSheet(), {
+          detents: [SheetSize.MEDIUM, SheetSize.LARGE], title: { title: '地图工具' },
+          dragBar: true, showClose: true, onDisappear: () => { this.isShowMapToolSheet = false; }
+        })
+        .position({ x: '100%', y: '60%' }).markAnchor({ x: '100%', y: '50%' }).translate({ x: -16 })
+        .transition({ type: TransitionType.All, opacity: 0, translate: { x: 16, y: 0 } })
       }
-      .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
-      .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
-      .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
-      .onClick(() => { this.isShowMapToolSheet = true; })
-      .bindSheet($$this.isShowMapToolSheet, this.buildMapToolSheet(), {
-        detents: [SheetSize.MEDIUM, SheetSize.LARGE], title: { title: '地图工具' },
-        dragBar: true, showClose: true, onDisappear: () => { this.isShowMapToolSheet = false; }
-      })
-      .position({ x: '100%', y: '100%' }).markAnchor({ x: '100%', y: '100%' })
-      .offset({ x: -16, y: -(this.navBarHeight * 2 + 44) })
     }
     .width('100%').height('100%')
   }
