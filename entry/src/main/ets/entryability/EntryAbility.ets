@@ -1,12 +1,3 @@
-/**
- * EntryAbility.ets —— 应用入口 Ability（UIAbility）
- *
- * 职责：
- *  - 加载主页面 pages/Index
- *  - 管理应用前后台切换时的「后台定位长任务」：
- *    进入后台时申请后台运行(LOCATION 模式)，保证轨迹能在后台持续记录；
- *    回到前台或销毁时停止，避免无谓耗电。
- */
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want, wantAgent } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
@@ -35,18 +26,6 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onWindowStageCreate');
 
-    try {
-      let mainWindow = windowStage.getMainWindowSync();
-
-      let sysBarProps: window.SystemBarProperties = {
-        statusBarColor: '#00000000',
-        statusBarContentColor: '#000000'
-      };
-      mainWindow.setWindowSystemBarProperties(sysBarProps);
-    } catch (err) {
-      hilog.error(DOMAIN, TAG, 'Failed to set status bar. Cause: %{public}s', JSON.stringify(err));
-    }
-
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(DOMAIN, TAG, 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
@@ -57,7 +36,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageDestroy(): void {
-    hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onWindowStageDestroy');
+    // 窗口销毁时的清理；长时任务在 onDestroy 中统一取消
   }
 
   onForeground(): void {
@@ -66,28 +45,26 @@ export default class EntryAbility extends UIAbility {
   }
 
   onBackground(): void {
-    // 进入后台：启动后台定位长任务，使轨迹记录在应用不可见时仍可继续
     this.startBackgroundTask();
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onBackground');
   }
 
-  // 申请后台运行(LOCATION 模式)：用 WantAgent 关联自身，确保系统允许后台持续定位
   private async startBackgroundTask(): Promise<void> {
     if (this.isBackgroundRunning) {
       return;
     }
     try {
-      let wantObj: Want = {
+      const wantObj: Want = {
         bundleName: this.context.abilityInfo.bundleName,
         abilityName: this.context.abilityInfo.name
       };
-      let wantAgentInfo: wantAgent.WantAgentInfo = {
+      const wantAgentInfo: wantAgent.WantAgentInfo = {
         wants: [wantObj],
         requestCode: 0,
         actionType: wantAgent.OperationType.START_ABILITY,
         actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
       };
-      let agent = await wantAgent.getWantAgent(wantAgentInfo);
+      const agent = await wantAgent.getWantAgent(wantAgentInfo);
       await backgroundTaskManager.startBackgroundRunning(this.context, backgroundTaskManager.BackgroundMode.LOCATION, agent);
       this.isBackgroundRunning = true;
       hilog.info(DOMAIN, TAG, 'startBackgroundRunning succeeded');
@@ -96,7 +73,6 @@ export default class EntryAbility extends UIAbility {
     }
   }
 
-  // 停止后台定位长任务（回到前台 / Ability 销毁时调用）
   private async stopBackgroundTask(): Promise<void> {
     if (!this.isBackgroundRunning) {
       return;

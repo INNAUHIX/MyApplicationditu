@@ -78,7 +78,7 @@ export class TimeViewModel {
     } else if (this.timeViewIndex === TIME_VIEW_CUSTOM) {
       return { start: this.customStartTs, end: this.customEndTs };
     } else {
-      return { start: getDayStartTs(Date.now()), end: Date.now() };
+      return { start: getDayStartTs(Date.now()), end: getDayEndTs(Date.now()) };
     }
   }
 
@@ -90,21 +90,21 @@ export class TimeViewModel {
   // 根据当前 timeViewIndex 重建「可见集」：从全量缓存按时间范围过滤，
   // 重算足迹点(海量点)与里程。删除足迹降密策略后所有轨迹点都记为足迹点。
   applyTimeView(): VisibleData {
-    let range = this.getVisibleRange();
+    const range = this.getVisibleRange();
     this.visibleStartTs = range.start;
     this.visibleEndTs = range.end;
 
-    let trackPoints: mapCommon.LatLng[] = [];
-    let footprintPoints: mapCommon.LatLng[] = [];
+    const trackPoints: mapCommon.LatLng[] = [];
+    const footprintPoints: mapCommon.LatLng[] = [];
     let lastFootprintPoint: mapCommon.LatLng | null = null;
     let totalDistance: number = 0;
     let prev: mapCommon.LatLng | null = null;
     for (let i = 0; i < this.allTrackPoints.length; i++) {
-      let rec = this.allTrackPoints[i];
+      const rec = this.allTrackPoints[i];
       if (rec.timestamp < range.start || rec.timestamp > range.end) {
         continue;
       }
-      let latLng: mapCommon.LatLng = { latitude: rec.latitude, longitude: rec.longitude };
+      const latLng: mapCommon.LatLng = { latitude: rec.latitude, longitude: rec.longitude };
       trackPoints.push(latLng);
       if (prev) {
         totalDistance += calculateDistance(prev, latLng);
@@ -141,7 +141,7 @@ export class TimeViewModel {
   startDayCheck(onDayChange: () => void): void {
     this.currentDayKey = getDayKey(Date.now());
     this.dayCheckTimer = setInterval(() => {
-      let key: string = getDayKey(Date.now());
+      const key: string = getDayKey(Date.now());
       if (key !== this.currentDayKey) {
         this.currentDayKey = key;
         onDayChange();
@@ -167,13 +167,13 @@ export class TimeViewModel {
       return;
     }
     try {
-      let pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
       pref.putSync(PREF_KEY_TIME_VIEW, this.timeViewIndex);
       pref.putSync(PREF_KEY_CUSTOM_START, this.customStartTs);
       pref.putSync(PREF_KEY_CUSTOM_END, this.customEndTs);
       pref.flushSync();
     } catch (e) {
-      let error = e as BusinessError;
+      const error = e as BusinessError;
       console.error(`saveTimeViewPrefs failed, code: ${error.code}, message: ${error.message}`);
     }
   }
@@ -184,7 +184,7 @@ export class TimeViewModel {
       return;
     }
     try {
-      let pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
       let idx: number = pref.getSync(PREF_KEY_TIME_VIEW, TIME_VIEW_TODAY) as number;
       // 仅允许 0/1/2 三态，非法值回退今日
       if (idx < 0 || idx > 2) {
@@ -201,7 +201,7 @@ export class TimeViewModel {
       this.customStartTs = cs;
       this.customEndTs = ce;
     } catch (e) {
-      let error = e as BusinessError;
+      const error = e as BusinessError;
       console.error(`loadTimeViewPrefs failed, code: ${error.code}, message: ${error.message}`);
       this.timeViewIndex = TIME_VIEW_TODAY;
     }

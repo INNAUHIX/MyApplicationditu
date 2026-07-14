@@ -22,17 +22,17 @@ export interface PermissionState {
 export class PermissionService {
   // 查询指定权限是否已授权：通过 bundleInfo 获取 tokenId，再调用 atManager.checkAccessToken
   async checkAccessToken(permission: Permissions): Promise<abilityAccessCtrl.GrantStatus> {
-    let atManager = abilityAccessCtrl.createAtManager();
+    const atManager = abilityAccessCtrl.createAtManager();
     let grantStatus = abilityAccessCtrl.GrantStatus.PERMISSION_DENIED;
     let tokenId = 0;
 
     try {
-      let bundleInfo = await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
+      const bundleInfo = await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
       tokenId = bundleInfo.appInfo.accessTokenId;
       grantStatus = await atManager.checkAccessToken(tokenId, permission);
       console.info(TAG, `checkAccessToken ${permission}: ${grantStatus}`);
     } catch (error) {
-      let err = error as BusinessError;
+      const err = error as BusinessError;
       console.error(`Failed to check access token. Code: ${err.code}, message: ${err.message}`);
     }
 
@@ -41,9 +41,9 @@ export class PermissionService {
 
   // 读取三项定位权限(大致/精确/后台)的当前授权状态
   async refreshPermissionState(): Promise<PermissionState> {
-    let hasForeground = await this.checkAccessToken('ohos.permission.APPROXIMATELY_LOCATION');
-    let hasLocation = await this.checkAccessToken('ohos.permission.LOCATION');
-    let hasBackground = await this.checkAccessToken('ohos.permission.LOCATION_IN_BACKGROUND');
+    const hasForeground = await this.checkAccessToken('ohos.permission.APPROXIMATELY_LOCATION');
+    const hasLocation = await this.checkAccessToken('ohos.permission.LOCATION');
+    const hasBackground = await this.checkAccessToken('ohos.permission.LOCATION_IN_BACKGROUND');
     return {
       hasApproximatelyLocation: hasForeground === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED,
       hasLocation: hasLocation === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED,
@@ -53,17 +53,17 @@ export class PermissionService {
 
   // 向前台定位权限(大致 + 精确)发起授权申请；返回申请后的最新权限状态快照
   async requestPermissions(context: common.UIAbilityContext): Promise<PermissionState> {
-    let atManager = abilityAccessCtrl.createAtManager();
-    let permissions: Array<Permissions> = [
+    const atManager = abilityAccessCtrl.createAtManager();
+    const permissions: Array<Permissions> = [
       'ohos.permission.APPROXIMATELY_LOCATION',
       'ohos.permission.LOCATION'
     ];
     try {
-      let result = await atManager.requestPermissionsFromUser(context, permissions);
-      let authResults: Array<number> = result.authResults;
-      let hasApproximately = authResults[0] === 0;
-      let hasLocation = authResults[1] === 0;
-      let hasBackground = (await this.checkAccessToken('ohos.permission.LOCATION_IN_BACKGROUND')) ===
+      const result = await atManager.requestPermissionsFromUser(context, permissions);
+      const authResults: Array<number> = result.authResults;
+      const hasApproximately = authResults[0] === 0;
+      const hasLocation = authResults[1] === 0;
+      const hasBackground = (await this.checkAccessToken('ohos.permission.LOCATION_IN_BACKGROUND')) ===
         abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
       if (hasApproximately && hasLocation) {
         if (!hasBackground) {
@@ -80,7 +80,7 @@ export class PermissionService {
         hasBackgroundLocation: hasBackground
       };
     } catch (err) {
-      let error = err as BusinessError;
+      const error = err as BusinessError;
       console.error(`Failed to request permissions from user. Code: ${error.code}, message: ${error.message}`);
       return {
         hasApproximatelyLocation: false,
@@ -131,7 +131,7 @@ export class PermissionService {
   // 跳转到系统「应用信息」设置页，便于用户手动修改定位权限
   async openPermissionSettings(context: common.UIAbilityContext): Promise<void> {
     try {
-      let want: Want = {
+      const want: Want = {
         bundleName: 'com.huawei.hmos.settings',
         abilityName: 'com.huawei.hmos.settings.MainAbility',
         uri: 'application_info_entry',
@@ -141,7 +141,7 @@ export class PermissionService {
       };
       await context.startAbility(want);
     } catch (err) {
-      let error = err as BusinessError;
+      const error = err as BusinessError;
       console.error(`Failed to open settings. Code: ${error.code}, message: ${error.message}`);
     }
   }
@@ -149,10 +149,10 @@ export class PermissionService {
   // 用于后台权限弹窗「开启权限」按钮：从 UIContext 反查 UIAbilityContext 后跳转设置
   private openPermissionSettingsFromUI(uiContext: UIContext): void {
     try {
-      let context = uiContext.getHostContext() as common.UIAbilityContext;
+      const context = uiContext.getHostContext() as common.UIAbilityContext;
       this.openPermissionSettings(context);
     } catch (err) {
-      let error = err as BusinessError;
+      const error = err as BusinessError;
       console.error(`Failed to get host context. Code: ${error.code}, message: ${error.message}`);
     }
   }

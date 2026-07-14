@@ -24,7 +24,7 @@ import { MapToolSheet } from '../components/MapToolSheet';
 import {
   TAG, RecordMode, MODE_CONFIG, TrackPointRecord,
   TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY,
-  ONE_DAY_MS, SHAKE_FLOOR_OPTIONS, STATIONARY_SPEED
+  ONE_DAY_MS
 } from '../model/TrackTypes';
 import { calculateDistance, formatDistance, getDayStartTs, getDayEndTs } from '../common/TrackUtils';
 
@@ -47,7 +47,7 @@ export struct FootprintTab {
   @Link isStationary: boolean;
   @Link trackCount: number;
   @Link totalDistance: number;
-  @Link shakeFloorIndex: number;
+
   @Link timeViewIndex: number;
   @Link hasApproximatelyLocation: boolean;
   @Link hasLocation: boolean;
@@ -63,7 +63,7 @@ export struct FootprintTab {
   @State displayMode: number = 0;
   @Link immersive: boolean;
   @State isShowMapToolSheet: boolean = false;
-  @State myLocationOn: boolean = true;
+  @State myLocationOn: boolean = false;
   @State mapStyleIndex: number = 0;
   @State timeViewSelectedIndexes: number[] = [TIME_VIEW_TODAY];
   @State display2SelectedIndexes: number[] = [0];
@@ -86,11 +86,11 @@ export struct FootprintTab {
 
   // ===== 生命周期 =====
   aboutToAppear(): void {
-    let ctx = getContext(this) as common.UIAbilityContext;
+    const ctx = getContext(this) as common.UIAbilityContext;
 
     // 恢复上次选择的地图样式，避免每次进入都被重置为经典
     this.mapStyleVM.setContext(ctx);
-    let style: number = this.mapStyleVM.loadMapStyle();
+    const style: number = this.mapStyleVM.loadMapStyle();
     this.mapStyleIndex = style;
     this.mapStyle2SelectedIndexes = [style];
 
@@ -110,16 +110,6 @@ export struct FootprintTab {
       () => { this.onMapClick(); }
     );
 
-    this.mapManager.createRedDotIcon().then(() => {
-      if (this.displayMode === 1 && this.trackPoints.length > 0) {
-        this.mapManager.rebuildOverlay(this.displayMode, this.trackPoints, this.footprintPoints);
-      }
-    });
-
-    // 启动批量落库定时器
-    this.db.startFlushTimer();
-
-    // 启动跨日检测：每分钟比对日期 key，跨过午夜(00:00)时自动刷新「今日」视图
     this.timeModel.startDayCheck(() => { this.onDayChange(); });
   }
 
@@ -132,32 +122,34 @@ export struct FootprintTab {
 
   // ===== 核心方法 =====
   private async onMapReady(): Promise<void> {
-    let ctx = getContext(this) as common.UIAbilityContext;
+    const ctx = getContext(this) as common.UIAbilityContext;
     await this.db.init(ctx);
-    let records = await this.db.loadAll();
+    const records = await this.db.loadAll();
     this.timeModel.setAllPoints(records);
+    await this.mapManager.createRedDotIcon();
     this.refreshVisibleView();
     await this.permissionFlow(ctx);
   }
 
   private onMapClick(): void {
-    let next: boolean = !this.immersive;
+    const next: boolean = !this.immersive;
     animateTo({ duration: 300, curve: Curve.EaseInOut }, () => { this.immersive = next; });
     this.mapManager.setBottomPadding(next);
-    let controller = this.mapManager.controller;
+    const controller = this.mapManager.controller;
     if (controller) {
-      controller.setMyLocationEnabled(!next);
-      this.myLocationOn = !next;
+      // 进入沉浸(next=true)时仅隐藏「我的位置」标记（视觉），退出时按用户原开关意图恢复；
+      // 不修改 myLocationOn，保证面板里的开关决定权完全属于用户
+      controller.setMyLocationEnabled(next ? false : this.myLocationOn);
     }
   }
 
   private async permissionFlow(ctx: common.UIAbilityContext): Promise<void> {
-    let state = await this.permSvc.refreshPermissionState();
+    const state = await this.permSvc.refreshPermissionState();
     this.hasApproximatelyLocation = state.hasApproximatelyLocation;
     this.hasLocation = state.hasLocation;
     this.hasBackgroundLocation = state.hasBackgroundLocation;
     if (!state.hasApproximatelyLocation || !state.hasLocation) {
-      let res = await this.permSvc.requestPermissions(ctx);
+      const res = await this.permSvc.requestPermissions(ctx);
       this.hasApproximatelyLocation = res.hasApproximatelyLocation;
       this.hasLocation = res.hasLocation;
       this.hasBackgroundLocation = res.hasBackgroundLocation;
@@ -172,65 +164,67 @@ export struct FootprintTab {
   }
 
   private async enableMyLocation(): Promise<void> {
-    let controller = this.mapManager.controller;
+    const controller = this.mapManager.controller;
     if (!controller) { return; }
     try {
-      let style: mapCommon.MyLocationStyle = { displayType: mapCommon.MyLocationDisplayType.FOLLOW_ROTATE };
+      const style: mapCommon.MyLocationStyle = { displayType: mapCommon.MyLocationDisplayType.FOLLOW_ROTATE };
       await controller.setMyLocationStyle(style);
       controller.setMyLocationEnabled(true);
       controller.setMyLocationControlsEnabled(true);
       this.myLocationOn = true;
-      let currentLocation = await geoLocationManager.getCurrentLocation();
-      let gcj02Location = await map.convertCoordinate(
+    } catch (err) {
+      const error = err as BusinessError;
+      console.error(`Failed to set my location style, code: ${error.code}, message: ${error.message}`);
+      this.myLocationOn = false;
+    }
+    try {
+      const currentLocation = await geoLocationManager.getCurrentLocation();
+      const gcj02Location = await map.convertCoordinate(
         mapCommon.CoordinateType.WGS84, mapCommon.CoordinateType.GCJ02,
         { latitude: currentLocation.latitude, longitude: currentLocation.longitude }
       );
-      controller.moveCamera(map.newCameraPosition({ target: gcj02Location, zoom: 15 }));
-      this.locationSvc.startLocation({
-        onSample: (latLng: mapCommon.LatLng, accuracy: number, speed: number) => { this.onLocationSample(latLng, accuracy, speed); }
-      });
-      this.isStationary = this.locationSvc.stationary;
+      controller?.moveCamera(map.newCameraPosition({ target: gcj02Location, zoom: 15 }));
     } catch (err) {
-      let error = err as BusinessError;
-      console.error(`Failed to enable my location, code: ${error.code}, message: ${error.message}`);
+      const error = err as BusinessError;
+      console.warn(`Failed to move camera to current location, code: ${error.code}, message: ${error.message}`);
     }
-  }
-
-  private onLocationSample(latLng: mapCommon.LatLng, accuracy: number, speed: number): void {
+    this.locationSvc.startLocation({
+      onSample: (latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number) => { this.onLocationSample(latLng, accuracy, speed, timestamp); }
+    });
     this.isStationary = this.locationSvc.stationary;
-    if (this.trackPoints.length > 0) {
-      let lastPoint: mapCommon.LatLng = this.trackPoints[this.trackPoints.length - 1];
-      if (calculateDistance(lastPoint, latLng) < SHAKE_FLOOR_OPTIONS[this.shakeFloorIndex]) { return; }
-    }
-    if (speed < STATIONARY_SPEED) { return; }
-    this.recordTrackPoint(latLng, accuracy, speed);
   }
 
-  private recordTrackPoint(latLng: mapCommon.LatLng, accuracy: number, speed: number): void {
-    let ts: number = Date.now();
-    let rec: TrackPointRecord = { latitude: latLng.latitude, longitude: latLng.longitude, timestamp: ts, accuracy: accuracy, speed: speed };
+  private onLocationSample(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number): void {
+    this.isStationary = this.locationSvc.stationary;
+
+    this.recordTrackPoint(latLng, accuracy, speed, timestamp);
+  }
+
+  private recordTrackPoint(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number): void {
+    const ts: number = timestamp ?? Date.now();
+    const rec: TrackPointRecord = { latitude: latLng.latitude, longitude: latLng.longitude, timestamp: ts, accuracy: accuracy, speed: speed };
     this.timeModel.addPoint(rec);
     if (this.timeModel.isInVisibleRange(ts)) {
-      let prevLast: mapCommon.LatLng | null = this.trackPoints.length > 0 ? this.trackPoints[this.trackPoints.length - 1] : null;
+      const prevLast: mapCommon.LatLng | null = this.trackPoints.length > 0 ? this.trackPoints[this.trackPoints.length - 1] : null;
       this.trackPoints.push(latLng);
       this.trackCount = this.trackPoints.length;
       if (prevLast) { this.totalDistance += calculateDistance(prevLast, latLng); }
       this.footprintPoints.push(latLng);
       this.lastFootprintPoint = latLng;
-      this.mapManager.refreshOverlayOptimized(this.displayMode, this.trackPoints, this.footprintPoints);
+      this.mapManager.refreshOverlay(this.displayMode, this.trackPoints, this.footprintPoints);
     }
-    this.db.enqueue(rec);
+    this.db.insert(rec);
   }
 
   private refreshVisibleView(): void {
-    let v = this.timeModel.applyTimeView();
+    const v = this.timeModel.applyTimeView();
     this.trackPoints = v.trackPoints;
     this.footprintPoints = v.footprintPoints;
     this.totalDistance = v.totalDistance;
     this.lastFootprintPoint = v.lastFootprintPoint;
     this.trackCount = v.trackPoints.length;
     if (this.timeViewIndex === TIME_VIEW_OVERVIEW) { this.displayMode = 1; this.display2SelectedIndexes = [1]; }
-    this.mapManager.resetOverlayThrottle();
+
     this.mapManager.rebuildOverlay(this.displayMode, this.trackPoints, this.footprintPoints);
   }
 
@@ -246,14 +240,14 @@ export struct FootprintTab {
   }
 
   private showCustomDatePicker(): void {
-    let todayStart: number = getDayStartTs(Date.now());
-    let todayEnd: number = getDayEndTs(Date.now());
-    let startInit: number = this.timeModel.customStart > 0 ? this.timeModel.customStart : todayStart;
+    const todayStart: number = getDayStartTs(Date.now());
+    const todayEnd: number = getDayEndTs(Date.now());
+    const startInit: number = this.timeModel.customStart > 0 ? this.timeModel.customStart : todayStart;
     DatePickerDialog.show({
       start: new Date(todayStart - 365 * ONE_DAY_MS), end: new Date(todayEnd), selected: new Date(startInit),
       onAccept: (value: DatePickerResult) => {
-        let s: number = getDayStartTs(new Date(value.year, (value.month ?? 1) - 1, value.day ?? 1).getTime());
-        let endInit: number = this.timeModel.customEnd > 0 ? this.timeModel.customEnd : Date.now();
+        const s: number = getDayStartTs(new Date(value.year, (value.month ?? 1) - 1, value.day ?? 1).getTime());
+        const endInit: number = this.timeModel.customEnd > 0 ? this.timeModel.customEnd : Date.now();
         DatePickerDialog.show({
           start: new Date(s), end: new Date(todayEnd), selected: new Date(endInit),
           onAccept: (value2: DatePickerResult) => {
@@ -287,7 +281,7 @@ export struct FootprintTab {
   // 组件销毁：停止定位、落库定时器、跨日检测
   aboutToDisappear(): void {
     this.locationSvc.stopLocation();
-    this.db.stopFlushTimer();
+
     this.timeModel.stopDayCheck();
   }
 

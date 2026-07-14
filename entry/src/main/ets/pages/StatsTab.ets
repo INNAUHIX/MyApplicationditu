@@ -45,7 +45,7 @@ export struct StatsTab {
 
   // T026: 统计计算（Tab 切入时由 Index 触发，或组件 aboutToAppear 自动执行）
   computeStats(): void {
-    let result = computeStatsUtil(this.timeModel.allPoints);
+    const result = computeStatsUtil(this.timeModel.allPoints);
     this.statTotalDistance = result.totalDistance;
     this.statTrackCount = result.trackCount;
     this.statActiveDays = result.activeDays;

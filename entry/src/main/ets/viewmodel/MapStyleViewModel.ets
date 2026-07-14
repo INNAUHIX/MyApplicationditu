@@ -29,11 +29,11 @@ export class MapStyleViewModel {
       return;
     }
     try {
-      let pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
       pref.putSync(PREF_KEY_MAP_STYLE, index);
       pref.flushSync();
     } catch (e) {
-      let error = e as BusinessError;
+      const error = e as BusinessError;
       console.error(`${TAG} saveMapStyle failed, code: ${error.code}, message: ${error.message}`);
     }
   }
@@ -44,7 +44,7 @@ export class MapStyleViewModel {
       return 0;
     }
     try {
-      let pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
       let idx: number = pref.getSync(PREF_KEY_MAP_STYLE, 0) as number;
       if (idx < 0 || idx > 3) {
         idx = 0;
@@ -52,7 +52,7 @@ export class MapStyleViewModel {
       this.mapStyleIndex = idx;
       return idx;
     } catch (e) {
-      let error = e as BusinessError;
+      const error = e as BusinessError;
       console.error(`${TAG} loadMapStyle failed, code: ${error.code}, message: ${error.message}`);
       return 0;
     }

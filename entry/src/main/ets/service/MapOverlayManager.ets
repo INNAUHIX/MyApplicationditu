@@ -3,7 +3,7 @@
  *
  * 从 Index 原 createRedDotIcon / initMapOptions / initMapCallback / enable3DBuilding /
  * rebuildOverlay / updatePolyline / buildMassPointItems /
- * updateMassPointOverlay / refreshOverlayOptimized / switchDisplayMode / applyNightMode /
+ * updateMassPointOverlay / refreshOverlay / switchDisplayMode / applyNightMode /
  * applyMapStyleToMap 抽取。
  * 持有 mapController 与全部覆盖物引用、红点图标、绘制节流计数，提供纯数据入参的覆盖物
  * 刷新与样式/昼夜切换接口；沉浸模式、Tab 动画等 UI 行为通过回调交还页面处理。
@@ -20,9 +20,7 @@ import {
   TIME_VIEW_OVERVIEW,
   MAP_STYLE_DARK_ID,
   MAP_STYLE_LIGHT_ID,
-  POLYLINE_UPDATE_POINT_GAP,
-  FOOTPRINT_UPDATE_POINT_GAP,
-  OVERLAY_UPDATE_INTERVAL,
+
   TAG
 } from '../model/TrackTypes';
 
@@ -38,9 +36,6 @@ export class MapOverlayManager {
   private initialMapStyleIndex: number = 0;
   private context?: common.UIAbilityContext;
 
-  private lastPolylineUpdatePointCount: number = 0;
-  private lastFootprintUpdateCount: number = 0;
-  private lastOverlayUpdateTs: number = 0;
 
   get controller(): map.MapComponentController | undefined {
     return this.mapController;
@@ -67,31 +62,38 @@ export class MapOverlayManager {
     this.mapController = controller;
   }
 
-  // 用 PixelMap 以代码绘制一个 9x9 的红色实心圆点，作为「足迹」海量点的图标（无需图片资源）
-  async createRedDotIcon(): Promise<void> {
-    let size: number = 9;
-    let imageSize: image.Size = { height: size, width: size };
-    let imageOptions: image.InitializationOptions = {
+  // 用 PixelMap 以代码绘制一个实心圆点，作为「足迹」海量点的图标（无需图片资源）。
+  // color 为 ARGB 格式（0xAARRGGBB），size 为像素直径；均带默认值，当前为 9px 红色，
+  // 未来支持用户自定义颜色/大小时直接传参即可，无需改动调用方。
+  async createRedDotIcon(color: number = 0xFFFF0000, size: number = 9): Promise<void> {
+    const imageSize: image.Size = { height: size, width: size };
+    const imageOptions: image.InitializationOptions = {
       editable: true,
       pixelFormat: image.PixelMapFormat.BGRA_8888,
       size: imageSize
     };
-    let buffer: ArrayBuffer = new ArrayBuffer(size * size * 4);
-    let pixelMap = await image.createPixelMap(buffer, imageOptions);
-    let imageData = new Uint8Array(buffer);
-    let center = size / 2;
-    let radius = size / 2 - 1;
+    const buffer: ArrayBuffer = new ArrayBuffer(size * size * 4);
+    const pixelMap = await image.createPixelMap(buffer, imageOptions);
+    const imageData = new Uint8Array(buffer);
+    const center = size / 2;
+    const radius = size / 2 - 1;
+    // 将传入的 ARGB 颜色（0xAARRGGBB）拆分为 R/G/B/A 分量
+    const alpha: number = (color >> 24) & 0xFF;
+    const red: number = (color >> 16) & 0xFF;
+    const green: number = (color >> 8) & 0xFF;
+    const blue: number = color & 0xFF;
     for (let y = 0; y < size; y++) {
       for (let x = 0; x < size; x++) {
-        let dx = x - center;
-        let dy = y - center;
-        let dist = Math.sqrt(dx * dx + dy * dy);
-        let offset = (y * size + x) * 4;
+        const dx = x - center;
+        const dy = y - center;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const offset = (y * size + x) * 4;
         if (dist <= radius) {
-          imageData[offset] = 255;
-          imageData[offset + 1] = 0;
-          imageData[offset + 2] = 0;
-          imageData[offset + 3] = 255;
+          // BGRA_8888 内存布局：B, G, R, A
+          imageData[offset] = blue;
+          imageData[offset + 1] = green;
+          imageData[offset + 2] = red;
+          imageData[offset + 3] = alpha;
         } else {
           imageData[offset] = 0;
           imageData[offset + 1] = 0;
@@ -106,9 +108,9 @@ export class MapOverlayManager {
 
   // 初始化地图初始参数：按已保存的地图样式在初始化阶段就预置 dayNightMode 与 styleId，让首帧直接对
   buildMapOptions(mapStyleIndex: number): mapCommon.MapOptions {
-    let initialDayNight: mapCommon.DayNightMode =
+    const initialDayNight: mapCommon.DayNightMode =
       (mapStyleIndex === 2 || mapStyleIndex === 3) ? mapCommon.DayNightMode.DAY : mapCommon.DayNightMode.NIGHT;
-    let initialStyleId: string | undefined =
+    const initialStyleId: string | undefined =
       mapStyleIndex === 1 ? MAP_STYLE_DARK_ID :
       mapStyleIndex === 2 ? MAP_STYLE_LIGHT_ID : undefined;
     return {
@@ -183,7 +185,7 @@ export class MapOverlayManager {
       this.mapController.setBuildingEnabled(true);
       console.info(TAG, '3D building enabled');
     } catch (err) {
-      let error = err as BusinessError;
+      const error = err as BusinessError;
       console.error(`Failed to enable 3D building, code: ${error.code}, message: ${error.message}`);
     }
   }
@@ -223,7 +225,7 @@ export class MapOverlayManager {
 
   private updatePolyline(trackPoints: mapCommon.LatLng[]): void {
     if (!this.trackPolyline) {
-      let polylineOption: mapCommon.MapPolylineOptions = {
+      const polylineOption: mapCommon.MapPolylineOptions = {
         points: trackPoints,
         width: 6,
         color: 0xFFFF0000,
@@ -239,15 +241,14 @@ export class MapOverlayManager {
     } else {
       this.trackPolyline.setPoints(trackPoints);
     }
-    // 同步节流计数：本次已把全部折线点刷新到地图
-    this.lastPolylineUpdatePointCount = trackPoints.length;
+
   }
 
   // 将 footprintPoints 转换为海量点所需的 MassPointItem 数组
   private buildMassPointItems(footprintPoints: mapCommon.LatLng[]): mapCommon.MassPointItem[] {
-    let items: mapCommon.MassPointItem[] = [];
+    const items: mapCommon.MassPointItem[] = [];
     for (let i = 0; i < footprintPoints.length; i++) {
-      let item: mapCommon.MassPointItem = {
+      const item: mapCommon.MassPointItem = {
         itemId: `footprint_${i}`,
         position: footprintPoints[i],
         title: `足迹${i + 1}`
@@ -264,7 +265,7 @@ export class MapOverlayManager {
       return;
     }
     if (!this.massPointOverlay) {
-      let params: mapCommon.MassPointOverlayParams = {
+      const params: mapCommon.MassPointOverlayParams = {
         id: 'footprint_overlay',
         items: this.buildMassPointItems(footprintPoints),
         icon: this.redDotIcon
@@ -279,36 +280,17 @@ export class MapOverlayManager {
     } else {
       this.massPointOverlay.setItems(this.buildMassPointItems(footprintPoints));
     }
-    // 同步节流计数：本次已把全部足迹点刷新到地图
-    this.lastFootprintUpdateCount = footprintPoints.length;
+
   }
 
-  // 覆盖物节流刷新（折线 / 足迹点海量点）：按展示模式分别判断「新增点数」与「距上次刷新时间」，
-  // 任一达标才真正刷新；MapPolyline.setPoints / MassPointOverlay.setItems 仅支持整体替换，故为降频整体刷新
-  refreshOverlayOptimized(displayMode: number, trackPoints: mapCommon.LatLng[],
+  // 实时刷新覆盖物：每次记录新点后直接更新地图，无节流
+  refreshOverlay(displayMode: number, trackPoints: mapCommon.LatLng[],
     footprintPoints: mapCommon.LatLng[]): void {
-    let now: number = Math.floor(Date.now() / 1000);
     if (displayMode === 0) {
-      let gap: number = trackPoints.length - this.lastPolylineUpdatePointCount;
-      if (gap < POLYLINE_UPDATE_POINT_GAP && (now - this.lastOverlayUpdateTs) < OVERLAY_UPDATE_INTERVAL) {
-        return;
-      }
       this.updatePolyline(trackPoints);
     } else {
-      let gap: number = footprintPoints.length - this.lastFootprintUpdateCount;
-      if (gap < FOOTPRINT_UPDATE_POINT_GAP && (now - this.lastOverlayUpdateTs) < OVERLAY_UPDATE_INTERVAL) {
-        return;
-      }
       this.updateMassPointOverlay(footprintPoints);
     }
-    this.lastOverlayUpdateTs = now;
-  }
-
-  // 重置覆盖物节流计数（applyTimeView / clearTrack 后强制整体重绘）
-  resetOverlayThrottle(): void {
-    this.lastPolylineUpdatePointCount = 0;
-    this.lastFootprintUpdateCount = 0;
-    this.lastOverlayUpdateTs = 0;
   }
 
   // 切换展示模式(0 折线 / 1 海量点)：移除另一种模式的覆盖物，并重建当前模式
@@ -369,7 +351,7 @@ export class MapOverlayManager {
       this.mapController.setDayNightMode(mode);
       console.info(TAG, `Day night mode set to ${mode}`);
     } catch (err) {
-      let error = err as BusinessError;
+      const error = err as BusinessError;
       console.error(`Failed to set day night mode, code: ${error.code}, message: ${error.message}`);
     }
   }
@@ -380,11 +362,11 @@ export class MapOverlayManager {
       return;
     }
     // 用局部常量承接，避免闭包内 this.mapController 被判定为 possibly 'undefined'
-    let controller: map.MapComponentController = this.mapController;
+    const controller: map.MapComponentController = this.mapController;
     if (index === 1) {
       // 暗夜样式：固定夜间模式 + 套用自定义暗夜样式
       controller.setDayNightMode(mapCommon.DayNightMode.NIGHT);
-      let param: mapCommon.CustomMapStyleOptions = {
+      const param: mapCommon.CustomMapStyleOptions = {
         styleId: MAP_STYLE_DARK_ID
       };
       controller.setCustomMapStyle(param).then(() => {
@@ -395,7 +377,7 @@ export class MapOverlayManager {
     } else if (index === 2) {
       // 浅白样式：固定白天模式 + 套用自定义浅白样式
       controller.setDayNightMode(mapCommon.DayNightMode.DAY);
-      let param: mapCommon.CustomMapStyleOptions = {
+      const param: mapCommon.CustomMapStyleOptions = {
         styleId: MAP_STYLE_LIGHT_ID
       };
       controller.setCustomMapStyle(param).then(() => {
@@ -406,8 +388,8 @@ export class MapOverlayManager {
     } else if (index === 3) {
       // 测试样式：固定白天模式 + 套用本地自定义浅色极简样式（从 rawfile 读取 JSON 字符串注入）
       controller.setDayNightMode(mapCommon.DayNightMode.DAY);
-      let styleContent: string = this.readMapStyleTestJson();
-      let param: mapCommon.CustomMapStyleOptions = { styleContent: styleContent };
+      const styleContent: string = this.readMapStyleTestJson();
+      const param: mapCommon.CustomMapStyleOptions = { styleContent: styleContent };
       controller.setCustomMapStyle(param).then(() => {
         console.info(TAG, 'Test map style applied');
       }).catch((err: BusinessError) => {
@@ -415,7 +397,7 @@ export class MapOverlayManager {
       });
     } else {
       // 经典样式：清空自定义样式（空内容覆盖），退回内置样式
-      let param: mapCommon.CustomMapStyleOptions = { styleContent: '[]' };
+      const param: mapCommon.CustomMapStyleOptions = { styleContent: '[]' };
       controller.setCustomMapStyle(param).then(() => {
         console.info(TAG, 'Classic map style applied');
       }).catch((err: BusinessError) => {
@@ -431,8 +413,8 @@ export class MapOverlayManager {
       return '[]';
     }
     try {
-      let rawContent: Uint8Array = this.context.resourceManager.getRawFileContentSync('map_style_test.json');
-      let decoder: util.TextDecoder = util.TextDecoder.create('utf-8');
+      const rawContent: Uint8Array = this.context.resourceManager.getRawFileContentSync('map_style_test.json');
+      const decoder: util.TextDecoder = util.TextDecoder.create('utf-8');
       return decoder.decodeToString(rawContent);
     } catch (e) {
       console.error(`${TAG} readMapStyleTestJson failed: ${JSON.stringify(e)}`);

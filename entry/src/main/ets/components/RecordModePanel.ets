@@ -5,25 +5,25 @@
  * 承载三档记录规则的 Radio 选择与说明。
  *
  * 布局规范（HarmonyOS Design）：
- *   - 三档模式拆为独立卡片，卡片间距 12vp
+ *   - 两档模式拆为独立卡片，卡片间距 12vp
  *   - 卡片圆角 16vp（RadiusL）
  *   - 卡片内边距 16vp（Padding_level8）
  *   - 屏幕边缘 16vp
  */
 
-import { RecordMode, MODE_CONFIG } from '../model/TrackTypes';
+import { RecordMode, MODE_CONFIG, SLEEP_START_HOUR, SLEEP_END_HOUR } from '../model/TrackTypes';
 
 @Component
 export struct RecordModePanel {
   @Link recordMode: RecordMode;
+  @Link sleepModeEnabled: boolean;
   onRecordModeChange: (mode: number) => void = () => {};
+  onSleepModeChange: (enabled: boolean) => void = () => {};
 
-  private recordModeNames: string[] = ['省电', '均衡', '耗电', '智能采样'];
+  private recordModeNames: string[] = ['均衡', '耗电'];
   private recordModeDescs: string[] = [
-    '定位场景\t日常服务（低频）\n定位间隔\t约60秒\n定位精度\t高精GPS\n每日耗电\t约3%–8%\n适用场景\t长时间后台挂机，对轨迹精度要求不高的日常记录',
-    '定位场景\t轨迹追踪（按间隔）\n定位间隔\t20秒\n点间距\t100米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约8%–15%\n适用场景\t日常通勤，精度与耗电均衡，推荐默认\n\n工作方式：系统每20秒推送一次定位，App计算与上次记录点的距离，≥100米才打点，不足则丢弃；速度<0.5m/s时跳过，过滤静止漂移',
-    '定位场景\t导航级（高频）\n定位间隔\t约1–5秒\n定位精度\t高精GPS\n每日耗电\t约20%–35%\n适用场景\t骑行/步行导航等需要细腻轨迹的场景',
-    '定位场景\t日常服务（低频）\n定位间隔\t120秒（兜底）\n点间距\t100米（距离触发）\n定位精度\t平衡GPS\n每日耗电\t约4%–10%\n适用场景\t全天默认，不动不记，动了才记\n\n工作方式：系统每2分钟推送一次定位，App计算与上次记录点的距离，≥100米才打点，不足则丢弃；速度<0.5m/s时跳过，过滤静止漂移'
+    '定位场景\t轨迹追踪（按距离）\n定位间隔\t20秒\n点间距\t≥100米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约8%–15%\n适用场景\t日常通勤，精度与耗电均衡，推荐默认\n\n工作方式：系统每20秒推送一次定位，App计算与上次记录点的距离，≥100米才打点，不足则丢弃',
+    '定位场景\t导航级（按距离）\n定位间隔\t5秒\n点间距\t≥30米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约15%–25%\n适用场景\t骑行/步行等需要较细腻轨迹的场景\n\n工作方式：系统每5秒推送一次定位，App计算与上次记录点的距离，≥30米才打点，不足则丢弃'
   ];
 
   build() {
@@ -69,6 +69,32 @@ export struct RecordModePanel {
             this.onRecordModeChange(index);
           })
         }, (_desc: string, index: number) => `rm_${index}`)
+
+        Row() {
+          Column({ space: 6 }) {
+            Text('睡眠模式')
+              .fontSize(16)
+              .fontColor($r('sys.color.font_primary'))
+              .fontWeight(FontWeight.Medium)
+              .textAlign(TextAlign.Start)
+            Text(`定位间隔\t60秒\n点间距\t≥200米（距离触发）\n自动时段\t${SLEEP_START_HOUR}:00-${SLEEP_END_HOUR}:00\n适用场景\t夜间自动降频省电，检测到活动自动恢复\n\n工作方式：睡眠时段内自动切换为低频定位，检测到真实移动（连续多点持续远离）自动退出并补录足迹点，休息后自动重新进入`)
+              .fontSize(12)
+              .fontColor($r('sys.color.font_secondary'))
+              .textAlign(TextAlign.Start)
+          }
+          .layoutWeight(1)
+          .alignItems(HorizontalAlign.Start)
+          Toggle({ type: ToggleType.Switch, isOn: this.sleepModeEnabled })
+            .onChange((isOn: boolean) => {
+              this.sleepModeEnabled = isOn;
+              this.onSleepModeChange(isOn);
+            })
+            .selectedColor($r('sys.color.ohos_id_color_activated'))
+            .margin({ left: 16 })
+        }
+        .padding(16)
+        .borderRadius(16)
+        .backgroundColor($r('sys.color.comp_background_list_card'))
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 12 })

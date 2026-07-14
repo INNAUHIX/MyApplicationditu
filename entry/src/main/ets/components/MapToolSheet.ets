@@ -6,8 +6,7 @@
  */
 
 import {
-  TIME_VIEW_OVERVIEW,
-  SHAKE_FLOOR_OPTIONS
+  TIME_VIEW_OVERVIEW
 } from '../model/TrackTypes';
 import {
   SegmentButton,

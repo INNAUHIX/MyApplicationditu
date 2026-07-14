@@ -11,31 +11,31 @@ import { TrackPointRecord, StatDayItem, StatResult } from '../model/TrackTypes';
 
 // 日期边界辅助：当天 0 点 / 当天 23:59:59.999 / 日期 key(YYYY-M-D)
 export function getDayStartTs(ts: number): number {
-  let d: Date = new Date(ts);
+  const d: Date = new Date(ts);
   d.setHours(0, 0, 0, 0);
   return d.getTime();
 }
 
 export function getDayEndTs(ts: number): number {
-  let d: Date = new Date(ts);
+  const d: Date = new Date(ts);
   d.setHours(23, 59, 59, 999);
   return d.getTime();
 }
 
 export function getDayKey(ts: number): string {
-  let d: Date = new Date(ts);
+  const d: Date = new Date(ts);
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 }
 
 // 使用 Haversine 公式估算两点间地表距离(米)
 export function calculateDistance(from: mapCommon.LatLng, to: mapCommon.LatLng): number {
-  let R: number = 6371000;
-  let dLat: number = (to.latitude - from.latitude) * Math.PI / 180;
-  let dLon: number = (to.longitude - from.longitude) * Math.PI / 180;
-  let a: number = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+  const R: number = 6371000;
+  const dLat: number = (to.latitude - from.latitude) * Math.PI / 180;
+  const dLon: number = (to.longitude - from.longitude) * Math.PI / 180;
+  const a: number = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(from.latitude * Math.PI / 180) * Math.cos(to.latitude * Math.PI / 180) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  let c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
 
@@ -52,9 +52,9 @@ export function formatStatDate(ts: number): string {
   if (!ts) {
     return '—';
   }
-  let d: Date = new Date(ts);
-  let m: number = d.getMonth() + 1;
-  let day: number = d.getDate();
+  const d: Date = new Date(ts);
+  const m: number = d.getMonth() + 1;
+  const day: number = d.getDate();
   return `${d.getFullYear()}-${m < 10 ? '0' + m : m}-${day < 10 ? '0' + day : day}`;
 }
 
@@ -75,16 +75,16 @@ export function computeStats(pts: TrackPointRecord[]): StatResult {
   }
 
   let totalDist: number = 0;
-  let dailyDist: Map<string, number> = new Map();
-  let dailyCount: Map<string, number> = new Map();
+  const dailyDist: Map<string, number> = new Map();
+  const dailyCount: Map<string, number> = new Map();
   let prev: mapCommon.LatLng | null = null;
   let prevKey: string = '';
   for (let i = 0; i < pts.length; i++) {
-    let rec: TrackPointRecord = pts[i];
-    let key: string = getDayKey(rec.timestamp);
-    let latLng: mapCommon.LatLng = { latitude: rec.latitude, longitude: rec.longitude };
+    const rec: TrackPointRecord = pts[i];
+    const key: string = getDayKey(rec.timestamp);
+    const latLng: mapCommon.LatLng = { latitude: rec.latitude, longitude: rec.longitude };
     if (prev && prevKey === key) {
-      let d: number = calculateDistance(prev, latLng);
+      const d: number = calculateDistance(prev, latLng);
       totalDist += d;
       dailyDist.set(key, (dailyDist.get(key) ?? 0) + d);
     }
@@ -93,7 +93,7 @@ export function computeStats(pts: TrackPointRecord[]): StatResult {
     dailyCount.set(key, (dailyCount.get(key) ?? 0) + 1);
   }
 
-  let activeDays: number = dailyCount.size;
+  const activeDays: number = dailyCount.size;
   let maxDaily: number = 0;
   dailyDist.forEach((v: number) => {
     if (v > maxDaily) {
@@ -102,11 +102,11 @@ export function computeStats(pts: TrackPointRecord[]): StatResult {
   });
 
   // 最近 7 天（含今天）每日里程与点数分布
-  let recent: StatDayItem[] = [];
-  let now: Date = new Date();
+  const recent: StatDayItem[] = [];
+  const now: Date = new Date();
   for (let i = 6; i >= 0; i--) {
-    let d: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-    let key: string = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    const d: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    const key: string = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
     recent.push({
       label: `${d.getMonth() + 1}/${d.getDate()}`,
       distance: dailyDist.get(key) ?? 0,

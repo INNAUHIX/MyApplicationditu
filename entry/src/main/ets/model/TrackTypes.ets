@@ -22,29 +22,21 @@ export interface VisibleRange {
 
 // ===== 定位记录模式（按功耗分级，Option B）=====
 export enum RecordMode {
-  POWER_SAVING = 0, // 省电
-  BALANCED = 1,     // 均衡（默认）
-  HIGH_POWER = 2,   // 耗电
-  SMART = 3         // 智能采样
+  BALANCED = 0,     // 均衡（默认）
+  HIGH_POWER = 1,   // 耗电
+  SLEEP = 2         // 睡眠
 }
 
-// 各档参数：timeInterval=定位回调间隔(秒)
 export interface RecordModeConfig {
   timeInterval: number;
   distanceInterval: number;
-  priority: number;
   label: string;
 }
 
-export const SMART_DISTANCE_INTERVAL: number = 100;
-export const SMART_TIME_INTERVAL: number = 120;
-
-// 四档参数：省电 / 均衡(默认) / 耗电 / 智能采样
 export const MODE_CONFIG: RecordModeConfig[] = [
-  { timeInterval: 60, distanceInterval: 0, priority: 0, label: '省电' },
-  { timeInterval: 20, distanceInterval: 100, priority: 0, label: '均衡' },
-  { timeInterval: 5,  distanceInterval: 0, priority: 0, label: '耗电' },
-  { timeInterval: SMART_TIME_INTERVAL, distanceInterval: SMART_DISTANCE_INTERVAL, priority: 1, label: '智能采样' }
+  { timeInterval: 20, distanceInterval: 100, label: '均衡' },
+  { timeInterval: 5,  distanceInterval: 30,  label: '耗电' },
+  { timeInterval: 60, distanceInterval: 200, label: '睡眠' },
 ];
 
 // 待写入数据库的轨迹点记录（含精度/速度/时间戳）
@@ -92,12 +84,13 @@ export const PREF_KEY_MAP_STYLE: string = 'mapStyleIndex';
 export const PREF_KEY_TIME_VIEW: string = 'timeViewIndex';
 export const PREF_KEY_CUSTOM_START: string = 'customStartTs';
 export const PREF_KEY_CUSTOM_END: string = 'customEndTs';
-// 轻量偏好存储：持久化记录规则（0=省电 / 1=均衡 / 2=耗电）
+// 轻量偏好存储：持久化记录规则（0=均衡 / 1=耗电）
 export const PREF_KEY_RECORD_MODE: string = 'recordModeIndex';
 // 轻量偏好存储：持久化夜间模式（0=跟随系统 / 1=普通模式 / 2=夜间模式）
 export const PREF_KEY_NIGHT_MODE: string = 'nightModeIndex';
-// 轻量偏好存储：持久化抖动地板阈值（0=5米 / 1=10米 / 2=15米）
-export const PREF_KEY_SHAKE_FLOOR: string = 'shakeFloorIndex';
+// 轻量偏好存储：持久化睡眠模式开关
+export const PREF_KEY_SLEEP_MODE: string = 'sleepModeEnabled';
+
 
 // 时间范围视图索引常量
 export const TIME_VIEW_OVERVIEW: number = 0; // 总览（仅海量点）
@@ -111,30 +104,23 @@ export const ONE_DAY_MS: number = 24 * 60 * 60 * 1000;
 export const MAP_STYLE_DARK_ID: string = '1992208612130395136';
 export const MAP_STYLE_LIGHT_ID: string = '1992216939216384896';
 
-// ===== 防漂移 / 落库 / 绘制节流阈值（原 Index 的 private static readonly 提升为模块常量）=====
-// 折线轨迹距离地板：新点与上一个轨迹点距离 < 阈值时丢弃，过滤GPS漂移导致的原地锯齿线
-export const MIN_TRACK_DISTANCE: number = 5;
-// 抖动地板可选阈值（米）：默认 5 米，支持在策略实验室面板切换为 10 / 15 米
-export const SHAKE_FLOOR_OPTIONS: number[] = [0, 5, 10, 15];
+// ===== 防漂移 / 静止检测阈值 =====
 // 静止检测：最近窗口大小
 export const STATIONARY_WINDOW: number = 10;
 // 静止检测：窗口内所有点到质心距离 < 15米则判定为静止
 export const STATIONARY_RADIUS: number = 15;
-// 静止时定位频率（秒），降低频率减少漂移点产生（覆盖各模式间隔）
-export const STATIONARY_INTERVAL: number = 30;
-// 静止速度门槛（米/秒）：定位上报速度低于此值视为原地未移动（≈1.8km/h，低于慢速步行），
-// 用于过滤静止时的位置漂移（室内网络定位/弱信号下位置会原地乱跳，但速度常近似 0）
-export const STATIONARY_SPEED: number = 0.5;
+
 // 静止退出半径（米）：已判定为常驻后，仅当新点明显远离常驻簇超过此值才视为真正离开并恢复记录
 // （迟滞，防止抖动误把常驻点判成「在动」而漏记飘线）
 export const STATIONARY_EXIT_RADIUS: number = 30;
-// 批量落库：缓冲积累点数达此值立即落库
-export const BATCH_SIZE: number = 15;
-// 批量落库：定时落库间隔（毫秒）
-export const FLUSH_INTERVAL: number = 8000;
-// 覆盖物最多每30秒刷新一次
-export const OVERLAY_UPDATE_INTERVAL: number = 30;
-// 每新增50个折线点刷新折线
-export const POLYLINE_UPDATE_POINT_GAP: number = 50;
-// 每新增20个足迹点刷新海量点
-export const FOOTPRINT_UPDATE_POINT_GAP: number = 20;
+
+// ===== 睡眠模式阈值 =====
+// 睡眠模式时段：0点~6点
+export const SLEEP_START_HOUR: number = 0;
+export const SLEEP_END_HOUR: number = 6;
+// 睡眠模式活动判定：连续N个点距睡眠起点距离持续单调递增且累计超过此值，判定为真实移动
+export const SLEEP_MOVEMENT_TREND_COUNT: number = 3;
+export const SLEEP_MOVEMENT_CUMULATIVE_DIST: number = 100;
+// 退出睡眠后最短活动持续时间（毫秒）：防止抖动导致反复进出睡眠
+export const SLEEP_MIN_ACTIVE_DURATION: number = 5 * 60 * 1000;
+
