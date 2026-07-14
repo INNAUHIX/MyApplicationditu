@@ -11,6 +11,7 @@ import { abilityAccessCtrl, bundleManager, common, Permissions, Want } from '@ki
 import { BusinessError } from '@kit.BasicServicesKit';
 import { UIContext } from '@kit.ArkUI';
 import { TAG } from '../model/TrackTypes';
+import { AppLogger } from '../common/logger/AppLogger';
 
 // 三项定位权限的授权状态快照
 export interface PermissionState {
@@ -44,11 +45,13 @@ export class PermissionService {
     const hasForeground = await this.checkAccessToken('ohos.permission.APPROXIMATELY_LOCATION');
     const hasLocation = await this.checkAccessToken('ohos.permission.LOCATION');
     const hasBackground = await this.checkAccessToken('ohos.permission.LOCATION_IN_BACKGROUND');
-    return {
+    const state: PermissionState = {
       hasApproximatelyLocation: hasForeground === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED,
       hasLocation: hasLocation === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED,
       hasBackgroundLocation: hasBackground === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED
     };
+    AppLogger.info('权限', `大致=${state.hasApproximatelyLocation} 精确=${state.hasLocation} 后台=${state.hasBackgroundLocation}`);
+    return state;
   }
 
   // 向前台定位权限(大致 + 精确)发起授权申请；返回申请后的最新权限状态快照
@@ -81,7 +84,7 @@ export class PermissionService {
       };
     } catch (err) {
       const error = err as BusinessError;
-      console.error(`Failed to request permissions from user. Code: ${error.code}, message: ${error.message}`);
+      AppLogger.error('权限', `请求定位权限失败 code=${error.code}`);
       return {
         hasApproximatelyLocation: false,
         hasLocation: false,

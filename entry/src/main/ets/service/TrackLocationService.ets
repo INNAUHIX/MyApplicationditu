@@ -24,17 +24,11 @@ import {
   SLEEP_MIN_ACTIVE_DURATION,
   TAG
 } from '../model/TrackTypes';
-import { calculateDistance } from '../common/TrackUtils';
+import { calculateDistance, getDayKey } from '../common/TrackUtils';
+import { AppLogger } from '../common/logger/AppLogger';
 
 export interface LocationHandlers {
-  onSample: (latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number) => void;
-}
-
-export interface SleepMonitorPoint {
-  gcj02: mapCommon.LatLng;
-  accuracy: number;
-  speed: number;
-  timestamp: number;
+  onSample: (latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number, isInitial?: boolean) => void;
 }
 
 export class TrackLocationService {
@@ -43,12 +37,18 @@ export class TrackLocationService {
   private currentMode: RecordMode = RecordMode.BALANCED;
   private locationCallback?: (location: geoLocationManager.Location) => void;
   private lastRecordedPoint: mapCommon.LatLng | null = null;
+  private lastRecordedDay: string = '';
+
+  setLastRecordedPoint(point: mapCommon.LatLng | null, dayKey: string = ''): void {
+    this.lastRecordedPoint = point;
+    this.lastRecordedDay = dayKey;
+  }
 
   private sleepModeEnabled: boolean = false;
+  private stationaryEnabled: boolean = true;
   private userMode: RecordMode = RecordMode.BALANCED;
   private isInSleepMode: boolean = false;
   private sleepOriginPoint: mapCommon.LatLng | null = null;
-  private sleepMonitorPoints: SleepMonitorPoint[] = [];
   private sleepDistances: number[] = [];
   private sleepExitTime: number = 0;
 
@@ -64,13 +64,20 @@ export class TrackLocationService {
     return this.isInSleepMode;
   }
 
-  setSleepModeEnabled(enabled: boolean, handlers?: LocationHandlers): void {
+  setSleepModeEnabled(enabled: boolean): void {
     this.sleepModeEnabled = enabled;
     if (!enabled && this.isInSleepMode) {
-      this.exitSleepMode(handlers);
+      this.exitSleepMode();
     }
     if (enabled && !this.isInSleepMode) {
       this.checkAndEnterSleep();
+    }
+  }
+
+  setStationaryEnabled(enabled: boolean): void {
+    this.stationaryEnabled = enabled;
+    if (!enabled) {
+      this.isStationary = false;
     }
   }
 
@@ -90,6 +97,9 @@ export class TrackLocationService {
     if (!this.sleepModeEnabled || this.isInSleepMode || !this.isInSleepTimeWindow()) {
       return;
     }
+    if (this.sleepExitTime > 0 && (Date.now() - this.sleepExitTime) < SLEEP_MIN_ACTIVE_DURATION) {
+      return;
+    }
     if (this.recentPoints.length >= STATIONARY_WINDOW && this.detectStationary()) {
       this.enterSleepMode();
     }
@@ -98,44 +108,23 @@ export class TrackLocationService {
   private enterSleepMode(): void {
     this.isInSleepMode = true;
     this.sleepOriginPoint = this.lastRecordedPoint;
-    this.sleepMonitorPoints = [];
     this.sleepDistances = [];
     this.currentMode = RecordMode.SLEEP;
     this.reSubscribe();
-    console.info(TAG, 'Sleep mode entered');
+    AppLogger.keyInfo('睡眠', `进入睡眠模式`);
   }
 
-  private exitSleepMode(handlers?: LocationHandlers): void {
+  private exitSleepMode(): void {
     if (!this.isInSleepMode) {
       return;
     }
-    this.backfillSleepPoints(handlers);
     this.isInSleepMode = false;
     this.sleepOriginPoint = null;
-    this.sleepMonitorPoints = [];
     this.sleepDistances = [];
     this.sleepExitTime = Date.now();
     this.currentMode = this.userMode;
     this.reSubscribe();
-    console.info(TAG, 'Sleep mode exited');
-  }
-
-  private backfillSleepPoints(handlers?: LocationHandlers): void {
-    if (this.sleepMonitorPoints.length === 0 || !this.lastRecordedPoint || !handlers) {
-      this.sleepMonitorPoints = [];
-      return;
-    }
-    const config = MODE_CONFIG[this.userMode];
-    let refPoint: mapCommon.LatLng = this.lastRecordedPoint;
-    for (const mp of this.sleepMonitorPoints) {
-      const dist: number = calculateDistance(refPoint, mp.gcj02);
-      if (dist >= config.distanceInterval) {
-        refPoint = mp.gcj02;
-        this.lastRecordedPoint = mp.gcj02;
-        handlers.onSample(mp.gcj02, mp.accuracy, mp.speed, mp.timestamp);
-      }
-    }
-    this.sleepMonitorPoints = [];
+    AppLogger.keyInfo('睡眠', `退出睡眠模式，恢复正常记录`);
   }
 
   private detectSleepMovement(gcj02: mapCommon.LatLng): boolean {
@@ -165,39 +154,33 @@ export class TrackLocationService {
     if (this.isInSleepMode && !this.isInSleepTimeWindow()) {
       this.isInSleepMode = false;
       this.sleepOriginPoint = null;
-      this.sleepMonitorPoints = [];
       this.sleepDistances = [];
       this.sleepExitTime = 0;
       this.currentMode = this.userMode;
       this.reSubscribe();
-      console.info(TAG, 'Sleep mode exited on time');
+      AppLogger.keyInfo('睡眠', `定时检查：超过睡眠时段，退出睡眠`);
     }
   }
+
 
   private reSubscribe(): void {
     if (this.locationCallback) {
       try {
         geoLocationManager.off('locationChange', this.locationCallback);
         geoLocationManager.on('locationChange', this.buildLocationRequest(), this.locationCallback);
-        console.info(TAG, `Record mode switched to ${MODE_CONFIG[this.currentMode].label}`);
+        AppLogger.info('定位', `重新订阅 间隔=${MODE_CONFIG[this.currentMode].timeInterval}s`);
       } catch (err) {
         const error = err as BusinessError;
-        console.error(`switchMode failed, code: ${error.code}, message: ${error.message}`);
+        AppLogger.error('定位', `重新订阅失败 code=${error.code}`);
       }
     }
   }
 
   private buildLocationRequest(): geoLocationManager.LocationRequest {
     const config = MODE_CONFIG[this.currentMode];
-    let scenario: geoLocationManager.LocationRequestScenario;
-    if (this.currentMode === RecordMode.HIGH_POWER) {
-      scenario = geoLocationManager.LocationRequestScenario.NAVIGATION;
-    } else {
-      scenario = geoLocationManager.LocationRequestScenario.TRAJECTORY_TRACKING;
-    }
     return {
       priority: geoLocationManager.LocationRequestPriority.ACCURACY,
-      scenario: scenario,
+      scenario: geoLocationManager.LocationRequestScenario.UNSET,
       timeInterval: config.timeInterval,
       distanceInterval: 0,
       maxAccuracy: 0
@@ -213,7 +196,7 @@ export class TrackLocationService {
       }
       this.locationCallback = undefined;
     }
-    this.lastRecordedPoint = null;
+
     this.locationCallback = (location: geoLocationManager.Location) => {
       map.convertCoordinate(
         mapCommon.CoordinateType.WGS84,
@@ -222,11 +205,11 @@ export class TrackLocationService {
       ).then((gcj02: mapCommon.LatLng) => {
         this.handleFix(gcj02, location.accuracy, location.speed, handlers);
       }).catch((err: BusinessError) => {
-        console.error(`convertCoordinate failed, code: ${err.code}, message: ${err.message}`);
+        AppLogger.error('定位', `坐标转换失败 code=${err.code}`);
       });
     };
     geoLocationManager.on('locationChange', this.buildLocationRequest(), this.locationCallback);
-    console.info(TAG, 'Location change listener registered');
+    AppLogger.keyInfo('定位', `定位服务已启动 模式=${MODE_CONFIG[this.currentMode].label}`);
   }
 
   private handleFix(
@@ -235,6 +218,8 @@ export class TrackLocationService {
   ): void {
     const speedVal: number = speed !== undefined ? speed : 0;
     const now: number = Date.now();
+
+    AppLogger.debug('定位', `回传 精度=${Math.round(accuracy)}m 速度=${speedVal.toFixed(1)}m/s`);
 
     this.recentPoints.push(gcj02);
     if (this.recentPoints.length > STATIONARY_WINDOW) {
@@ -248,9 +233,10 @@ export class TrackLocationService {
 
     if (this.sleepModeEnabled && this.isInSleepTimeWindow() && !this.isInSleepMode) {
       if (this.sleepExitTime > 0 && (now - this.sleepExitTime) < SLEEP_MIN_ACTIVE_DURATION) {
-        // 退出睡眠后未满最短活动持续时间，不重新进入
+        AppLogger.info('定位', `退出睡眠未满5分钟，跳过睡眠入口`);
       } else {
         if (this.recentPoints.length >= STATIONARY_WINDOW && this.detectStationary()) {
+          AppLogger.keyInfo('睡眠', `静止检测触发，进入睡眠模式`);
           this.enterSleepMode();
           return;
         }
@@ -259,13 +245,25 @@ export class TrackLocationService {
 
     if (this.lastRecordedPoint === null) {
       this.lastRecordedPoint = gcj02;
-      handlers.onSample(gcj02, accuracy, speedVal, now);
+      this.lastRecordedDay = getDayKey(now);
+      AppLogger.keyInfo('定位', `首次打点(初始点) 精度=${Math.round(accuracy)}m 速度=${speedVal.toFixed(1)}m/s`);
+      handlers.onSample(gcj02, accuracy, speedVal, now, true);
       return;
     }
 
-    if (this.detectStationary()) {
+    const todayKey: string = getDayKey(now);
+    if (todayKey !== this.lastRecordedDay) {
+      this.lastRecordedPoint = gcj02;
+      this.lastRecordedDay = todayKey;
+      AppLogger.keyInfo('定位', `跨天初始点 精度=${Math.round(accuracy)}m`);
+      handlers.onSample(gcj02, accuracy, speedVal, now, true);
+      return;
+    }
+
+    if (this.stationaryEnabled && this.detectStationary()) {
       if (!this.isStationary) {
         this.isStationary = true;
+        AppLogger.keyInfo('静止', `进入静止状态`);
       }
       return;
     }
@@ -276,12 +274,14 @@ export class TrackLocationService {
         return;
       }
       this.isStationary = false;
+      AppLogger.keyInfo('静止', `退出静止状态`);
     }
 
     const dist: number = calculateDistance(gcj02, this.lastRecordedPoint);
     const config = MODE_CONFIG[this.currentMode];
     if (dist >= config.distanceInterval) {
       this.lastRecordedPoint = gcj02;
+      AppLogger.keyInfo('定位', `打点 距上个点${Math.round(dist)}m 精度=${Math.round(accuracy)}m 速度=${speedVal.toFixed(1)}m/s`);
       handlers.onSample(gcj02, accuracy, speedVal, now);
     }
   }
@@ -290,15 +290,15 @@ export class TrackLocationService {
     gcj02: mapCommon.LatLng, accuracy: number, speed: number, timestamp: number,
     handlers: LocationHandlers
   ): void {
-    this.sleepMonitorPoints.push({ gcj02: gcj02, accuracy: accuracy, speed: speed, timestamp: timestamp } as SleepMonitorPoint);
-
     if (this.detectSleepMovement(gcj02)) {
-      this.exitSleepMode(handlers);
+      AppLogger.keyInfo('睡眠', `检测到真实移动，退出睡眠`);
+      this.exitSleepMode();
       return;
     }
 
     if (!this.isInSleepTimeWindow()) {
-      this.exitSleepMode(handlers);
+      AppLogger.keyInfo('睡眠', `超过睡眠时段，退出睡眠`);
+      this.exitSleepMode();
     }
   }
 
@@ -317,9 +317,10 @@ export class TrackLocationService {
     this.isStationary = false;
     this.isInSleepMode = false;
     this.sleepOriginPoint = null;
-    this.sleepMonitorPoints = [];
+
     this.sleepDistances = [];
     this.sleepExitTime = 0;
+    AppLogger.keyInfo('定位', `定位服务已停止`);
   }
 
   switchMode(mode: number): void {
@@ -332,6 +333,7 @@ export class TrackLocationService {
     }
     this.currentMode = this.userMode;
     this.reSubscribe();
+    AppLogger.keyInfo('定位', `切换记录模式 → ${MODE_CONFIG[this.currentMode].label}`);
   }
 
   private detectStationary(): boolean {

@@ -13,7 +13,7 @@ import { mapCommon } from '@kit.MapKit';
 import { preferences } from '@kit.ArkData';
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { TrackPointRecord, VisibleRange, TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY, PREF_NAME, PREF_KEY_TIME_VIEW, PREF_KEY_CUSTOM_START, PREF_KEY_CUSTOM_END, TAG } from '../model/TrackTypes';
+import { TrackPointRecord, VisibleRange, TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY, PREF_NAME, PREF_KEY_TIME_VIEW, PREF_KEY_CUSTOM_START, PREF_KEY_CUSTOM_END, ONE_DAY_MS, TAG } from '../model/TrackTypes';
 import { getDayStartTs, getDayEndTs, getDayKey, calculateDistance } from '../common/TrackUtils';
 
 // applyTimeView 计算出的可见集（纯数据，供页面写入 @State 并驱动地图重绘）
@@ -178,7 +178,7 @@ export class TimeViewModel {
     }
   }
 
-  // 恢复「时间范围」视图选择与自定义起止日期（默认今日）
+  // 恢复「时间范围」视图选择与自定义日期（默认昨天）
   loadPrefs(): void {
     if (!this.context) {
       return;
@@ -186,17 +186,15 @@ export class TimeViewModel {
     try {
       const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
       let idx: number = pref.getSync(PREF_KEY_TIME_VIEW, TIME_VIEW_TODAY) as number;
-      // 仅允许 0/1/2 三态，非法值回退今日
       if (idx < 0 || idx > 2) {
         idx = TIME_VIEW_TODAY;
       }
       this.timeViewIndex = idx;
       let cs: number = pref.getSync(PREF_KEY_CUSTOM_START, 0) as number;
       let ce: number = pref.getSync(PREF_KEY_CUSTOM_END, 0) as number;
-      // 自定义起止未设置时回退为今天，避免空范围
       if (cs <= 0 || ce <= 0) {
-        cs = getDayStartTs(Date.now());
-        ce = getDayEndTs(Date.now());
+        cs = getDayStartTs(Date.now() - ONE_DAY_MS);
+        ce = getDayEndTs(Date.now() - ONE_DAY_MS);
       }
       this.customStartTs = cs;
       this.customEndTs = ce;

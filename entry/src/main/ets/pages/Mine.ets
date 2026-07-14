@@ -22,6 +22,7 @@ export struct Mine {
 
   @Link recordMode: RecordMode;
   @Link sleepModeEnabled: boolean;
+  @Link stationaryEnabled: boolean;
   @Link hasApproximatelyLocation: boolean;
   @Link hasLocation: boolean;
   @Link hasBackgroundLocation: boolean;
@@ -35,6 +36,7 @@ export struct Mine {
   onNightModeChange: (index: number) => void = () => {};
   onRecordModeChange: (mode: number) => void = () => {};
   onSleepModeChange: (enabled: boolean) => void = () => {};
+  onStationaryChange: (enabled: boolean) => void = () => {};
 
   recordModeNames: string[] = ['均衡', '耗电'];
 
@@ -93,6 +95,12 @@ export struct Mine {
 
           Column() {
             Column() {
+              CardItem({
+                label: '运行日志',
+                symbol: $r('sys.symbol.doc_text'),
+                onClickEvent: () => { this.mainNavStack.pushPath({ name: 'LogViewer' }); }
+              })
+              Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
               CardItem({
                 label: '设置',
                 symbol: $r('sys.symbol.gearshape'),

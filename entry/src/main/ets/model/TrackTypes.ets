@@ -34,7 +34,7 @@ export interface RecordModeConfig {
 }
 
 export const MODE_CONFIG: RecordModeConfig[] = [
-  { timeInterval: 20, distanceInterval: 100, label: '均衡' },
+  { timeInterval: 20, distanceInterval: 90, label: '均衡' },
   { timeInterval: 5,  distanceInterval: 30,  label: '耗电' },
   { timeInterval: 60, distanceInterval: 200, label: '睡眠' },
 ];
@@ -90,6 +90,7 @@ export const PREF_KEY_RECORD_MODE: string = 'recordModeIndex';
 export const PREF_KEY_NIGHT_MODE: string = 'nightModeIndex';
 // 轻量偏好存储：持久化睡眠模式开关
 export const PREF_KEY_SLEEP_MODE: string = 'sleepModeEnabled';
+export const PREF_KEY_STATIONARY: string = 'stationaryEnabled';
 
 
 // 时间范围视图索引常量

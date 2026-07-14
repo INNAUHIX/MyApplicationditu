@@ -26,7 +26,7 @@ import {
   TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY,
   ONE_DAY_MS
 } from '../model/TrackTypes';
-import { calculateDistance, formatDistance, getDayStartTs, getDayEndTs } from '../common/TrackUtils';
+import { calculateDistance, formatDistance, getDayStartTs, getDayEndTs, getDayKey } from '../common/TrackUtils';
 
 @Component
 export struct FootprintTab {
@@ -126,6 +126,14 @@ export struct FootprintTab {
     await this.db.init(ctx);
     const records = await this.db.loadAll();
     this.timeModel.setAllPoints(records);
+    if (records.length > 0) {
+      const last = records[records.length - 1];
+      this.locationSvc.setLastRecordedPoint(
+        { latitude: last.latitude, longitude: last.longitude },
+        getDayKey(last.timestamp)
+      );
+    }
+
     await this.mapManager.createRedDotIcon();
     this.refreshVisibleView();
     await this.permissionFlow(ctx);
@@ -194,21 +202,23 @@ export struct FootprintTab {
     this.isStationary = this.locationSvc.stationary;
   }
 
-  private onLocationSample(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number): void {
+  private onLocationSample(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number, isInitial?: boolean): void {
     this.isStationary = this.locationSvc.stationary;
 
-    this.recordTrackPoint(latLng, accuracy, speed, timestamp);
+    this.recordTrackPoint(latLng, accuracy, speed, timestamp, isInitial);
   }
 
-  private recordTrackPoint(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number): void {
+  private recordTrackPoint(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number, isInitial?: boolean): void {
     const ts: number = timestamp ?? Date.now();
     const rec: TrackPointRecord = { latitude: latLng.latitude, longitude: latLng.longitude, timestamp: ts, accuracy: accuracy, speed: speed };
     this.timeModel.addPoint(rec);
     if (this.timeModel.isInVisibleRange(ts)) {
       const prevLast: mapCommon.LatLng | null = this.trackPoints.length > 0 ? this.trackPoints[this.trackPoints.length - 1] : null;
-      this.trackPoints.push(latLng);
+      if (!isInitial) {
+        this.trackPoints.push(latLng);
+      }
       this.trackCount = this.trackPoints.length;
-      if (prevLast) { this.totalDistance += calculateDistance(prevLast, latLng); }
+      if (!isInitial && prevLast) { this.totalDistance += calculateDistance(prevLast, latLng); }
       this.footprintPoints.push(latLng);
       this.lastFootprintPoint = latLng;
       this.mapManager.refreshOverlay(this.displayMode, this.trackPoints, this.footprintPoints);
@@ -241,22 +251,15 @@ export struct FootprintTab {
 
   private showCustomDatePicker(): void {
     const todayStart: number = getDayStartTs(Date.now());
-    const todayEnd: number = getDayEndTs(Date.now());
-    const startInit: number = this.timeModel.customStart > 0 ? this.timeModel.customStart : todayStart;
+    const yesterdayStart: number = getDayStartTs(Date.now() - ONE_DAY_MS);
+    const yesterdayEnd: number = getDayEndTs(Date.now() - ONE_DAY_MS);
     DatePickerDialog.show({
-      start: new Date(todayStart - 365 * ONE_DAY_MS), end: new Date(todayEnd), selected: new Date(startInit),
+      start: new Date(todayStart - 365 * ONE_DAY_MS), end: new Date(yesterdayEnd), selected: new Date(this.timeModel.customStart > 0 ? this.timeModel.customStart : yesterdayStart),
       onAccept: (value: DatePickerResult) => {
-        const s: number = getDayStartTs(new Date(value.year, (value.month ?? 1) - 1, value.day ?? 1).getTime());
-        const endInit: number = this.timeModel.customEnd > 0 ? this.timeModel.customEnd : Date.now();
-        DatePickerDialog.show({
-          start: new Date(s), end: new Date(todayEnd), selected: new Date(endInit),
-          onAccept: (value2: DatePickerResult) => {
-            let e: number = getDayEndTs(new Date(value2.year, (value2.month ?? 1) - 1, value2.day ?? 1).getTime());
-            if (e < s) { e = getDayEndTs(s); }
-            this.timeModel.setCustomRange(s, e);
-            this.refreshVisibleView();
-          }
-        });
+        const s: number = getDayStartTs(new Date(value.year, value.month ?? 0, value.day ?? 1).getTime());
+        const e: number = getDayEndTs(s);
+        this.timeModel.setCustomRange(s, e);
+        this.refreshVisibleView();
       }
     });
   }
@@ -344,6 +347,18 @@ export struct FootprintTab {
           dragBar: true, showClose: true, onDisappear: () => { this.isShowMapToolSheet = false; }
         })
         .position({ x: '100%', y: '60%' }).markAnchor({ x: '100%', y: '50%' }).translate({ x: -16 })
+        .transition({ type: TransitionType.All, opacity: 0, translate: { x: 16, y: 0 } })
+      }
+
+      // 右侧新增胶囊（地图工具入口胶囊下方），纯图标，暂不绑定点击
+      if (!this.immersive) {
+        Row() {
+          SymbolGlyph($r('sys.symbol.Investment_stable_value_add')).fontSize(20).fontColor([$r('sys.color.font_primary')])
+        }
+        .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
+        .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
+        .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
+        .position({ x: '100%', y: '60%' }).markAnchor({ x: '100%', y: '50%' }).translate({ x: -16, y: 50 })  // 紧贴画板正下方 10vp（两胶囊半高各约20 + 间距10）
         .transition({ type: TransitionType.All, opacity: 0, translate: { x: 16, y: 0 } })
       }
     }

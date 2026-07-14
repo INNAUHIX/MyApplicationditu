@@ -69,7 +69,7 @@ export class MapOverlayManager {
     const imageSize: image.Size = { height: size, width: size };
     const imageOptions: image.InitializationOptions = {
       editable: true,
-      pixelFormat: image.PixelMapFormat.BGRA_8888,
+      pixelFormat: image.PixelMapFormat.RGBA_8888,
       size: imageSize
     };
     const buffer: ArrayBuffer = new ArrayBuffer(size * size * 4);
@@ -77,7 +77,6 @@ export class MapOverlayManager {
     const imageData = new Uint8Array(buffer);
     const center = size / 2;
     const radius = size / 2 - 1;
-    // 将传入的 ARGB 颜色（0xAARRGGBB）拆分为 R/G/B/A 分量
     const alpha: number = (color >> 24) & 0xFF;
     const red: number = (color >> 16) & 0xFF;
     const green: number = (color >> 8) & 0xFF;
@@ -89,10 +88,9 @@ export class MapOverlayManager {
         const dist = Math.sqrt(dx * dx + dy * dy);
         const offset = (y * size + x) * 4;
         if (dist <= radius) {
-          // BGRA_8888 内存布局：B, G, R, A
-          imageData[offset] = blue;
+          imageData[offset] = red;
           imageData[offset + 1] = green;
-          imageData[offset + 2] = red;
+          imageData[offset + 2] = blue;
           imageData[offset + 3] = alpha;
         } else {
           imageData[offset] = 0;
@@ -109,7 +107,7 @@ export class MapOverlayManager {
   // 初始化地图初始参数：按已保存的地图样式在初始化阶段就预置 dayNightMode 与 styleId，让首帧直接对
   buildMapOptions(mapStyleIndex: number): mapCommon.MapOptions {
     const initialDayNight: mapCommon.DayNightMode =
-      (mapStyleIndex === 2 || mapStyleIndex === 3) ? mapCommon.DayNightMode.DAY : mapCommon.DayNightMode.NIGHT;
+      (mapStyleIndex === 2 || mapStyleIndex === 3) ? mapCommon.DayNightMode.DAY : mapCommon.DayNightMode.AUTO;
     const initialStyleId: string | undefined =
       mapStyleIndex === 1 ? MAP_STYLE_DARK_ID :
       mapStyleIndex === 2 ? MAP_STYLE_LIGHT_ID : undefined;
@@ -140,12 +138,12 @@ export class MapOverlayManager {
       if (!err) {
         this.mapController = mapController;
 
-        // 底部留白：将缩放控件、"我的位置"按钮整体顶到悬浮 tab 栏上方，避免被遮挡
+        // 底部留白：仅避让系统导航条（状态栏/底部 Tab 由浮层与页面布局处理）
         this.mapController.setPadding({
           left: 0,
           top: 0,
           right: 0,
-          bottom: this.navBarHeight + 90
+          bottom: this.navBarHeight
         });
 
         // 关闭系统缩放控件（initMapOptions 已设 zoomControlsEnabled=false，这里再次确保运行时关闭）
@@ -190,7 +188,7 @@ export class MapOverlayManager {
     }
   }
 
-  // 设置地图底部留白（沉浸模式时仅避让导航条，否则抬到 tab 栏上方）
+  // 设置地图底部留白（仅避让系统导航条；普通/沉浸模式保持一致，避免控件跳动）
   setBottomPadding(immersive: boolean): void {
     if (!this.mapController) {
       return;
@@ -199,7 +197,7 @@ export class MapOverlayManager {
       left: 0,
       top: 0,
       right: 0,
-      bottom: immersive ? this.navBarHeight : this.navBarHeight + 90
+      bottom: this.navBarHeight
     });
   }
 
@@ -227,7 +225,7 @@ export class MapOverlayManager {
     if (!this.trackPolyline) {
       const polylineOption: mapCommon.MapPolylineOptions = {
         points: trackPoints,
-        width: 6,
+        width: 8,
         color: 0xFFFF0000,
         geodesic: false
       };
