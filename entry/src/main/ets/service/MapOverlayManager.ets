@@ -16,6 +16,7 @@ import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { image } from '@kit.ImageKit';
 import { util } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import {
   TIME_VIEW_OVERVIEW,
   MAP_STYLE_DARK_ID,
@@ -23,6 +24,8 @@ import {
 
   TAG
 } from '../model/TrackTypes';
+
+const TAG_LOG: string = 'MapOverlay';
 
 export class MapOverlayManager {
   private mapController?: map.MapComponentController;
@@ -69,7 +72,7 @@ export class MapOverlayManager {
     const imageSize: image.Size = { height: size, width: size };
     const imageOptions: image.InitializationOptions = {
       editable: true,
-      pixelFormat: image.PixelMapFormat.RGBA_8888,
+      pixelFormat: image.PixelMapFormat.BGRA_8888,
       size: imageSize
     };
     const buffer: ArrayBuffer = new ArrayBuffer(size * size * 4);
@@ -77,6 +80,7 @@ export class MapOverlayManager {
     const imageData = new Uint8Array(buffer);
     const center = size / 2;
     const radius = size / 2 - 1;
+    // 将传入的 ARGB 颜色（0xAARRGGBB）拆分为 R/G/B/A 分量
     const alpha: number = (color >> 24) & 0xFF;
     const red: number = (color >> 16) & 0xFF;
     const green: number = (color >> 8) & 0xFF;
@@ -88,9 +92,10 @@ export class MapOverlayManager {
         const dist = Math.sqrt(dx * dx + dy * dy);
         const offset = (y * size + x) * 4;
         if (dist <= radius) {
-          imageData[offset] = red;
+          // BGRA_8888 内存布局：B, G, R, A
+          imageData[offset] = blue;
           imageData[offset + 1] = green;
-          imageData[offset + 2] = blue;
+          imageData[offset + 2] = red;
           imageData[offset + 3] = alpha;
         } else {
           imageData[offset] = 0;
@@ -107,7 +112,7 @@ export class MapOverlayManager {
   // 初始化地图初始参数：按已保存的地图样式在初始化阶段就预置 dayNightMode 与 styleId，让首帧直接对
   buildMapOptions(mapStyleIndex: number): mapCommon.MapOptions {
     const initialDayNight: mapCommon.DayNightMode =
-      (mapStyleIndex === 2 || mapStyleIndex === 3) ? mapCommon.DayNightMode.DAY : mapCommon.DayNightMode.AUTO;
+      (mapStyleIndex === 2 || mapStyleIndex === 3) ? mapCommon.DayNightMode.DAY : mapCommon.DayNightMode.NIGHT;
     const initialStyleId: string | undefined =
       mapStyleIndex === 1 ? MAP_STYLE_DARK_ID :
       mapStyleIndex === 2 ? MAP_STYLE_LIGHT_ID : undefined;
@@ -138,12 +143,12 @@ export class MapOverlayManager {
       if (!err) {
         this.mapController = mapController;
 
-        // 底部留白：仅避让系统导航条（状态栏/底部 Tab 由浮层与页面布局处理）
+        // 底部留白：将缩放控件、"我的位置"按钮整体顶到悬浮 tab 栏上方，避免被遮挡
         this.mapController.setPadding({
           left: 0,
           top: 0,
           right: 0,
-          bottom: this.navBarHeight
+          bottom: this.navBarHeight + 90
         });
 
         // 关闭系统缩放控件（initMapOptions 已设 zoomControlsEnabled=false，这里再次确保运行时关闭）
@@ -153,10 +158,10 @@ export class MapOverlayManager {
         try {
           this.mapController.setApproveNumberEnabled(false);
         } catch (e) {
-          console.error(TAG, `setApproveNumberEnabled failed: ${JSON.stringify(e)}`);
+          hilog.error(0x0000, TAG_LOG, 'setApproveNumberEnabled failed: %{public}s', JSON.stringify(e));
         }
 
-        console.info(TAG, 'Map initialized successfully');
+        hilog.info(0x0000, TAG_LOG, 'Map initialized successfully');
 
         // 点击地图空白区域切换沉浸模式：交给页面处理（涉及 immersive / tabs / padding）
         this.mapEventManager = this.mapController.getEventManager();
@@ -169,7 +174,7 @@ export class MapOverlayManager {
         this.applyMapStyle(this.initialMapStyleIndex);
         onMapReady();
       } else {
-        console.error(`Failed to initialize the map, code: ${err.code}, message: ${err.message}`);
+        hilog.error(0x0000, TAG_LOG, 'Failed to initialize the map, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
       }
     };
   }
@@ -181,14 +186,14 @@ export class MapOverlayManager {
     }
     try {
       this.mapController.setBuildingEnabled(true);
-      console.info(TAG, '3D building enabled');
+      hilog.info(0x0000, TAG_LOG, '3D building enabled');
     } catch (err) {
       const error = err as BusinessError;
-      console.error(`Failed to enable 3D building, code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'Failed to enable 3D building, code: %{public}s, message: %{public}s', error.code.toString(), error.message.toString());
     }
   }
 
-  // 设置地图底部留白（仅避让系统导航条；普通/沉浸模式保持一致，避免控件跳动）
+  // 设置地图底部留白（沉浸模式时仅避让导航条，否则抬到 tab 栏上方）
   setBottomPadding(immersive: boolean): void {
     if (!this.mapController) {
       return;
@@ -197,7 +202,7 @@ export class MapOverlayManager {
       left: 0,
       top: 0,
       right: 0,
-      bottom: this.navBarHeight
+      bottom: immersive ? this.navBarHeight : this.navBarHeight + 90
     });
   }
 
@@ -225,7 +230,7 @@ export class MapOverlayManager {
     if (!this.trackPolyline) {
       const polylineOption: mapCommon.MapPolylineOptions = {
         points: trackPoints,
-        width: 8,
+        width: 6,
         color: 0xFFFF0000,
         geodesic: false
       };
@@ -234,7 +239,7 @@ export class MapOverlayManager {
           this.trackPolyline = polyline;
         }
       }).catch((err: BusinessError) => {
-        console.error(`addPolyline failed, code: ${err.code}, message: ${err.message}`);
+        hilog.error(0x0000, TAG_LOG, 'addPolyline failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
       });
     } else {
       this.trackPolyline.setPoints(trackPoints);
@@ -259,7 +264,7 @@ export class MapOverlayManager {
   // 海量点模式：首次创建红色圆点覆盖物，之后仅 setItems 增量更新
   private updateMassPointOverlay(footprintPoints: mapCommon.LatLng[]): void {
     if (!this.redDotIcon) {
-      console.warn(TAG, 'redDotIcon is not ready');
+      hilog.warn(0x0000, TAG_LOG, 'redDotIcon is not ready');
       return;
     }
     if (!this.massPointOverlay) {
@@ -273,7 +278,7 @@ export class MapOverlayManager {
           this.massPointOverlay = overlay;
         }
       }).catch((err: BusinessError) => {
-        console.error(`addMassPointOverlay failed, code: ${err.code}, message: ${err.message}`);
+        hilog.error(0x0000, TAG_LOG, 'addMassPointOverlay failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
       });
     } else {
       this.massPointOverlay.setItems(this.buildMassPointItems(footprintPoints));
@@ -331,7 +336,7 @@ export class MapOverlayManager {
   // 根据 nightModeIndex(0 跟随系统 /1 普通 /2 夜间) 设置地图日夜模式
   applyNightMode(index: number): void {
     if (!this.mapController) {
-      console.warn(TAG, 'mapController is null, night mode applies after map ready');
+      hilog.warn(0x0000, TAG_LOG, 'mapController is null, night mode applies after map ready');
       return;
     }
     let mode: mapCommon.DayNightMode;
@@ -347,10 +352,10 @@ export class MapOverlayManager {
     }
     try {
       this.mapController.setDayNightMode(mode);
-      console.info(TAG, `Day night mode set to ${mode}`);
+      hilog.info(0x0000, TAG_LOG, 'Day night mode set to %{public}s', mode.toString());
     } catch (err) {
       const error = err as BusinessError;
-      console.error(`Failed to set day night mode, code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'Failed to set day night mode, code: %{public}s, message: %{public}s', error.code.toString(), error.message.toString());
     }
   }
 
@@ -368,9 +373,9 @@ export class MapOverlayManager {
         styleId: MAP_STYLE_DARK_ID
       };
       controller.setCustomMapStyle(param).then(() => {
-        console.info(TAG, 'Dark night map style applied');
+        hilog.info(0x0000, TAG_LOG, 'Dark night map style applied');
       }).catch((err: BusinessError) => {
-        console.error(`setCustomMapStyle failed, code: ${err.code}, message: ${err.message}`);
+        hilog.error(0x0000, TAG_LOG, 'setCustomMapStyle failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
       });
     } else if (index === 2) {
       // 浅白样式：固定白天模式 + 套用自定义浅白样式
@@ -379,35 +384,35 @@ export class MapOverlayManager {
         styleId: MAP_STYLE_LIGHT_ID
       };
       controller.setCustomMapStyle(param).then(() => {
-        console.info(TAG, 'Light map style applied');
+        hilog.info(0x0000, TAG_LOG, 'Light map style applied');
       }).catch((err: BusinessError) => {
-        console.error(`setCustomMapStyle failed, code: ${err.code}, message: ${err.message}`);
+        hilog.error(0x0000, TAG_LOG, 'setCustomMapStyle failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
       });
     } else if (index === 3) {
-      // 测试样式：固定白天模式 + 套用本地自定义浅色极简样式（从 rawfile 读取 JSON 字符串注入）
+      // 大白样式：固定白天模式 + 套用本地自定义浅色极简样式（从 rawfile 读取 JSON 字符串注入）
       controller.setDayNightMode(mapCommon.DayNightMode.DAY);
       const styleContent: string = this.readMapStyleTestJson();
       const param: mapCommon.CustomMapStyleOptions = { styleContent: styleContent };
       controller.setCustomMapStyle(param).then(() => {
-        console.info(TAG, 'Test map style applied');
+        hilog.info(0x0000, TAG_LOG, 'Dabai map style applied');
       }).catch((err: BusinessError) => {
-        console.error(`setCustomMapStyle failed, code: ${err.code}, message: ${err.message}`);
+        hilog.error(0x0000, TAG_LOG, 'setCustomMapStyle failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
       });
     } else {
       // 经典样式：清空自定义样式（空内容覆盖），退回内置样式
       const param: mapCommon.CustomMapStyleOptions = { styleContent: '[]' };
       controller.setCustomMapStyle(param).then(() => {
-        console.info(TAG, 'Classic map style applied');
+        hilog.info(0x0000, TAG_LOG, 'Classic map style applied');
       }).catch((err: BusinessError) => {
-        console.error(`setCustomMapStyle failed, code: ${err.code}, message: ${err.message}`);
+        hilog.error(0x0000, TAG_LOG, 'setCustomMapStyle failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
       });
     }
   }
 
-  // 从 rawfile 同步读取地图测试样式 JSON 字符串
+  // 从 rawfile 同步读取地图大白样式 JSON 字符串
   private readMapStyleTestJson(): string {
     if (!this.context) {
-      console.error(`${TAG} readMapStyleTestJson: context is null`);
+      hilog.error(0x0000, TAG_LOG, 'readMapStyleTestJson: context is null');
       return '[]';
     }
     try {
@@ -415,7 +420,7 @@ export class MapOverlayManager {
       const decoder: util.TextDecoder = util.TextDecoder.create('utf-8');
       return decoder.decodeToString(rawContent);
     } catch (e) {
-      console.error(`${TAG} readMapStyleTestJson failed: ${JSON.stringify(e)}`);
+      hilog.error(0x0000, TAG_LOG, 'readMapStyleTestJson failed: %{public}s', JSON.stringify(e));
       return '[]';
     }
   }

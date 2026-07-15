@@ -13,8 +13,11 @@ import { mapCommon } from '@kit.MapKit';
 import { preferences } from '@kit.ArkData';
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { TrackPointRecord, VisibleRange, TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY, PREF_NAME, PREF_KEY_TIME_VIEW, PREF_KEY_CUSTOM_START, PREF_KEY_CUSTOM_END, ONE_DAY_MS, TAG } from '../model/TrackTypes';
-import { getDayStartTs, getDayEndTs, getDayKey, calculateDistance } from '../common/TrackUtils';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { TrackPointRecord, VisibleRange, StatResult, TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY, PREF_NAME, PREF_KEY_TIME_VIEW, PREF_KEY_CUSTOM_START, PREF_KEY_CUSTOM_END, TAG } from '../model/TrackTypes';
+import { getDayStartTs, getDayEndTs, getDayKey, calculateDistance, computeStats as computeStatsUtil } from '../common/TrackUtils';
+
+const TAG_LOG: string = 'TimeVM';
 
 // applyTimeView 计算出的可见集（纯数据，供页面写入 @State 并驱动地图重绘）
 export interface VisibleData {
@@ -36,6 +39,8 @@ export class TimeViewModel {
   private currentDayKey: string = '';
   private dayCheckTimer: number | null = null;
   private context?: common.UIAbilityContext;
+  private cachedStats: StatResult | null = null;
+  private lastComputeCount: number = 0;
 
   setContext(ctx: common.UIAbilityContext): void {
     this.context = ctx;
@@ -69,6 +74,19 @@ export class TimeViewModel {
 
   clearAll(): void {
     this.allTrackPoints = [];
+    this.cachedStats = null;
+    this.lastComputeCount = 0;
+  }
+
+  // 增量计算统计：若全量点数未变则直接返回缓存，否则全量重算并更新缓存
+  computeStats(): StatResult {
+    if (this.cachedStats !== null && this.allTrackPoints.length === this.lastComputeCount) {
+      return this.cachedStats;
+    }
+    const result = computeStatsUtil(this.allTrackPoints);
+    this.cachedStats = result;
+    this.lastComputeCount = this.allTrackPoints.length;
+    return result;
   }
 
   // 计算当前时间视图对应的可见时间范围 [startTs, endTs]
@@ -114,8 +132,8 @@ export class TimeViewModel {
       footprintPoints.push(latLng);
       lastFootprintPoint = latLng;
     }
-    console.info(TAG, `applyTimeView(${this.timeViewIndex}) -> visible ${trackPoints.length} points, ` +
-      `distance ${Math.round(totalDistance)}m`);
+    hilog.info(0x0000, TAG_LOG, 'applyTimeView(%{public}d) -> visible %{public}d points, distance %{public}dm',
+      this.timeViewIndex, trackPoints.length, Math.round(totalDistance));
     return { trackPoints, footprintPoints, totalDistance, lastFootprintPoint };
   }
 
@@ -174,11 +192,12 @@ export class TimeViewModel {
       pref.flushSync();
     } catch (e) {
       const error = e as BusinessError;
-      console.error(`saveTimeViewPrefs failed, code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'saveTimeViewPrefs failed, code: %{public}d, message: %{public}s',
+        error.code, error.message);
     }
   }
 
-  // 恢复「时间范围」视图选择与自定义日期（默认昨天）
+  // 恢复「时间范围」视图选择与自定义起止日期（默认今日）
   loadPrefs(): void {
     if (!this.context) {
       return;
@@ -186,21 +205,24 @@ export class TimeViewModel {
     try {
       const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
       let idx: number = pref.getSync(PREF_KEY_TIME_VIEW, TIME_VIEW_TODAY) as number;
+      // 仅允许 0/1/2 三态，非法值回退今日
       if (idx < 0 || idx > 2) {
         idx = TIME_VIEW_TODAY;
       }
       this.timeViewIndex = idx;
       let cs: number = pref.getSync(PREF_KEY_CUSTOM_START, 0) as number;
       let ce: number = pref.getSync(PREF_KEY_CUSTOM_END, 0) as number;
+      // 自定义起止未设置时回退为今天，避免空范围
       if (cs <= 0 || ce <= 0) {
-        cs = getDayStartTs(Date.now() - ONE_DAY_MS);
-        ce = getDayEndTs(Date.now() - ONE_DAY_MS);
+        cs = getDayStartTs(Date.now());
+        ce = getDayEndTs(Date.now());
       }
       this.customStartTs = cs;
       this.customEndTs = ce;
     } catch (e) {
       const error = e as BusinessError;
-      console.error(`loadTimeViewPrefs failed, code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'loadTimeViewPrefs failed, code: %{public}d, message: %{public}s',
+        error.code, error.message);
       this.timeViewIndex = TIME_VIEW_TODAY;
     }
   }

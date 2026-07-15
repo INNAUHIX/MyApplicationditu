@@ -14,6 +14,9 @@ import { RecordModePanel } from '../components/RecordModePanel';
 import { LocationPermPanel } from '../components/LocationPermPanel';
 import { SettingPanel } from '../components/SettingPanel';
 import { PermissionService } from '../service/PermissionService';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG_LOG: string = 'Mine';
 
 @Component
 export struct Mine {
@@ -22,21 +25,18 @@ export struct Mine {
 
   @Link recordMode: RecordMode;
   @Link sleepModeEnabled: boolean;
-  @Link stationaryEnabled: boolean;
   @Link hasApproximatelyLocation: boolean;
   @Link hasLocation: boolean;
   @Link hasBackgroundLocation: boolean;
   @Link nightModeIndex: number;
-  @Link trackCount: number;
+
 
   @State pushSwitchOn: boolean = false;
 
-  onClearTrack: () => void = () => {};
   onRefreshPermission: () => void = () => {};
   onNightModeChange: (index: number) => void = () => {};
   onRecordModeChange: (mode: number) => void = () => {};
   onSleepModeChange: (enabled: boolean) => void = () => {};
-  onStationaryChange: (enabled: boolean) => void = () => {};
 
   recordModeNames: string[] = ['均衡', '耗电'];
 
@@ -95,12 +95,6 @@ export struct Mine {
 
           Column() {
             Column() {
-              CardItem({
-                label: '运行日志',
-                symbol: $r('sys.symbol.doc_text'),
-                onClickEvent: () => { this.mainNavStack.pushPath({ name: 'LogViewer' }); }
-              })
-              Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
               CardItem({
                 label: '设置',
                 symbol: $r('sys.symbol.gearshape'),
@@ -177,8 +171,7 @@ export struct Mine {
     SettingPanel({
       nightModeIndex: $nightModeIndex,
       pushSwitchOn: $pushSwitchOn,
-      trackCount: $trackCount,
-      onClearTrack: () => { this.onClearTrack(); },
+
       onNightModeChange: (i: number) => { this.onNightModeChange(i); }
     })
   }

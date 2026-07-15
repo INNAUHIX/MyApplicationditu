@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.cer",
+          "certpath": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001A318EAD65236BEBFC9F1A53D5E6A8700CE435064CA601A77E1736F221F4E8001846B2C9F7DBFE",
-          "profile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.p7b",
+          "keyPassword": "0000001B65CB27BB0A7F9011E7522D8A8CE9ACA72A1D185CB12DA045AA1B3F09F876339061E47D71C5B1EC",
+          "profile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_GSEmz77PqpUcuXk3aSBpbdChGkF4mc7X9ADPYSA117k=.p12",
-          "storePassword": "0000001A27637E0BD286B4B8BFEE5B1D1D7C7A19DD27C7884F51B9BA06B297EDD9ACA1CADCB2735E91CC"
+          "storeFile": "C:\\Users\\liuze\\.ohos\\config\\default_MyApplicationditu_zgS_ssOXBo0cDhDb5wOzg3pHw48S0zcz4FZheW73ke0=.p12",
+          "storePassword": "0000001B5EC1021E1B622EBAAEADE8CDE6CBEF975C4260A2E82787567083EDA1705E390632001CC21817BD"
         }
       }
     ],

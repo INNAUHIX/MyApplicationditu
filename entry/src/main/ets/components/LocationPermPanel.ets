@@ -152,7 +152,7 @@ export struct LocationPermPanel {
         .borderRadius(16)
         .backgroundColor($r('sys.color.comp_background_list_card'))
         .onClick(() => {
-          const ctx = getContext(this) as common.UIAbilityContext;
+          const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
           this.permSvc.openPermissionSettings(ctx);
         })
       }
@@ -173,16 +173,16 @@ export struct LocationPermPanel {
   }
 
   private handlePermissionClick(type: string): void {
-    const ctx = getContext(this) as common.UIAbilityContext;
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
     if (type === 'approximately' && !this.hasApproximatelyLocation) {
-      this.permSvc.requestPermissions(ctx).then((state) => {
+      this.permSvc.requestPermissions(ctx, this.getUIContext()).then((state) => {
         this.hasApproximatelyLocation = state.hasApproximatelyLocation;
         this.hasLocation = state.hasLocation;
         this.hasBackgroundLocation = state.hasBackgroundLocation;
         this.onRefreshPermission();
       });
     } else if (type === 'location' && !this.hasLocation) {
-      this.permSvc.requestPermissions(ctx).then((state) => {
+      this.permSvc.requestPermissions(ctx, this.getUIContext()).then((state) => {
         this.hasApproximatelyLocation = state.hasApproximatelyLocation;
         this.hasLocation = state.hasLocation;
         this.hasBackgroundLocation = state.hasBackgroundLocation;

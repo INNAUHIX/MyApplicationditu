@@ -8,6 +8,7 @@
  * 已删除策略：漂移过滤、轮询模式（所有模式统一走距离触发）
  */
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { geoLocationManager } from '@kit.LocationKit';
 import { map, mapCommon } from '@kit.MapKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -16,45 +17,36 @@ import {
   MODE_CONFIG,
   STATIONARY_WINDOW,
   STATIONARY_RADIUS,
-  STATIONARY_EXIT_RADIUS,
-  SLEEP_START_HOUR,
   SLEEP_END_HOUR,
-  SLEEP_MOVEMENT_TREND_COUNT,
-  SLEEP_MOVEMENT_CUMULATIVE_DIST,
   SLEEP_MIN_ACTIVE_DURATION,
   TAG
 } from '../model/TrackTypes';
 import { calculateDistance, getDayKey } from '../common/TrackUtils';
-import { AppLogger } from '../common/logger/AppLogger';
+
+const TAG_LOG: string = 'TrackLocSvc';
 
 export interface LocationHandlers {
   onSample: (latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number, isInitial?: boolean) => void;
+  onLocationError?: (error: geoLocationManager.LocationError) => void;
+  onLocationEnabledChange?: (enabled: boolean) => void;
 }
 
 export class TrackLocationService {
   private recentPoints: mapCommon.LatLng[] = [];
-  private isStationary: boolean = false;
+
   private currentMode: RecordMode = RecordMode.BALANCED;
   private locationCallback?: (location: geoLocationManager.Location) => void;
+  private locationErrorCallback?: (error: geoLocationManager.LocationError) => void;
+  private locationEnabledCallback?: (state: boolean) => void;
   private lastRecordedPoint: mapCommon.LatLng | null = null;
   private lastRecordedDay: string = '';
 
-  setLastRecordedPoint(point: mapCommon.LatLng | null, dayKey: string = ''): void {
-    this.lastRecordedPoint = point;
-    this.lastRecordedDay = dayKey;
-  }
-
   private sleepModeEnabled: boolean = false;
-  private stationaryEnabled: boolean = true;
   private userMode: RecordMode = RecordMode.BALANCED;
   private isInSleepMode: boolean = false;
-  private sleepOriginPoint: mapCommon.LatLng | null = null;
-  private sleepDistances: number[] = [];
   private sleepExitTime: number = 0;
+  private sleepExitTimer: number | null = null;
 
-  get stationary(): boolean {
-    return this.isStationary;
-  }
 
   get mode(): RecordMode {
     return this.currentMode;
@@ -74,30 +66,17 @@ export class TrackLocationService {
     }
   }
 
-  setStationaryEnabled(enabled: boolean): void {
-    this.stationaryEnabled = enabled;
-    if (!enabled) {
-      this.isStationary = false;
-    }
-  }
-
   setUserMode(mode: RecordMode): void {
     this.userMode = mode;
   }
 
   private isInSleepTimeWindow(): boolean {
     const hour: number = new Date().getHours();
-    if (SLEEP_START_HOUR === 0 && SLEEP_END_HOUR > 0) {
-      return hour < SLEEP_END_HOUR;
-    }
-    return hour >= SLEEP_START_HOUR || hour < SLEEP_END_HOUR;
+    return hour < SLEEP_END_HOUR;
   }
 
   checkAndEnterSleep(): void {
     if (!this.sleepModeEnabled || this.isInSleepMode || !this.isInSleepTimeWindow()) {
-      return;
-    }
-    if (this.sleepExitTime > 0 && (Date.now() - this.sleepExitTime) < SLEEP_MIN_ACTIVE_DURATION) {
       return;
     }
     if (this.recentPoints.length >= STATIONARY_WINDOW && this.detectStationary()) {
@@ -107,71 +86,55 @@ export class TrackLocationService {
 
   private enterSleepMode(): void {
     this.isInSleepMode = true;
-    this.sleepOriginPoint = this.lastRecordedPoint;
-    this.sleepDistances = [];
     this.currentMode = RecordMode.SLEEP;
     this.reSubscribe();
-    AppLogger.keyInfo('睡眠', `进入睡眠模式`);
+    this.scheduleSleepExit();
+    hilog.info(0x0000, TAG_LOG, 'Sleep mode entered');
   }
 
   private exitSleepMode(): void {
     if (!this.isInSleepMode) {
       return;
     }
+    this.clearSleepExitTimer();
     this.isInSleepMode = false;
-    this.sleepOriginPoint = null;
-    this.sleepDistances = [];
     this.sleepExitTime = Date.now();
     this.currentMode = this.userMode;
     this.reSubscribe();
-    AppLogger.keyInfo('睡眠', `退出睡眠模式，恢复正常记录`);
+    hilog.info(0x0000, TAG_LOG, 'Sleep mode exited');
   }
 
-  private detectSleepMovement(gcj02: mapCommon.LatLng): boolean {
-    if (!this.sleepOriginPoint) {
-      return false;
+  private scheduleSleepExit(): void {
+    this.clearSleepExitTimer();
+    const now: Date = new Date();
+    const exitTime: Date = new Date(now);
+    exitTime.setHours(SLEEP_END_HOUR, 0, 0, 0);
+    const delay: number = exitTime.getTime() - now.getTime();
+    if (delay <= 0) {
+      return;
     }
-    const dist: number = calculateDistance(this.sleepOriginPoint, gcj02);
-    this.sleepDistances.push(dist);
-    if (this.sleepDistances.length > SLEEP_MOVEMENT_TREND_COUNT) {
-      this.sleepDistances.shift();
-    }
-    if (this.sleepDistances.length < SLEEP_MOVEMENT_TREND_COUNT) {
-      return false;
-    }
-    if (dist < SLEEP_MOVEMENT_CUMULATIVE_DIST) {
-      return false;
-    }
-    for (let i = 1; i < this.sleepDistances.length; i++) {
-      if (this.sleepDistances[i] < this.sleepDistances[i - 1]) {
-        return false;
-      }
-    }
-    return true;
+    this.sleepExitTimer = setTimeout(() => {
+      this.sleepExitTimer = null;
+      this.exitSleepMode();
+    }, delay);
   }
 
-  checkAndExitSleepOnTime(): void {
-    if (this.isInSleepMode && !this.isInSleepTimeWindow()) {
-      this.isInSleepMode = false;
-      this.sleepOriginPoint = null;
-      this.sleepDistances = [];
-      this.sleepExitTime = 0;
-      this.currentMode = this.userMode;
-      this.reSubscribe();
-      AppLogger.keyInfo('睡眠', `定时检查：超过睡眠时段，退出睡眠`);
+  private clearSleepExitTimer(): void {
+    if (this.sleepExitTimer !== null) {
+      clearTimeout(this.sleepExitTimer);
+      this.sleepExitTimer = null;
     }
   }
-
 
   private reSubscribe(): void {
     if (this.locationCallback) {
       try {
         geoLocationManager.off('locationChange', this.locationCallback);
         geoLocationManager.on('locationChange', this.buildLocationRequest(), this.locationCallback);
-        AppLogger.info('定位', `重新订阅 间隔=${MODE_CONFIG[this.currentMode].timeInterval}s`);
+        hilog.info(0x0000, TAG_LOG, `Record mode switched to ${MODE_CONFIG[this.currentMode].label}`);
       } catch (err) {
         const error = err as BusinessError;
-        AppLogger.error('定位', `重新订阅失败 code=${error.code}`);
+        hilog.error(0x0000, TAG_LOG, 'switchMode failed, code: %{public}d, message: %{public}s', error.code, error.message);
       }
     }
   }
@@ -188,15 +151,77 @@ export class TrackLocationService {
   }
 
   startLocation(handlers: LocationHandlers): void {
+    // 检查定位开关是否开启
+    try {
+      if (!geoLocationManager.isLocationEnabled()) {
+        hilog.warn(0x0000, TAG_LOG, 'Location switch is off, cannot start tracking');
+        if (handlers.onLocationError) {
+          handlers.onLocationError(geoLocationManager.LocationError.LOCATING_FAILED_LOCATION_SWITCH_OFF);
+        }
+        return;
+      }
+    } catch (err) {
+      const error = err as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'isLocationEnabled check failed, code: %{public}d, message: %{public}s', error.code, error.message);
+    }
+
+    // 清理旧订阅
     if (this.locationCallback) {
       try {
         geoLocationManager.off('locationChange', this.locationCallback);
       } catch (err) {
-        console.warn(TAG, 'Failed to unsubscribe old locationChange listener');
+        hilog.warn(0x0000, TAG_LOG, 'Failed to unsubscribe old locationChange listener');
       }
       this.locationCallback = undefined;
     }
+    if (this.locationErrorCallback) {
+      try {
+        geoLocationManager.off('locationError', this.locationErrorCallback);
+      } catch (err) {
+        hilog.warn(0x0000, TAG_LOG, 'Failed to unsubscribe old locationError listener');
+      }
+      this.locationErrorCallback = undefined;
+    }
+    if (this.locationEnabledCallback) {
+      try {
+        geoLocationManager.off('locationEnabledChange', this.locationEnabledCallback);
+      } catch (err) {
+        hilog.warn(0x0000, TAG_LOG, 'Failed to unsubscribe old locationEnabledChange listener');
+      }
+      this.locationEnabledCallback = undefined;
+    }
 
+    this.lastRecordedPoint = null;
+
+    // 订阅持续定位错误（权限被撤销、开关被关闭、网络不可用等）
+    this.locationErrorCallback = (errCode: geoLocationManager.LocationError): void => {
+      hilog.warn(0x0000, TAG_LOG, `Location error: ${errCode}`);
+      if (handlers.onLocationError) {
+        handlers.onLocationError(errCode);
+      }
+    };
+    try {
+      geoLocationManager.on('locationError', this.locationErrorCallback);
+    } catch (err) {
+      const error = err as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'Failed to subscribe locationError, code: %{public}d, message: %{public}s', error.code, error.message);
+    }
+
+    // 订阅定位开关状态变化（用户手动开关定位时通知调用方）
+    this.locationEnabledCallback = (enabled: boolean): void => {
+      hilog.info(0x0000, TAG_LOG, `Location enabled changed: ${enabled}`);
+      if (handlers.onLocationEnabledChange) {
+        handlers.onLocationEnabledChange(enabled);
+      }
+    };
+    try {
+      geoLocationManager.on('locationEnabledChange', this.locationEnabledCallback);
+    } catch (err) {
+      const error = err as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'Failed to subscribe locationEnabledChange, code: %{public}d, message: %{public}s', error.code, error.message);
+    }
+
+    // 订阅位置变化
     this.locationCallback = (location: geoLocationManager.Location) => {
       map.convertCoordinate(
         mapCommon.CoordinateType.WGS84,
@@ -205,11 +230,16 @@ export class TrackLocationService {
       ).then((gcj02: mapCommon.LatLng) => {
         this.handleFix(gcj02, location.accuracy, location.speed, handlers);
       }).catch((err: BusinessError) => {
-        AppLogger.error('定位', `坐标转换失败 code=${err.code}`);
+        hilog.error(0x0000, TAG_LOG, 'convertCoordinate failed, code: %{public}d, message: %{public}s', err.code, err.message);
       });
     };
-    geoLocationManager.on('locationChange', this.buildLocationRequest(), this.locationCallback);
-    AppLogger.keyInfo('定位', `定位服务已启动 模式=${MODE_CONFIG[this.currentMode].label}`);
+    try {
+      geoLocationManager.on('locationChange', this.buildLocationRequest(), this.locationCallback);
+      hilog.info(0x0000, TAG_LOG, 'Location change listener registered');
+    } catch (err) {
+      const error = err as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'startLocation failed, code: %{public}d, message: %{public}s', error.code, error.message);
+    }
   }
 
   private handleFix(
@@ -219,24 +249,30 @@ export class TrackLocationService {
     const speedVal: number = speed !== undefined ? speed : 0;
     const now: number = Date.now();
 
-    AppLogger.debug('定位', `回传 精度=${Math.round(accuracy)}m 速度=${speedVal.toFixed(1)}m/s`);
-
     this.recentPoints.push(gcj02);
     if (this.recentPoints.length > STATIONARY_WINDOW) {
       this.recentPoints.shift();
     }
 
     if (this.isInSleepMode) {
-      this.handleSleepFix(gcj02, accuracy, speedVal, now, handlers);
-      return;
+      if (this.lastRecordedPoint !== null) {
+        const sleepDist: number = calculateDistance(gcj02, this.lastRecordedPoint);
+        const userConfig = MODE_CONFIG[this.userMode];
+        if (sleepDist >= userConfig.distanceInterval) {
+          this.exitSleepMode();
+        } else {
+          return;
+        }
+      } else {
+        return;
+      }
     }
 
     if (this.sleepModeEnabled && this.isInSleepTimeWindow() && !this.isInSleepMode) {
       if (this.sleepExitTime > 0 && (now - this.sleepExitTime) < SLEEP_MIN_ACTIVE_DURATION) {
-        AppLogger.info('定位', `退出睡眠未满5分钟，跳过睡眠入口`);
+        // 退出睡眠后未满最短活动持续时间，不重新进入
       } else {
         if (this.recentPoints.length >= STATIONARY_WINDOW && this.detectStationary()) {
-          AppLogger.keyInfo('睡眠', `静止检测触发，进入睡眠模式`);
           this.enterSleepMode();
           return;
         }
@@ -246,7 +282,6 @@ export class TrackLocationService {
     if (this.lastRecordedPoint === null) {
       this.lastRecordedPoint = gcj02;
       this.lastRecordedDay = getDayKey(now);
-      AppLogger.keyInfo('定位', `首次打点(初始点) 精度=${Math.round(accuracy)}m 速度=${speedVal.toFixed(1)}m/s`);
       handlers.onSample(gcj02, accuracy, speedVal, now, true);
       return;
     }
@@ -255,50 +290,15 @@ export class TrackLocationService {
     if (todayKey !== this.lastRecordedDay) {
       this.lastRecordedPoint = gcj02;
       this.lastRecordedDay = todayKey;
-      AppLogger.keyInfo('定位', `跨天初始点 精度=${Math.round(accuracy)}m`);
       handlers.onSample(gcj02, accuracy, speedVal, now, true);
       return;
-    }
-
-    if (this.stationaryEnabled && this.detectStationary()) {
-      if (!this.isStationary) {
-        this.isStationary = true;
-        AppLogger.keyInfo('静止', `进入静止状态`);
-      }
-      return;
-    }
-
-    if (this.isStationary) {
-      const centroid: mapCommon.LatLng | null = this.getRecentCentroid();
-      if (centroid !== null && calculateDistance(gcj02, centroid) < STATIONARY_EXIT_RADIUS) {
-        return;
-      }
-      this.isStationary = false;
-      AppLogger.keyInfo('静止', `退出静止状态`);
     }
 
     const dist: number = calculateDistance(gcj02, this.lastRecordedPoint);
     const config = MODE_CONFIG[this.currentMode];
     if (dist >= config.distanceInterval) {
       this.lastRecordedPoint = gcj02;
-      AppLogger.keyInfo('定位', `打点 距上个点${Math.round(dist)}m 精度=${Math.round(accuracy)}m 速度=${speedVal.toFixed(1)}m/s`);
       handlers.onSample(gcj02, accuracy, speedVal, now);
-    }
-  }
-
-  private handleSleepFix(
-    gcj02: mapCommon.LatLng, accuracy: number, speed: number, timestamp: number,
-    handlers: LocationHandlers
-  ): void {
-    if (this.detectSleepMovement(gcj02)) {
-      AppLogger.keyInfo('睡眠', `检测到真实移动，退出睡眠`);
-      this.exitSleepMode();
-      return;
-    }
-
-    if (!this.isInSleepTimeWindow()) {
-      AppLogger.keyInfo('睡眠', `超过睡眠时段，退出睡眠`);
-      this.exitSleepMode();
     }
   }
 
@@ -306,21 +306,31 @@ export class TrackLocationService {
     try {
       if (this.locationCallback) {
         geoLocationManager.off('locationChange', this.locationCallback);
-      } else {
-        geoLocationManager.off('locationChange');
       }
     } catch (err) {
-      console.warn(TAG, 'Failed to unsubscribe locationChange');
+      hilog.warn(0x0000, TAG_LOG, 'Failed to unsubscribe locationChange');
+    }
+    try {
+      if (this.locationErrorCallback) {
+        geoLocationManager.off('locationError', this.locationErrorCallback);
+      }
+    } catch (err) {
+      hilog.warn(0x0000, TAG_LOG, 'Failed to unsubscribe locationError');
+    }
+    try {
+      if (this.locationEnabledCallback) {
+        geoLocationManager.off('locationEnabledChange', this.locationEnabledCallback);
+      }
+    } catch (err) {
+      hilog.warn(0x0000, TAG_LOG, 'Failed to unsubscribe locationEnabledChange');
     }
     this.locationCallback = undefined;
+    this.locationErrorCallback = undefined;
+    this.locationEnabledCallback = undefined;
     this.recentPoints = [];
-    this.isStationary = false;
     this.isInSleepMode = false;
-    this.sleepOriginPoint = null;
-
-    this.sleepDistances = [];
     this.sleepExitTime = 0;
-    AppLogger.keyInfo('定位', `定位服务已停止`);
+    this.clearSleepExitTimer();
   }
 
   switchMode(mode: number): void {
@@ -333,7 +343,6 @@ export class TrackLocationService {
     }
     this.currentMode = this.userMode;
     this.reSubscribe();
-    AppLogger.keyInfo('定位', `切换记录模式 → ${MODE_CONFIG[this.currentMode].label}`);
   }
 
   private detectStationary(): boolean {
@@ -358,20 +367,5 @@ export class TrackLocationService {
     return true;
   }
 
-  private getRecentCentroid(): mapCommon.LatLng | null {
-    if (this.recentPoints.length < 2) {
-      return null;
-    }
-    let cLat: number = 0;
-    let cLon: number = 0;
-    for (let p of this.recentPoints) {
-      cLat += p.latitude;
-      cLon += p.longitude;
-    }
-    return {
-      latitude: cLat / this.recentPoints.length,
-      longitude: cLon / this.recentPoints.length
-    };
-  }
 
 }

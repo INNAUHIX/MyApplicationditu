@@ -5,7 +5,7 @@
  *   - 华为官方 Navigation 标题栏 + List 列表
  *   - 累计里程 / 足迹点 / 记录天数 指标卡片
  *   - 平均每日里程 / 最长单日里程 / 首次记录 / 最近记录
- *   - 常驻点状态
+
  *   - 最近 7 天每日里程与点数分布
  *   - 当前视图可见集汇总（里程 + 足迹点）
  */
@@ -17,6 +17,9 @@ import {
   TIME_VIEW_CUSTOM
 } from '../model/TrackTypes';
 import { computeStats as computeStatsUtil, formatDistance, formatStatDate } from '../common/TrackUtils';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG_LOG: string = 'StatsTab';
 
 @Component
 export struct StatsTab {
@@ -30,7 +33,7 @@ export struct StatsTab {
   // 跨 Tab 双向状态
   @Link trackCount: number;
   @Link totalDistance: number;
-  @Link isStationary: boolean;
+
   @Link timeViewIndex: number;
 
   // 统计内部状态
@@ -152,43 +155,7 @@ export struct StatsTab {
           }
 
           ListItem() {
-            Column({ space: 8 }) {
-              Row() {
-                Text('常驻点')
-                  .fontSize(16)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor($r('sys.color.font_primary'))
-                Blank()
-                if (this.isStationary) {
-                  Text('已激活')
-                    .fontSize(14)
-                    .fontColor($r('sys.color.ohos_id_color_activated'))
-                    .fontWeight(FontWeight.Medium)
-                } else {
-                  Text('未激活')
-                    .fontSize(14)
-                    .fontColor($r('sys.color.font_primary'))
-                    .opacity(0.5)
-                }
-              }
-              .width('100%')
-              .justifyContent(FlexAlign.SpaceBetween)
-              .alignItems(VerticalAlign.Center)
 
-              Text('当位置长时间不变时，系统判定为常驻点')
-                .fontSize(12)
-                .fontColor($r('sys.color.font_primary'))
-                .opacity(0.5)
-                .width('100%')
-            }
-            .width('100%')
-            .backgroundColor($r('sys.color.comp_background_list_card'))
-            .borderRadius(16)
-            .padding(16)
-            .margin({ bottom: 16 })
-          }
-
-          ListItem() {
             Column({ space: 10 }) {
               Text('最近 7 天')
                 .fontSize(16)

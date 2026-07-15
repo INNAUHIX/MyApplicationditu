@@ -12,7 +12,8 @@ import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { preferences } from '@kit.ArkData';
 import { HdsNavigation, HdsNavDestination, HdsTabs, HdsTabsController, hdsMaterial } from '@kit.UIDesignKit';
-import { SymbolGlyphModifier, window } from '@kit.ArkUI';
+import { SymbolGlyphModifier, window, display } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 import { TrackDatabase } from '../data/TrackDatabase';
 import { PermissionService } from '../service/PermissionService';
@@ -26,10 +27,20 @@ import { Mine } from './Mine';
 
 
 import { StrategyLabPanel } from '../components/StrategyLabPanel';
-import { LogViewerPage } from '../components/LogViewerPage';
 
-import { RecordMode, TAG, PREF_NAME, PREF_KEY_RECORD_MODE, PREF_KEY_NIGHT_MODE, PREF_KEY_SLEEP_MODE, PREF_KEY_STATIONARY } from '../model/TrackTypes';
-import { AppLogger } from '../common/logger/AppLogger';
+
+import { RecordMode, TAG, PREF_NAME, PREF_KEY_RECORD_MODE, PREF_KEY_NIGHT_MODE, PREF_KEY_SLEEP_MODE } from '../model/TrackTypes';
+
+const TAG_LOG: string = 'Index';
+
+function px2vpSafe(px: number): number {
+  try {
+    const density = display.getDefaultDisplaySync().densityPixels;
+    return px / density;
+  } catch (e) {
+    return px / 3; // 默认密度 fallback
+  }
+}
 
 @Entry
 @Component
@@ -47,10 +58,8 @@ struct Index {
   @State customMaterialLevel: hdsMaterial.MaterialLevel = hdsMaterial.MaterialLevel.EXQUISITE;
 
   @State @Watch('watchCurrentMode') currentMode: RecordMode = RecordMode.BALANCED;
-  @State isStationary: boolean = false;
+
   @State sleepModeEnabled: boolean = false;
-  @State stationaryEnabled: boolean = true;
-  private prefsLoaded: boolean = false;
   private sleepCheckTimer: number | null = null;
   @State trackCount: number = 0;
   @State totalDistance: number = 0;
@@ -63,13 +72,12 @@ struct Index {
   private mainNavStack: NavPathStack = new NavPathStack();
 
   aboutToAppear(): void {
+
     this.loadPrefs();
     this.locationSvc.switchMode(this.currentMode);
     this.locationSvc.setSleepModeEnabled(this.sleepModeEnabled);
-    this.locationSvc.setStationaryEnabled(this.stationaryEnabled);
     this.locationSvc.setUserMode(this.currentMode);
     this.startSleepCheckTimer();
-    AppLogger.keyInfo('应用', `启动完成 模式=${this.currentMode} 睡眠=${this.sleepModeEnabled} 静止=${this.stationaryEnabled}`);
     try {
       const materialTypes: hdsMaterial.MaterialType[] = hdsMaterial.getSystemMaterialTypes();
       if (materialTypes.indexOf(hdsMaterial.MaterialType.IMMERSIVE) < 0) {
@@ -79,14 +87,14 @@ struct Index {
       this.customMaterialLevel = hdsMaterial.MaterialLevel.SMOOTH;
     }
     try {
-      const ctx = getContext(this) as common.UIAbilityContext;
-      window.getLastWindow(ctx).then((win: window.Window) => {
+      const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+      window.getLastWindow(ctx).then((win) => {
         const avoidArea = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
-        this.statusBarHeight = px2vp(avoidArea.topRect.height);
+        this.statusBarHeight = px2vpSafe(avoidArea.topRect.height);
         const bottomAvoid = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
-        this.navBarHeight = px2vp(bottomAvoid.bottomRect.height);
-      }).catch((e: BusinessError) => {
-        console.error(`${TAG} getLastWindow failed: ${JSON.stringify(e)}`);
+        this.navBarHeight = px2vpSafe(bottomAvoid.bottomRect.height);
+      }).catch(() => {
+        // 窗口未就绪时使用默认值
       });
     } catch (e) {
       // 窗口未就绪时使用默认值
@@ -94,11 +102,9 @@ struct Index {
   }
 
   aboutToDisappear(): void {
-    this.savePrefs();
     this.locationSvc.stopLocation();
     this.timeModel.stopDayCheck();
     this.stopSleepCheckTimer();
-    AppLogger.keyInfo('应用', `页面销毁，服务已停止`);
   }
 
   private watchCurrentMode(): void {
@@ -112,17 +118,10 @@ struct Index {
     this.savePrefs();
   }
 
-  private onClearTrack(): void {
-    this.db.clear();
-    this.timeModel.clearAll();
-    this.mapManager.clearOverlays();
-    this.trackCount = 0;
-    this.totalDistance = 0;
-  }
 
   private onRefreshPermission(): void {
-    const ctx = getContext(this) as common.UIAbilityContext;
-    this.permSvc.requestPermissions(ctx);
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    this.permSvc.requestPermissions(ctx, this.getUIContext());
   }
 
   private onNightModeChange(index: number): void {
@@ -139,16 +138,10 @@ struct Index {
     this.savePrefs();
   }
 
-  private onStationaryChange(enabled: boolean): void {
-    this.stationaryEnabled = enabled;
-    this.locationSvc.setStationaryEnabled(enabled);
-    this.savePrefs();
-  }
-
   private startSleepCheckTimer(): void {
     this.sleepCheckTimer = setInterval(() => {
       this.locationSvc.checkAndEnterSleep();
-      this.locationSvc.checkAndExitSleepOnTime();
+
     }, 60 * 1000);
   }
 
@@ -161,35 +154,28 @@ struct Index {
 
   private loadPrefs(): void {
     try {
-      const ctx = getContext(this) as common.UIAbilityContext;
+      const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
       const pref = preferences.getPreferencesSync(ctx, { name: PREF_NAME });
       this.currentMode = pref.getSync(PREF_KEY_RECORD_MODE, RecordMode.BALANCED) as RecordMode;
       this.nightModeIndex = pref.getSync(PREF_KEY_NIGHT_MODE, 0) as number;
       this.sleepModeEnabled = pref.getSync(PREF_KEY_SLEEP_MODE, false) as boolean;
-      this.stationaryEnabled = pref.getSync(PREF_KEY_STATIONARY, true) as boolean;
-      this.prefsLoaded = true;
     } catch (e) {
       const error = e as BusinessError;
-      console.error(`${TAG} loadPrefs failed, code: ${error.code}, message: ${error.message}`);
-      this.prefsLoaded = true;
+      hilog.error(0x0000, TAG_LOG, 'loadPrefs failed, code: %{public}d, message: %{public}s', error.code, error.message);
     }
   }
 
   private savePrefs(): void {
-    if (!this.prefsLoaded) {
-      return;
-    }
     try {
-      const ctx = getContext(this) as common.UIAbilityContext;
+      const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
       const pref = preferences.getPreferencesSync(ctx, { name: PREF_NAME });
       pref.putSync(PREF_KEY_RECORD_MODE, this.currentMode);
       pref.putSync(PREF_KEY_NIGHT_MODE, this.nightModeIndex);
       pref.putSync(PREF_KEY_SLEEP_MODE, this.sleepModeEnabled);
-      pref.putSync(PREF_KEY_STATIONARY, this.stationaryEnabled);
       pref.flushSync();
     } catch (e) {
       const error = e as BusinessError;
-      console.error(`${TAG} savePrefs failed, code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'savePrefs failed, code: %{public}d, message: %{public}s', error.code, error.message);
     }
   }
 
@@ -207,7 +193,7 @@ struct Index {
             statusBarHeight: this.statusBarHeight,
             navBarHeight: this.navBarHeight,
             currentMode: $currentMode,
-            isStationary: $isStationary,
+
             trackCount: $trackCount,
             totalDistance: $totalDistance,
             timeViewIndex: $timeViewIndex,
@@ -234,7 +220,7 @@ struct Index {
             statusBarHeight: this.statusBarHeight,
             trackCount: $trackCount,
             totalDistance: $totalDistance,
-            isStationary: $isStationary,
+
             timeViewIndex: $timeViewIndex,
           })
         }
@@ -253,18 +239,16 @@ struct Index {
             mainNavStack: this.mainNavStack,
             recordMode: $currentMode,
             sleepModeEnabled: $sleepModeEnabled,
-            stationaryEnabled: $stationaryEnabled,
             hasApproximatelyLocation: $hasApproximatelyLocation,
             hasLocation: $hasLocation,
             hasBackgroundLocation: $hasBackgroundLocation,
             nightModeIndex: $nightModeIndex,
-            trackCount: $trackCount,
-            onClearTrack: () => { this.onClearTrack(); },
+
+
             onRefreshPermission: () => { this.onRefreshPermission(); },
             onNightModeChange: (i: number) => { this.onNightModeChange(i); },
             onRecordModeChange: (m: number) => { this.onRecordModeChange(m); },
             onSleepModeChange: (e: boolean) => { this.onSleepModeChange(e); },
-            onStationaryChange: (e: boolean) => { this.onStationaryChange(e); },
           })
         }
         .tabBar(new BottomTabBarStyle({
@@ -281,9 +265,9 @@ struct Index {
       .barPosition(BarPosition.End)
       .scrollable(false)
       .barFloatingStyle({
-          barBottomMargin: 28 + this.navBarHeight,
+        barBottomMargin: 28 + this.navBarHeight,
         systemMaterialEffect: {
-          materialType: hdsMaterial.MaterialType.ADAPTIVE,
+          materialType: hdsMaterial.MaterialType.IMMERSIVE,
           materialLevel: this.customMaterialLevel
         }
       })
@@ -299,25 +283,11 @@ struct Index {
   mainNavDestination(name: string) {
     if (name === 'StrategyLab') {
       HdsNavDestination() {
-        StrategyLabPanel({
-          stationaryEnabled: $stationaryEnabled,
-          onStationaryChange: (e: boolean) => { this.onStationaryChange(e); }
-        })
+        StrategyLabPanel()
       }
       .titleBar({
         content: {
           title: { mainTitle: '策略实验室' }
-        }
-      })
-      .hideBackButton(false)
-    }
-    if (name === 'LogViewer') {
-      HdsNavDestination() {
-        LogViewerPage()
-      }
-      .titleBar({
-        content: {
-          title: { mainTitle: '运行日志' }
         }
       })
       .hideBackButton(false)

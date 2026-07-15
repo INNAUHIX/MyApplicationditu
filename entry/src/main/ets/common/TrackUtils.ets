@@ -6,8 +6,11 @@
  * formatStatDate / getDayStartTs / getDayEndTs / getDayKey / computeStats 抽取。
  */
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { mapCommon } from '@kit.MapKit';
 import { TrackPointRecord, StatDayItem, StatResult } from '../model/TrackTypes';
+
+const TAG_LOG: string = 'TrackUtils';
 
 // 日期边界辅助：当天 0 点 / 当天 23:59:59.999 / 日期 key(YYYY-M-D)
 export function getDayStartTs(ts: number): number {

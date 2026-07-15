@@ -14,13 +14,15 @@
  */
 
 import { SymbolGlyphModifier } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG_LOG: string = 'SettingPanel';
 
 @Component
 export struct SettingPanel {
   @Link nightModeIndex: number;
   @Link pushSwitchOn: boolean;
-  @Link trackCount: number;
-  onClearTrack: () => void = () => {};
+
   onNightModeChange: (index: number) => void = () => {};
 
   @State isShowPrivacy: boolean = false;
@@ -94,34 +96,6 @@ export struct SettingPanel {
         .borderRadius(16)
         .backgroundColor($r('sys.color.comp_background_list_card'))
 
-        // 删除轨迹
-        Row() {
-          Column({ space: 6 }) {
-            Text('删除轨迹')
-              .fontSize(16)
-              .fontColor($r('sys.color.font_primary'))
-              .fontWeight(FontWeight.Medium)
-              .textAlign(TextAlign.Start)
-          }
-          .layoutWeight(1)
-          .alignItems(HorizontalAlign.Start)
-          Row() {
-            Text(`${this.trackCount}`)
-              .fontSize(14)
-              .fontColor($r('sys.color.font_secondary'))
-              .margin({ right: 4 })
-            SymbolGlyph($r('sys.symbol.chevron_right'))
-              .fontSize(24)
-              .fontColor([$r('sys.color.font_fourth')])
-          }
-          .justifyContent(FlexAlign.End)
-        }
-        .padding(16)
-        .borderRadius(16)
-        .backgroundColor($r('sys.color.comp_background_list_card'))
-        .onClick(() => {
-          this.onClearTrack();
-        })
 
         // 隐私设置
         Row() {

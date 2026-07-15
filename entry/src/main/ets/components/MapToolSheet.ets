@@ -14,6 +14,9 @@ import {
   ItemRestriction,
   SegmentButtonTextItem
 } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG_LOG: string = 'MapToolSheet';
 
 @Component
 export struct MapToolSheet {
@@ -46,7 +49,7 @@ export struct MapToolSheet {
       { text: '经典' },
       { text: '暗夜' },
       { text: '浅白' },
-      { text: '测试' }
+      { text: '大白' }
     ] as ItemRestriction<SegmentButtonTextItem>,
     selectedBackgroundColor: $r('sys.color.ohos_id_color_activated'),
     fontColor: $r('sys.color.font_secondary'),

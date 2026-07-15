@@ -10,8 +10,9 @@
 import { abilityAccessCtrl, bundleManager, common, Permissions, Want } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { UIContext } from '@kit.ArkUI';
-import { TAG } from '../model/TrackTypes';
-import { AppLogger } from '../common/logger/AppLogger';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG_LOG: string = 'PermService';
 
 // 三项定位权限的授权状态快照
 export interface PermissionState {
@@ -31,10 +32,10 @@ export class PermissionService {
       const bundleInfo = await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
       tokenId = bundleInfo.appInfo.accessTokenId;
       grantStatus = await atManager.checkAccessToken(tokenId, permission);
-      console.info(TAG, `checkAccessToken ${permission}: ${grantStatus}`);
+      hilog.info(0x0000, TAG_LOG, `checkAccessToken ${permission}: ${grantStatus}`);
     } catch (error) {
       const err = error as BusinessError;
-      console.error(`Failed to check access token. Code: ${err.code}, message: ${err.message}`);
+      hilog.error(0x0000, TAG_LOG, 'Failed to check access token. Code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
     }
 
     return grantStatus;
@@ -45,17 +46,15 @@ export class PermissionService {
     const hasForeground = await this.checkAccessToken('ohos.permission.APPROXIMATELY_LOCATION');
     const hasLocation = await this.checkAccessToken('ohos.permission.LOCATION');
     const hasBackground = await this.checkAccessToken('ohos.permission.LOCATION_IN_BACKGROUND');
-    const state: PermissionState = {
+    return {
       hasApproximatelyLocation: hasForeground === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED,
       hasLocation: hasLocation === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED,
       hasBackgroundLocation: hasBackground === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED
     };
-    AppLogger.info('权限', `大致=${state.hasApproximatelyLocation} 精确=${state.hasLocation} 后台=${state.hasBackgroundLocation}`);
-    return state;
   }
 
   // 向前台定位权限(大致 + 精确)发起授权申请；返回申请后的最新权限状态快照
-  async requestPermissions(context: common.UIAbilityContext): Promise<PermissionState> {
+  async requestPermissions(context: common.UIAbilityContext, uiContext: UIContext): Promise<PermissionState> {
     const atManager = abilityAccessCtrl.createAtManager();
     const permissions: Array<Permissions> = [
       'ohos.permission.APPROXIMATELY_LOCATION',
@@ -74,8 +73,8 @@ export class PermissionService {
         }
       } else {
         // 用户拒绝或系统不再弹授权框：弹出应用内引导对话框，避免点击后无任何反应
-        console.warn(TAG, 'Location permission denied, please grant in Settings');
-        this.guideToLocationSettings(context);
+        hilog.warn(0x0000, TAG_LOG, 'Location permission denied, please grant in Settings');
+        this.guideToLocationSettings(context, uiContext);
       }
       return {
         hasApproximatelyLocation: hasApproximately,
@@ -84,7 +83,7 @@ export class PermissionService {
       };
     } catch (err) {
       const error = err as BusinessError;
-      AppLogger.error('权限', `请求定位权限失败 code=${error.code}`);
+      hilog.error(0x0000, TAG_LOG, 'Failed to request permissions from user. Code: %{public}s, message: %{public}s', error.code.toString(), error.message.toString());
       return {
         hasApproximatelyLocation: false,
         hasLocation: false,
@@ -107,14 +106,14 @@ export class PermissionService {
         this.openPermissionSettingsFromUI(uiContext);
       }
     }).catch((err: BusinessError) => {
-      console.error(`showDialog failed. Code: ${err.code}, message: ${err.message}`);
+      hilog.error(0x0000, TAG_LOG, 'showDialog failed. Code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
     });
   }
 
   // 前台定位权限被拒 / 系统不再弹授权框时，弹出应用内引导对话框，
   // 提示并引导用户前往系统设置手动开启「大致位置」与「精确位置」
-  guideToLocationSettings(context: common.UIAbilityContext): void {
-    AlertDialog.show({
+  guideToLocationSettings(context: common.UIAbilityContext, uiContext: UIContext): void {
+    uiContext.showAlertDialog({
       title: '定位权限未开启',
       message: '请前往系统设置开启"大致位置"与"精确位置"。',
       primaryButton: {
@@ -145,7 +144,7 @@ export class PermissionService {
       await context.startAbility(want);
     } catch (err) {
       const error = err as BusinessError;
-      console.error(`Failed to open settings. Code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'Failed to open settings. Code: %{public}s, message: %{public}s', error.code.toString(), error.message.toString());
     }
   }
 
@@ -156,7 +155,7 @@ export class PermissionService {
       this.openPermissionSettings(context);
     } catch (err) {
       const error = err as BusinessError;
-      console.error(`Failed to get host context. Code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'Failed to get host context. Code: %{public}s, message: %{public}s', error.code.toString(), error.message.toString());
     }
   }
 }

@@ -11,7 +11,10 @@
  *   - 屏幕边缘 16vp
  */
 
-import { RecordMode, MODE_CONFIG, SLEEP_START_HOUR, SLEEP_END_HOUR } from '../model/TrackTypes';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { RecordMode, MODE_CONFIG, SLEEP_END_HOUR } from '../model/TrackTypes';
+
+const TAG_LOG: string = 'RecordMode';
 
 @Component
 export struct RecordModePanel {
@@ -22,8 +25,8 @@ export struct RecordModePanel {
 
   private recordModeNames: string[] = ['均衡', '耗电'];
   private recordModeDescs: string[] = [
-    `定位间隔\t${MODE_CONFIG[RecordMode.BALANCED].timeInterval}秒\n点间距\t≥${MODE_CONFIG[RecordMode.BALANCED].distanceInterval}米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约8%–15%\n适用场景\t日常通勤，精度与耗电均衡，推荐默认\n\n工作方式：系统每${MODE_CONFIG[RecordMode.BALANCED].timeInterval}秒推送一次定位，App计算与上次记录点的距离，≥${MODE_CONFIG[RecordMode.BALANCED].distanceInterval}米才打点，不足则丢弃`,
-    `定位间隔\t${MODE_CONFIG[RecordMode.HIGH_POWER].timeInterval}秒\n点间距\t≥${MODE_CONFIG[RecordMode.HIGH_POWER].distanceInterval}米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约15%–25%\n适用场景\t骑行/步行等需要较细腻轨迹的场景\n\n工作方式：系统每${MODE_CONFIG[RecordMode.HIGH_POWER].timeInterval}秒推送一次定位，App计算与上次记录点的距离，≥${MODE_CONFIG[RecordMode.HIGH_POWER].distanceInterval}米才打点，不足则丢弃`
+    '定位方式\t精度优先GPS（按距离）\n定位间隔\t20秒\n点间距\t≥90米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约8%–15%\n适用场景\t日常通勤，精度与耗电均衡，推荐默认\n\n工作方式：系统每20秒获取一次GPS定位，App计算与上次记录点的距离，≥90米才打点，不足则丢弃',
+    '定位方式\t精度优先GPS（按距离）\n定位间隔\t5秒\n点间距\t≥30米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约15%–25%\n适用场景\t骑行/步行等需要较细腻轨迹的场景\n\n工作方式：系统每5秒获取一次GPS定位，App计算与上次记录点的距离，≥30米才打点，不足则丢弃'
   ];
 
   build() {
@@ -77,15 +80,16 @@ export struct RecordModePanel {
               .fontColor($r('sys.color.font_primary'))
               .fontWeight(FontWeight.Medium)
               .textAlign(TextAlign.Start)
-            Text(`定位间隔\t60秒\n点间距\t≥200米（距离触发）\n自动时段\t${SLEEP_START_HOUR}:00-${SLEEP_END_HOUR}:00\n适用场景\t夜间自动降频省电，检测到活动自动恢复\n\n进入条件：睡眠时段内，连续10个定位点均落在15米半径内，判定为静止后进入睡眠模式（此判断独立运行，不受静止检测开关影响）\n退出条件：连续3个定位点距睡眠起点持续单调远离且累计超过100米，判定为真实移动后退出；或超过6:00自动退出\n\n工作方式：进入后切换为60秒低频定位，不记录足迹点；退出后恢复正常记录规则`)
+            Text(`定位间隔\t60秒\n自动时段\t0:00-${SLEEP_END_HOUR}:00\n适用场景\t夜间自动降频省电，检测到活动自动恢复\n\n进入条件：0:00-${SLEEP_END_HOUR}:00时段内，连续10个定位点均落在15米半径内，判定为静止后进入睡眠模式\n退出条件：移动距离达到当前记录规则的点间距阈值（与均衡/耗电模式一致）时打点并退出；或${SLEEP_END_HOUR}:00准时退出\n防抖机制：退出睡眠后5分钟内不会重新进入，防止短暂移动后反复进出\n\n工作方式：进入后切换为60秒低频定位且不记录足迹点，省电运行；退出后立即恢复正常记录规则`)
               .fontSize(12)
               .fontColor($r('sys.color.font_secondary'))
               .textAlign(TextAlign.Start)
           }
           .layoutWeight(1)
           .alignItems(HorizontalAlign.Start)
-          Toggle({ type: ToggleType.Switch, isOn: $$this.sleepModeEnabled })
+          Toggle({ type: ToggleType.Switch, isOn: this.sleepModeEnabled })
             .onChange((isOn: boolean) => {
+              this.sleepModeEnabled = isOn;
               this.onSleepModeChange(isOn);
             })
             .selectedColor($r('sys.color.ohos_id_color_activated'))

@@ -21,6 +21,10 @@
       "value": "用于记录您的运动轨迹和位置信息"
     },
     {
+      "name": "precise_location_reason",
+      "value": "需要获取精确位置用于地图标注与轨迹记录"
+    },
+    {
       "name": "background_running_reason",
       "value": "需要在后台持续记录您的运动轨迹"
     },

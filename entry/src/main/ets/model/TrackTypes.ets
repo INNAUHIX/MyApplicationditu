@@ -34,9 +34,9 @@ export interface RecordModeConfig {
 }
 
 export const MODE_CONFIG: RecordModeConfig[] = [
-  { timeInterval: 20, distanceInterval: 90, label: '均衡' },
+  { timeInterval: 20, distanceInterval: 90,  label: '均衡' },
   { timeInterval: 5,  distanceInterval: 30,  label: '耗电' },
-  { timeInterval: 60, distanceInterval: 200, label: '睡眠' },
+  { timeInterval: 60, distanceInterval: 0,   label: '睡眠' },
 ];
 
 // 待写入数据库的轨迹点记录（含精度/速度/时间戳）
@@ -90,7 +90,6 @@ export const PREF_KEY_RECORD_MODE: string = 'recordModeIndex';
 export const PREF_KEY_NIGHT_MODE: string = 'nightModeIndex';
 // 轻量偏好存储：持久化睡眠模式开关
 export const PREF_KEY_SLEEP_MODE: string = 'sleepModeEnabled';
-export const PREF_KEY_STATIONARY: string = 'stationaryEnabled';
 
 
 // 时间范围视图索引常量
@@ -111,17 +110,10 @@ export const STATIONARY_WINDOW: number = 10;
 // 静止检测：窗口内所有点到质心距离 < 15米则判定为静止
 export const STATIONARY_RADIUS: number = 15;
 
-// 静止退出半径（米）：已判定为常驻后，仅当新点明显远离常驻簇超过此值才视为真正离开并恢复记录
-// （迟滞，防止抖动误把常驻点判成「在动」而漏记飘线）
-export const STATIONARY_EXIT_RADIUS: number = 30;
 
 // ===== 睡眠模式阈值 =====
-// 睡眠模式时段：0点~6点
-export const SLEEP_START_HOUR: number = 0;
+// 睡眠模式时段结束小时
 export const SLEEP_END_HOUR: number = 6;
-// 睡眠模式活动判定：连续N个点距睡眠起点距离持续单调递增且累计超过此值，判定为真实移动
-export const SLEEP_MOVEMENT_TREND_COUNT: number = 3;
-export const SLEEP_MOVEMENT_CUMULATIVE_DIST: number = 100;
 // 退出睡眠后最短活动持续时间（毫秒）：防止抖动导致反复进出睡眠
 export const SLEEP_MIN_ACTIVE_DURATION: number = 5 * 60 * 1000;
 

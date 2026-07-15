@@ -14,6 +14,7 @@ import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { geoLocationManager } from '@kit.LocationKit';
 import { SymbolGlyphModifier, SegmentButton, SegmentButtonOptions, ItemRestriction, SegmentButtonTextItem } from '@kit.ArkUI';
+
 import { TrackDatabase } from '../data/TrackDatabase';
 import { PermissionService } from '../service/PermissionService';
 import { TrackLocationService, LocationHandlers } from '../service/TrackLocationService';
@@ -26,7 +27,10 @@ import {
   TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY,
   ONE_DAY_MS
 } from '../model/TrackTypes';
-import { calculateDistance, formatDistance, getDayStartTs, getDayEndTs, getDayKey } from '../common/TrackUtils';
+import { calculateDistance, formatDistance, getDayStartTs, getDayEndTs } from '../common/TrackUtils';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG_LOG: string = 'FootprintTab';
 
 @Component
 export struct FootprintTab {
@@ -44,7 +48,7 @@ export struct FootprintTab {
 
   // ===== 跨 Tab 双向状态（与 Index @State 双向同步，Mine/StatsTab 共享）=====
   @Link currentMode: RecordMode;
-  @Link isStationary: boolean;
+
   @Link trackCount: number;
   @Link totalDistance: number;
 
@@ -63,6 +67,7 @@ export struct FootprintTab {
   @State displayMode: number = 0;
   @Link immersive: boolean;
   @State isShowMapToolSheet: boolean = false;
+
   @State myLocationOn: boolean = false;
   @State mapStyleIndex: number = 0;
   @State timeViewSelectedIndexes: number[] = [TIME_VIEW_TODAY];
@@ -86,7 +91,7 @@ export struct FootprintTab {
 
   // ===== 生命周期 =====
   aboutToAppear(): void {
-    const ctx = getContext(this) as common.UIAbilityContext;
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
     // 恢复上次选择的地图样式，避免每次进入都被重置为经典
     this.mapStyleVM.setContext(ctx);
@@ -122,18 +127,10 @@ export struct FootprintTab {
 
   // ===== 核心方法 =====
   private async onMapReady(): Promise<void> {
-    const ctx = getContext(this) as common.UIAbilityContext;
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
     await this.db.init(ctx);
     const records = await this.db.loadAll();
     this.timeModel.setAllPoints(records);
-    if (records.length > 0) {
-      const last = records[records.length - 1];
-      this.locationSvc.setLastRecordedPoint(
-        { latitude: last.latitude, longitude: last.longitude },
-        getDayKey(last.timestamp)
-      );
-    }
-
     await this.mapManager.createRedDotIcon();
     this.refreshVisibleView();
     await this.permissionFlow(ctx);
@@ -141,7 +138,7 @@ export struct FootprintTab {
 
   private onMapClick(): void {
     const next: boolean = !this.immersive;
-    animateTo({ duration: 300, curve: Curve.EaseInOut }, () => { this.immersive = next; });
+    this.getUIContext().animateTo({ duration: 300, curve: Curve.EaseInOut }, () => { this.immersive = next; });
     this.mapManager.setBottomPadding(next);
     const controller = this.mapManager.controller;
     if (controller) {
@@ -157,7 +154,7 @@ export struct FootprintTab {
     this.hasLocation = state.hasLocation;
     this.hasBackgroundLocation = state.hasBackgroundLocation;
     if (!state.hasApproximatelyLocation || !state.hasLocation) {
-      const res = await this.permSvc.requestPermissions(ctx);
+      const res = await this.permSvc.requestPermissions(ctx, this.getUIContext());
       this.hasApproximatelyLocation = res.hasApproximatelyLocation;
       this.hasLocation = res.hasLocation;
       this.hasBackgroundLocation = res.hasBackgroundLocation;
@@ -182,11 +179,15 @@ export struct FootprintTab {
       this.myLocationOn = true;
     } catch (err) {
       const error = err as BusinessError;
-      console.error(`Failed to set my location style, code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'Failed to set my location style, code: %{public}d, message: %{public}s', error.code, error.message);
       this.myLocationOn = false;
     }
     try {
-      const currentLocation = await geoLocationManager.getCurrentLocation();
+      const singleRequest: geoLocationManager.SingleLocationRequest = {
+        locatingTimeoutMs: 10000,
+        locatingPriority: geoLocationManager.LocatingPriority.PRIORITY_ACCURACY
+      };
+      const currentLocation = await geoLocationManager.getCurrentLocation(singleRequest);
       const gcj02Location = await map.convertCoordinate(
         mapCommon.CoordinateType.WGS84, mapCommon.CoordinateType.GCJ02,
         { latitude: currentLocation.latitude, longitude: currentLocation.longitude }
@@ -194,31 +195,87 @@ export struct FootprintTab {
       controller?.moveCamera(map.newCameraPosition({ target: gcj02Location, zoom: 15 }));
     } catch (err) {
       const error = err as BusinessError;
-      console.warn(`Failed to move camera to current location, code: ${error.code}, message: ${error.message}`);
+      hilog.warn(0x0000, TAG_LOG, 'Failed to move camera to current location, code: %{public}d, message: %{public}s', error.code, error.message);
     }
     this.locationSvc.startLocation({
-      onSample: (latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number) => { this.onLocationSample(latLng, accuracy, speed, timestamp); }
+      onSample: (latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number) => { this.onLocationSample(latLng, accuracy, speed, timestamp); },
+      onLocationError: (error: geoLocationManager.LocationError) => { this.onLocationError(error); },
+      onLocationEnabledChange: (enabled: boolean) => { this.onLocationEnabledChange(enabled); }
     });
-    this.isStationary = this.locationSvc.stationary;
   }
 
-  private onLocationSample(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number, isInitial?: boolean): void {
-    this.isStationary = this.locationSvc.stationary;
 
-    this.recordTrackPoint(latLng, accuracy, speed, timestamp, isInitial);
+  private onLocationSample(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number): void {
+
+    this.recordTrackPoint(latLng, accuracy, speed, timestamp);
   }
 
-  private recordTrackPoint(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number, isInitial?: boolean): void {
+  private onLocationError(error: geoLocationManager.LocationError): void {
+    if (error === geoLocationManager.LocationError.LOCATING_FAILED_LOCATION_SWITCH_OFF) {
+      hilog.warn(0x0000, TAG_LOG, 'Location switch turned off during tracking');
+      try {
+        this.getUIContext().getPromptAction().showToast({ message: '定位开关已关闭，请在设置中开启' });
+      } catch (e) {
+        hilog.warn(0x0000, TAG_LOG, 'showToast failed');
+      }
+    } else if (error === geoLocationManager.LocationError.LOCATING_FAILED_LOCATION_PERMISSION_DENIED) {
+      hilog.warn(0x0000, TAG_LOG, 'Location permission denied during tracking');
+      try {
+        this.getUIContext().getPromptAction().showToast({ message: '定位权限被拒绝，请在设置中授权' });
+      } catch (e) {
+        hilog.warn(0x0000, TAG_LOG, 'showToast failed');
+      }
+    } else if (error === geoLocationManager.LocationError.LOCATING_FAILED_BACKGROUND_PERMISSION_DENIED) {
+      hilog.warn(0x0000, TAG_LOG, 'Background location permission denied during tracking');
+      try {
+        this.getUIContext().getPromptAction().showToast({ message: '后台定位权限被拒绝，请在设置中授权' });
+      } catch (e) {
+        hilog.warn(0x0000, TAG_LOG, 'showToast failed');
+      }
+    } else if (error === geoLocationManager.LocationError.LOCATING_FAILED_INTERNET_ACCESS_FAILURE) {
+      hilog.warn(0x0000, TAG_LOG, 'Network unavailable, network positioning failed');
+      try {
+        this.getUIContext().getPromptAction().showToast({ message: '网络不可用，网络定位失败' });
+      } catch (e) {
+        hilog.warn(0x0000, TAG_LOG, 'showToast failed');
+      }
+    } else {
+      hilog.warn(0x0000, TAG_LOG, 'Location error: %{public}s', String(error));
+      try {
+        this.getUIContext().getPromptAction().showToast({ message: '定位异常' });
+      } catch (e) {
+        hilog.warn(0x0000, TAG_LOG, 'showToast failed');
+      }
+    }
+  }
+
+  private onLocationEnabledChange(enabled: boolean): void {
+    if (!enabled) {
+      hilog.warn(0x0000, TAG_LOG, 'Location switch turned off by user');
+      try {
+        this.getUIContext().getPromptAction().showToast({ message: '定位开关已关闭，足迹记录已暂停' });
+      } catch (e) {
+        hilog.warn(0x0000, TAG_LOG, 'showToast failed');
+      }
+    } else {
+      hilog.info(0x0000, TAG_LOG, 'Location switch turned on by user');
+      try {
+        this.getUIContext().getPromptAction().showToast({ message: '定位开关已开启' });
+      } catch (e) {
+        hilog.warn(0x0000, TAG_LOG, 'showToast failed');
+      }
+    }
+  }
+
+  private recordTrackPoint(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number): void {
     const ts: number = timestamp ?? Date.now();
     const rec: TrackPointRecord = { latitude: latLng.latitude, longitude: latLng.longitude, timestamp: ts, accuracy: accuracy, speed: speed };
     this.timeModel.addPoint(rec);
     if (this.timeModel.isInVisibleRange(ts)) {
       const prevLast: mapCommon.LatLng | null = this.trackPoints.length > 0 ? this.trackPoints[this.trackPoints.length - 1] : null;
-      if (!isInitial) {
-        this.trackPoints.push(latLng);
-      }
+      this.trackPoints.push(latLng);
       this.trackCount = this.trackPoints.length;
-      if (!isInitial && prevLast) { this.totalDistance += calculateDistance(prevLast, latLng); }
+      if (prevLast) { this.totalDistance += calculateDistance(prevLast, latLng); }
       this.footprintPoints.push(latLng);
       this.lastFootprintPoint = latLng;
       this.mapManager.refreshOverlay(this.displayMode, this.trackPoints, this.footprintPoints);
@@ -250,16 +307,24 @@ export struct FootprintTab {
   }
 
   private showCustomDatePicker(): void {
+    const uiContext = this.getUIContext();
     const todayStart: number = getDayStartTs(Date.now());
-    const yesterdayStart: number = getDayStartTs(Date.now() - ONE_DAY_MS);
-    const yesterdayEnd: number = getDayEndTs(Date.now() - ONE_DAY_MS);
-    DatePickerDialog.show({
-      start: new Date(todayStart - 365 * ONE_DAY_MS), end: new Date(yesterdayEnd), selected: new Date(this.timeModel.customStart > 0 ? this.timeModel.customStart : yesterdayStart),
-      onAccept: (value: DatePickerResult) => {
-        const s: number = getDayStartTs(new Date(value.year, value.month ?? 0, value.day ?? 1).getTime());
-        const e: number = getDayEndTs(s);
-        this.timeModel.setCustomRange(s, e);
-        this.refreshVisibleView();
+    const todayEnd: number = getDayEndTs(Date.now());
+    const startInit: number = this.timeModel.customStart > 0 ? this.timeModel.customStart : todayStart;
+    uiContext.showDatePickerDialog({
+      start: new Date(todayStart - 365 * ONE_DAY_MS), end: new Date(todayEnd), selected: new Date(startInit),
+      onDateAccept: (value: Date) => {
+        const s: number = getDayStartTs(value.getTime());
+        const endInit: number = this.timeModel.customEnd > 0 ? this.timeModel.customEnd : Date.now();
+        uiContext.showDatePickerDialog({
+          start: new Date(s), end: new Date(todayEnd), selected: new Date(endInit),
+          onDateAccept: (value2: Date) => {
+            const e: number = getDayEndTs(value2.getTime());
+            if (e < s) { getDayEndTs(s); }
+            this.timeModel.setCustomRange(s, e);
+            this.refreshVisibleView();
+          }
+        });
       }
     });
   }
@@ -281,10 +346,10 @@ export struct FootprintTab {
     this.mapManager.switchDisplayMode(mode, this.timeViewIndex, this.trackPoints, this.footprintPoints);
   }
 
-  // 组件销毁：停止定位、落库定时器、跨日检测
+  // 组件销毁：停止定位、刷新数据库缓冲区、跨日检测
   aboutToDisappear(): void {
     this.locationSvc.stopLocation();
-
+    this.db.flushIfNeeded();
     this.timeModel.stopDayCheck();
   }
 
@@ -307,15 +372,7 @@ export struct FootprintTab {
           .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
           .transition({ type: TransitionType.All, opacity: 0, translate: { x: 0, y: -16 } })
         }
-        if (this.isStationary) {
-          Row() {
-            SymbolGlyph($r('sys.symbol.local_fill')).fontSize(16).fontColor([$r('sys.color.font_primary')])
-            Text('常驻点激活').fontSize(13).fontColor($r('sys.color.font_primary')).fontWeight(FontWeight.Medium).margin({ left: 4 })
-          }
-          .padding({ left: 10, right: 12, top: 6, bottom: 6 }).borderRadius(16).clip(true).backdropBlur(12)
-          .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
-          .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
-        }
+
       }
       .alignItems(HorizontalAlign.Start).position({ x: 12, y: 12 + this.statusBarHeight })
 
@@ -346,21 +403,10 @@ export struct FootprintTab {
           detents: [SheetSize.MEDIUM, SheetSize.LARGE], title: { title: '地图工具' },
           dragBar: true, showClose: true, onDisappear: () => { this.isShowMapToolSheet = false; }
         })
-        .position({ x: '100%', y: '60%' }).markAnchor({ x: '100%', y: '50%' }).translate({ x: -16 })
+        .position({ x: '100%', y: '34%' }).markAnchor({ x: '100%', y: '50%' }).translate({ x: -16 })
         .transition({ type: TransitionType.All, opacity: 0, translate: { x: 16, y: 0 } })
       }
 
-      // 右侧新增胶囊（地图工具入口胶囊下方），纯图标，暂不绑定点击
-      if (!this.immersive) {
-        Row() {
-          SymbolGlyph($r('sys.symbol.Investment_stable_value_add')).fontSize(20).fontColor([$r('sys.color.font_primary')])
-        }
-        .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
-        .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
-        .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
-        .position({ x: '100%', y: '60%' }).markAnchor({ x: '100%', y: '50%' }).translate({ x: -16, y: 50 })  // 紧贴画板正下方 10vp（两胶囊半高各约20 + 间距10）
-        .transition({ type: TransitionType.All, opacity: 0, translate: { x: 16, y: 0 } })
-      }
     }
     .width('100%').height('100%')
   }

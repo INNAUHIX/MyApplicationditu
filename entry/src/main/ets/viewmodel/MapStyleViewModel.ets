@@ -8,7 +8,10 @@
 import { preferences } from '@kit.ArkData';
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { PREF_NAME, PREF_KEY_MAP_STYLE, TAG } from '../model/TrackTypes';
+import { PREF_NAME, PREF_KEY_MAP_STYLE } from '../model/TrackTypes';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG_LOG: string = 'MapStyleVM';
 
 export class MapStyleViewModel {
   private context?: common.UIAbilityContext;
@@ -34,7 +37,7 @@ export class MapStyleViewModel {
       pref.flushSync();
     } catch (e) {
       const error = e as BusinessError;
-      console.error(`${TAG} saveMapStyle failed, code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'saveMapStyle failed, code: %{public}d, message: %{public}s', error.code, error.message);
     }
   }
 
@@ -53,7 +56,7 @@ export class MapStyleViewModel {
       return idx;
     } catch (e) {
       const error = e as BusinessError;
-      console.error(`${TAG} loadMapStyle failed, code: ${error.code}, message: ${error.message}`);
+      hilog.error(0x0000, TAG_LOG, 'loadMapStyle failed, code: %{public}d, message: %{public}s', error.code, error.message);
       return 0;
     }
   }

@@ -62,7 +62,7 @@
       },
       {
         "name": "ohos.permission.LOCATION",
-        "reason": "$string:background_location_reason",
+        "reason": "$string:precise_location_reason",
         "usedScene": {
           "abilities": [
             "EntryAbility"
