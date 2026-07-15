@@ -18,8 +18,8 @@ const TAG_LOG: string = 'RecordMode';
 
 @Component
 export struct RecordModePanel {
-  @Link recordMode: RecordMode;
-  @Link sleepModeEnabled: boolean;
+  recordMode: RecordMode = RecordMode.BALANCED;
+  sleepModeEnabled: boolean = false;
   onRecordModeChange: (mode: number) => void = () => {};
   onSleepModeChange: (enabled: boolean) => void = () => {};
 
@@ -58,7 +58,6 @@ export struct RecordModePanel {
               .height(24)
               .onChange((isChecked: boolean) => {
                 if (isChecked) {
-                  this.recordMode = index as RecordMode;
                   this.onRecordModeChange(index);
                 }
               })
@@ -68,7 +67,6 @@ export struct RecordModePanel {
           .borderRadius(16)
           .backgroundColor($r('sys.color.comp_background_list_card'))
           .onClick(() => {
-            this.recordMode = index as RecordMode;
             this.onRecordModeChange(index);
           })
         }, (_desc: string, index: number) => `rm_${index}`)
@@ -89,7 +87,6 @@ export struct RecordModePanel {
           .alignItems(HorizontalAlign.Start)
           Toggle({ type: ToggleType.Switch, isOn: this.sleepModeEnabled })
             .onChange((isOn: boolean) => {
-              this.sleepModeEnabled = isOn;
               this.onSleepModeChange(isOn);
             })
             .selectedColor($r('sys.color.ohos_id_color_activated'))

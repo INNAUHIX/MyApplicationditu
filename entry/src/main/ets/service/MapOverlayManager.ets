@@ -75,8 +75,9 @@ export class MapOverlayManager {
       pixelFormat: image.PixelMapFormat.BGRA_8888,
       size: imageSize
     };
+    const initBuffer: ArrayBuffer = new ArrayBuffer(size * size * 4);
+    const pixelMap = await image.createPixelMap(initBuffer, imageOptions);
     const buffer: ArrayBuffer = new ArrayBuffer(size * size * 4);
-    const pixelMap = await image.createPixelMap(buffer, imageOptions);
     const imageData = new Uint8Array(buffer);
     const center = size / 2;
     const radius = size / 2 - 1;
@@ -92,10 +93,11 @@ export class MapOverlayManager {
         const dist = Math.sqrt(dx * dx + dy * dy);
         const offset = (y * size + x) * 4;
         if (dist <= radius) {
-          // BGRA_8888 内存布局：B, G, R, A
-          imageData[offset] = blue;
+          // 地图渲染管线内部将 PixelMap 数据以 RGBA 顺序上传纹理，
+          // 此处写入 RGBA 顺序：R, G, B, A，补偿渲染管线的通道解译差异
+          imageData[offset] = red;
           imageData[offset + 1] = green;
-          imageData[offset + 2] = red;
+          imageData[offset + 2] = blue;
           imageData[offset + 3] = alpha;
         } else {
           imageData[offset] = 0;
@@ -122,7 +124,7 @@ export class MapOverlayManager {
           latitude: 39.9,
           longitude: 116.4
         },
-        zoom: 10
+        zoom: 15
       },
       myLocationControlsEnabled: true,
       scaleControlsEnabled: true,

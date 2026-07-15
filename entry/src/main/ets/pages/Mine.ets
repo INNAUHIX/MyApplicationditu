@@ -21,7 +21,7 @@ const TAG_LOG: string = 'Mine';
 @Component
 export struct Mine {
   permSvc: PermissionService = new PermissionService();
-  mainNavStack: NavPathStack = new NavPathStack();
+  mainNavStack: NavPathStack | null = null;
 
   @Link recordMode: RecordMode;
   @Link sleepModeEnabled: boolean;
@@ -40,7 +40,7 @@ export struct Mine {
 
   recordModeNames: string[] = ['均衡', '耗电'];
 
-  safeBottom: number = 80;
+  safeBottom: number = 0;
 
   @State isShowRecordMode: boolean = false;
   @State isShowLocation: boolean = false;
@@ -74,7 +74,7 @@ export struct Mine {
               CardItem({
                 label: '策略实验室',
                 symbol: $r('sys.symbol.person_shield_fill'),
-                onClickEvent: () => { this.mainNavStack.pushPath({ name: 'StrategyLab' }); }
+                onClickEvent: () => { this.mainNavStack?.pushPath({ name: 'StrategyLab' }); }
               })
               Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
               CardItem({

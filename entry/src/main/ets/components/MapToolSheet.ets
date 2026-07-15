@@ -1,4 +1,4 @@
-/**
+ /**
  * MapToolSheet.ets —— 地图工具半模态面板子组件
  *
  * 从 FootprintTab.buildMapToolSheetContent() 提取的独立 @Component，

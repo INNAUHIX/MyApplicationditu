@@ -64,7 +64,18 @@ export struct StatsTab {
   }
 
   build() {
-    Navigation() {
+    Column() {
+      Row() {
+        Text('足迹统计')
+          .fontSize(18)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('sys.color.font_primary'))
+      }
+      .width('100%')
+      .height(56)
+      .padding({ left: 16 })
+      .alignItems(VerticalAlign.Center)
+
       List() {
         if (this.statTrackCount === 0) {
           ListItem() {
@@ -251,22 +262,15 @@ export struct StatsTab {
           }
         }
       }
-      .width('100%')
-      .height('100%')
-      .padding({ left: 16, right: 16, bottom: this.navBarHeight + 96 })
-      .backgroundColor($r('sys.color.background_secondary'))
+      .layoutWeight(1)
+      .padding({ left: 16, right: 16 })
       .edgeEffect(EdgeEffect.Spring)
       .scrollBar(BarState.Off)
     }
-    .title('足迹统计', { backgroundColor: $r('sys.color.background_secondary') })
-    .titleMode(NavigationTitleMode.Mini)
-    .hideBackButton(true)
-    .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
-    .padding({ top: this.statusBarHeight })
-    .backgroundColor($r('sys.color.background_secondary'))
-    .mode(NavigationMode.Stack)
     .width('100%')
     .height('100%')
+    .padding({ top: this.statusBarHeight })
+    .backgroundColor($r('sys.color.background_secondary'))
   }
 
   // 统计面板内的单行指标
