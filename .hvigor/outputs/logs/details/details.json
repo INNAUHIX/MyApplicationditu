@@ -50,6 +50,9 @@
         ],
         "PACKAGE_JSON": [],
         "MODULE_TYPE": "entry",
+        "INCREMENTAL_TASKS": {
+          "COMPILE_ARKTS": true
+        },
         "IS_INCREMENTAL_MODULE": true
       }
     ],
@@ -61,28 +64,31 @@
   },
   "HVIGOR": {
     "IS_INCREMENTAL": true,
-    "IS_DAEMON": true,
+    "IS_DAEMON": false,
     "IS_PARALLEL": true,
     "IS_HVIGORFILE_TYPE_CHECK": false,
     "IS_EXECUTION_OHPM_BY_HVIGOR": false,
     "BUILD_ANALYSIS_MODE": "normal",
     "TASK_TIME": {
       "923fe53966c6cd9343e11af776cd4b05be315ea4b200b02e4d5dfb0f929b73bf": {
-        "PreBuild": 6361500,
-        "CreateModuleInfo": 229400,
-        "ConfigureCmake": 99200,
-        "PreCheckSyscap": 109700,
-        "GeneratePkgSdkInfo": 618100,
-        "ProcessIntegratedHsp": 195700,
-        "BuildNativeWithCmake": 98400,
-        "SyscapTransform": 1374000,
-        "ProcessStartupConfig": 571500,
-        "BuildNativeWithNinja": 200000,
-        "BuildJS": 758100,
-        "ProcessCompiledResources": 245200,
-        "PackingCheck": 2032800,
-        "CollectDebugSymbol": 273200,
-        "assembleHap": 87300
+        "PreBuild": 85065600,
+        "CreateModuleInfo": 410100,
+        "ConfigureCmake": 104100,
+        "PreCheckSyscap": 183300,
+        "GeneratePkgSdkInfo": 1075300,
+        "ProcessIntegratedHsp": 336400,
+        "BuildNativeWithCmake": 128300,
+        "SyscapTransform": 8781100,
+        "ProcessStartupConfig": 1543500,
+        "BuildNativeWithNinja": 326400,
+        "BuildJS": 1262100,
+        "CompileArkTS": 4740024800,
+        "ProcessCompiledResources": 350900,
+        "PackageHap": 872932200,
+        "PackingCheck": 3393300,
+        "SignHap": 1324787000,
+        "CollectDebugSymbol": 1119700,
+        "assembleHap": 125300
       }
     },
     "CUSTOM_TASK_TIME": {},
@@ -95,7 +101,7 @@
       "ENABLE_CPP_FUNCTION_LEVEL_INCREMENTAL": false
     },
     "CONFIG_PROPERTIES": {},
-    "TOTAL_TIME": 314198100,
-    "BUILD_ID": "202607160309275300"
+    "BUILD_ID": "202607180210516920",
+    "TOTAL_TIME": 8399585600
   }
 }

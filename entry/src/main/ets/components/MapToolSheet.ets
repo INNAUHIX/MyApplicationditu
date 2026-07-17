@@ -13,7 +13,7 @@ import {
   SegmentButtonOptions,
   ItemRestriction,
   SegmentButtonTextItem
-} from '@kit.ArkUI';
+} from '@kit.ArkUI'; 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const TAG_LOG: string = 'MapToolSheet';

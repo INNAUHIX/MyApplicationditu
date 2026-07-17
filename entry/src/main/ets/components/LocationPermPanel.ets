@@ -17,6 +17,7 @@ import { common } from '@kit.AbilityKit';
 
 @Component
 export struct LocationPermPanel {
+  scroller: Scroller = new Scroller();
   permSvc: PermissionService = new PermissionService();
 
   @Link hasApproximatelyLocation: boolean;
@@ -25,9 +26,8 @@ export struct LocationPermPanel {
   onRefreshPermission: () => void = () => {};
 
   build() {
-    Scroll() {
+    Scroll(this.scroller) {
       Column({ space: 12 }) {
-        // 大致位置
         Row() {
           Column({ space: 6 }) {
             Text('大致位置')
@@ -60,7 +60,6 @@ export struct LocationPermPanel {
           this.handlePermissionClick('approximately');
         })
 
-        // 精确位置
         Row() {
           Column({ space: 6 }) {
             Text('精确位置')
@@ -93,7 +92,6 @@ export struct LocationPermPanel {
           this.handlePermissionClick('location');
         })
 
-        // 后台定位
         Row() {
           Column({ space: 6 }) {
             Text('后台定位')
@@ -126,7 +124,6 @@ export struct LocationPermPanel {
           this.handlePermissionClick('background');
         })
 
-        // 前往系统设置
         Row() {
           Column({ space: 6 }) {
             Text('前往系统设置')
@@ -161,14 +158,9 @@ export struct LocationPermPanel {
     }
     .layoutWeight(1)
     .align(Alignment.Top)
-    .edgeEffect(EdgeEffect.Spring)
+    .edgeEffect(EdgeEffect.None)
     .scrollBar(BarState.Off)
-    .nestedScroll({
-      scrollForward: NestedScrollMode.PARENT_FIRST,
-      scrollBackward: NestedScrollMode.SELF_FIRST
-    })
     .width('100%')
-    .height('100%')
     .backgroundColor($r('sys.color.background_secondary'))
   }
 

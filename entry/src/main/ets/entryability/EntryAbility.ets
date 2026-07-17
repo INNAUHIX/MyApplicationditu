@@ -18,17 +18,33 @@ const TAG = 'EntryAbility';
 export default class EntryAbility extends UIAbility {
   private isBackgroundRunning: boolean = false;
 
+  private taskCancelCallback = (info: backgroundTaskManager.ContinuousTaskCancelInfo): void => {
+    hilog.warn(DOMAIN, TAG, 'Background task canceled, id: %{public}d, reason: %{public}d', info.id, info.reason);
+    this.isBackgroundRunning = false;
+    hilog.warn(DOMAIN, TAG, 'Will re-request background task on next background transition');
+  };
+
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     try {
       this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     } catch (err) {
       hilog.error(DOMAIN, TAG, 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
     }
+    try {
+      backgroundTaskManager.on('continuousTaskCancel', this.taskCancelCallback);
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, 'Failed to register continuousTaskCancel: %{public}s', JSON.stringify(err));
+    }
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onCreate');
   }
 
   onDestroy(): void {
     this.stopBackgroundTask();
+    try {
+      backgroundTaskManager.off('continuousTaskCancel', this.taskCancelCallback);
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, 'Failed to unregister continuousTaskCancel: %{public}s', JSON.stringify(err));
+    }
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onDestroy');
   }
 

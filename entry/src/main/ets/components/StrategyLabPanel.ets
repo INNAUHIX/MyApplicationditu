@@ -18,6 +18,7 @@ import { RecordStrategyItem } from '../model/TrackTypes';
 
 @Component
 export struct StrategyLabPanel {
+  scroller: Scroller = new Scroller();
   private recordStrategyItems: RecordStrategyItem[] = [
     { title: '坐标纠偏', desc: '手机GPS返回的是WGS84坐标系，国内地图使用GCJ02坐标系，两者有几十到几百米偏差。系统自动将每个定位点从WGS84转换为GCJ02，确保轨迹与地图道路对齐。' },
     { title: '定时定位采样', desc: '所有模式均使用精度优先定位配合自定义时间间隔，系统按设定间隔获取GPS定位：均衡模式20秒、耗电模式5秒、睡眠模式60秒。由应用直接控制定位间隔与精度优先级，确保各模式按预期频率运行。' },
@@ -26,7 +27,7 @@ export struct StrategyLabPanel {
   ];
 
   build() {
-    Scroll() {
+    Scroll(this.scroller) {
       Column({ space: 12 }) {
         Column() {
           Text('自动生效策略')
@@ -74,14 +75,9 @@ export struct StrategyLabPanel {
     }
     .layoutWeight(1)
     .align(Alignment.Top)
-    .edgeEffect(EdgeEffect.Spring)
+    .edgeEffect(EdgeEffect.None)
     .scrollBar(BarState.Off)
-    .nestedScroll({
-      scrollForward: NestedScrollMode.PARENT_FIRST,
-      scrollBackward: NestedScrollMode.SELF_FIRST
-    })
     .width('100%')
-    .height('100%')
     .backgroundColor($r('sys.color.background_secondary'))
   }
 

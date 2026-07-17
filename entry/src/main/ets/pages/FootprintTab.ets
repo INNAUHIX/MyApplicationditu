@@ -31,6 +31,7 @@ import {
 } from '../model/TrackTypes';
 import { calculateDistance, formatDistance, getDayStartTs, getDayEndTs, computeStats as computeStatsUtil, formatStatDate } from '../common/TrackUtils';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { vibrator } from '@kit.SensorServiceKit';
 
 const TAG_LOG: string = 'FootprintTab';
 
@@ -87,9 +88,15 @@ export struct FootprintTab {
   // ===== 右侧浮层面板状态 ====
   @State isShowStatsSheet: boolean = false;
   @State isShowMineSheet: boolean = false;
-  // Mine 面板子视图模式（''=主列表, recordMode/location/setting/strategyLab=子视图）
-  @State mineSubviewMode: string = '';
+  private mineNavStack: NavPathStack = new NavPathStack();
   @State pushSwitchOn: boolean = false;
+
+  // ===== 我的面板 Scroller =====
+  private mineScroller: Scroller = new Scroller();
+  private recordModeScroller: Scroller = new Scroller();
+  private locationScroller: Scroller = new Scroller();
+  private settingScroller: Scroller = new Scroller();
+  private strategyLabScroller: Scroller = new Scroller();
 
   // ===== HdsTabs 底部悬浮页签 =====
   private hdsTabsController: HdsTabsController = new HdsTabsController();
@@ -104,8 +111,6 @@ export struct FootprintTab {
   @State statFirstTs: number = 0;
   @State statLastTs: number = 0;
   @State statRecent7: StatDayItem[] = [];
-
-  private recordModeNames: string[] = ['均衡', '耗电'];
 
   // ===== 生命周期 =====
   aboutToAppear(): void {
@@ -432,12 +437,12 @@ export struct FootprintTab {
           .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
           .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
           .onClick(() => {
+            try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
             this.computeStats();
             this.isShowStatsSheet = true;
           })
           .bindSheet($$this.isShowStatsSheet, this.buildStatsSheet(), {
-            detents: [SheetSize.MEDIUM, SheetSize.LARGE], title: { title: '足迹统计' },
-            dragBar: true, showClose: true, onDisappear: () => { this.isShowStatsSheet = false; }
+            onDisappear: () => { this.isShowStatsSheet = false; }
           })
 
           // 我的
@@ -447,12 +452,14 @@ export struct FootprintTab {
           .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
           .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
           .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
-          .onClick(() => { this.isShowMineSheet = true; })
+          .onClick(() => {
+            try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
+            this.isShowMineSheet = true;
+          })
           .bindSheet($$this.isShowMineSheet, this.buildMineSheet(), {
-            detents: [SheetSize.MEDIUM, SheetSize.LARGE], title: { title: '我的' },
-            dragBar: true, showClose: true, onDisappear: () => {
+            onDisappear: () => {
               this.isShowMineSheet = false;
-              this.mineSubviewMode = '';
+              this.mineNavStack.clear();
             }
           })
 
@@ -463,10 +470,12 @@ export struct FootprintTab {
           .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
           .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
           .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
-          .onClick(() => { this.isShowMapToolSheet = true; })
+          .onClick(() => {
+            try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
+            this.isShowMapToolSheet = true;
+          })
           .bindSheet($$this.isShowMapToolSheet, this.buildMapToolSheet(), {
-            detents: [SheetSize.MEDIUM, SheetSize.LARGE], title: { title: '地图工具' },
-            dragBar: true, showClose: true, onDisappear: () => { this.isShowMapToolSheet = false; }
+            onDisappear: () => { this.isShowMapToolSheet = false; }
           })
         }
         .alignItems(HorizontalAlign.End)
@@ -528,7 +537,12 @@ export struct FootprintTab {
       .vertical(false)
       .barPosition(BarPosition.End)
       .scrollable(false)
-      .onChange((index: number) => { this.onTimeViewSelected(index); })
+      .onChange((index: number) => {
+        try {
+          vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' });
+        } catch (e) {}
+        this.onTimeViewSelected(index);
+      })
       .barFloatingStyle({
         barBottomMargin: 28,
         miniBar: {
@@ -574,16 +588,29 @@ export struct FootprintTab {
   @Builder
   private miniBarBuilder() {
     Row() {
-      SymbolGlyph(this.displayMode === 0
-        ? $r('sys.symbol.waveform_folder_fill')
-        : $r('sys.symbol.person_crop_circle_fill_1'))
-        .fontSize(24)
-        .fontColor([$r('sys.color.ohos_id_color_activated')])
+      if (this.displayMode === 0) {
+        SymbolGlyph($r('sys.symbol.waveform_folder_fill'))
+          .fontSize(24)
+          .fontColor([$r('sys.color.ohos_id_color_activated')])
+          .transition(
+            TransitionEffect.scale({ x: 0.5, y: 0.5 }).combine(TransitionEffect.opacity(0))
+              .animation({ duration: 200, curve: Curve.Smooth })
+          )
+      } else {
+        SymbolGlyph($r('sys.symbol.person_crop_circle_fill_1'))
+          .fontSize(24)
+          .fontColor([$r('sys.color.ohos_id_color_activated')])
+          .transition(
+            TransitionEffect.scale({ x: 0.5, y: 0.5 }).combine(TransitionEffect.opacity(0))
+              .animation({ duration: 200, curve: Curve.Smooth })
+          )
+      }
     }
     .width('100%').height('100%')
     .justifyContent(FlexAlign.Center)
     .alignItems(VerticalAlign.Center)
     .onClick(() => {
+      try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
       this.switchDisplayMode(this.displayMode === 0 ? 1 : 0);
     })
   }
@@ -601,7 +628,6 @@ export struct FootprintTab {
       } else {
         Scroll() {
           Column({ space: 12 }) {
-            // 指标行
             Row({ space: 12 }) {
               this.buildStatItem(`${(this.statTotalDistance / 1000).toFixed(2)} km`, '累计里程')
               this.buildStatItem(`${this.statTrackCount}`, '足迹点')
@@ -625,7 +651,6 @@ export struct FootprintTab {
             .width('100%').backgroundColor($r('sys.color.comp_background_list_card'))
             .borderRadius(16).padding(16)
 
-            // 最近 7 天
             Column({ space: 10 }) {
               Text('最近 7 天').fontSize(16).fontWeight(FontWeight.Medium)
                 .fontColor($r('sys.color.font_primary')).width('100%')
@@ -650,67 +675,124 @@ export struct FootprintTab {
     .width('100%').height('100%').backgroundColor($r('sys.color.background_secondary'))
   }
 
-  // 我的面板（含子视图条件切换）
   @Builder
   private buildMineSheet(): void {
-    Column() {
-      if (this.mineSubviewMode === 'recordMode') {
-        // 记录规则子视图
-        this.recordModeSheet()
-      } else if (this.mineSubviewMode === 'location') {
-        // 定位权限子视图
-        this.locationSheet()
-      } else if (this.mineSubviewMode === 'setting') {
-        // 设置子视图
-        this.settingSheet()
-      } else if (this.mineSubviewMode === 'strategyLab') {
-        // 策略实验室子视图
-        this.strategyLabSheet()
-      } else {
-        // 主列表
-        Scroll() {
-          Column({ space: 16 }) {
-            Column() {
-              CardItem({
-                label: '记录规则',
-                symbol: $r('sys.symbol.local_badge_gearshape'),
-                statusText: this.recordModeNames[this.currentMode],
-                statusColor: $r('sys.color.font_secondary'),
-                onClickEvent: () => { this.mineSubviewMode = 'recordMode'; }
-              })
-              Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
-              CardItem({
-                label: '策略实验室',
-                symbol: $r('sys.symbol.person_shield_fill'),
-                onClickEvent: () => { this.mineSubviewMode = 'strategyLab'; }
-              })
-              Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
-              CardItem({
-                label: '定位权限',
-                symbol: $r('sys.symbol.position_badge_exclamationmark'),
-                statusText: (!this.hasApproximatelyLocation || !this.hasLocation || !this.hasBackgroundLocation) ? '权限异常' : '',
-                statusColor: $r('sys.color.ohos_id_color_warning'),
-                onClickEvent: () => {
-                  this.onRefreshPermission();
-                  this.mineSubviewMode = 'location';
-                }
-              })
-              Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
-              CardItem({
-                label: '设置',
-                symbol: $r('sys.symbol.gearshape'),
-                onClickEvent: () => { this.mineSubviewMode = 'setting'; }
-              })
-            }
-            .width('100%').borderRadius(16).backgroundColor($r('sys.color.comp_background_list_card'))
+    Navigation(this.mineNavStack) {
+      Scroll(this.mineScroller) {
+        Column({ space: 16 }) {
+          Column() {
+            CardItem({
+              label: '记录规则',
+              symbol: $r('sys.symbol.local_badge_gearshape'),
+              statusText: MODE_CONFIG[this.currentMode].label,
+              statusColor: $r('sys.color.font_secondary'),
+              onClickEvent: () => { this.mineNavStack.pushPath({ name: 'recordMode' }); }
+            })
+            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
+            CardItem({
+              label: '策略实验室',
+              symbol: $r('sys.symbol.person_shield_fill'),
+              onClickEvent: () => { this.mineNavStack.pushPath({ name: 'strategyLab' }); }
+            })
+            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
+            CardItem({
+              label: '定位权限',
+              symbol: $r('sys.symbol.position_badge_exclamationmark'),
+              statusText: (!this.hasApproximatelyLocation || !this.hasLocation || !this.hasBackgroundLocation) ? '权限异常' : '',
+              statusColor: $r('sys.color.ohos_id_color_warning'),
+              onClickEvent: () => {
+                this.onRefreshPermission();
+                this.mineNavStack.pushPath({ name: 'location' });
+              }
+            })
+            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
+            CardItem({
+              label: '设置',
+              symbol: $r('sys.symbol.gearshape'),
+              onClickEvent: () => { this.mineNavStack.pushPath({ name: 'setting' }); }
+            })
           }
-          .width('100%').padding({ left: 16, right: 16, top: 12 })
-          .margin({ bottom: 16 })
+          .width('100%').borderRadius(16).backgroundColor($r('sys.color.comp_background_list_card'))
         }
-        .layoutWeight(1)
+        .width('100%').padding({ left: 16, right: 16, top: 12 })
+        .margin({ bottom: 16 })
       }
+      .layoutWeight(1)
+      .align(Alignment.Top)
+      .edgeEffect(EdgeEffect.None)
+      .scrollBar(BarState.Off)
+      .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
     }
-    .width('100%').height('100%').backgroundColor($r('sys.color.background_secondary'))
+    .title('我的', { backgroundColor: $r('sys.color.background_secondary') })
+    .titleMode(NavigationTitleMode.Mini)
+    .mode(NavigationMode.Stack)
+    .hideBackButton(true)
+    .hideToolBar(true)
+    .menus(this.buildCloseMenu())
+    .navDestination(this.mineNavDestination)
+    .width('100%')
+    .height('100%')
+    .backgroundColor($r('sys.color.background_secondary'))
+  }
+
+  private buildCloseMenu(): Array<NavigationMenuItem> {
+    const item: NavigationMenuItem = {
+      value: '',
+      symbolIcon: new SymbolGlyphModifier($r('sys.symbol.xmark')).fontSize(24),
+      action: () => { this.isShowMineSheet = false; }
+    };
+    return [item];
+  }
+
+  @Builder
+  mineNavDestination(name: string) {
+    if (name === 'recordMode') {
+      NavDestination() {
+        RecordModePanel({
+          scroller: this.recordModeScroller,
+          recordMode: this.currentMode,
+          sleepModeEnabled: this.sleepModeEnabled,
+          onRecordModeChange: (mode: number) => { this.onRecordModeChange(mode); },
+          onSleepModeChange: (enabled: boolean) => { this.onSleepModeChange(enabled); }
+        })
+      }
+      .title('记录规则', { backgroundColor: $r('sys.color.background_secondary') })
+      .hideToolBar(true)
+      .menus(this.buildCloseMenu())
+    } else if (name === 'location') {
+      NavDestination() {
+        LocationPermPanel({
+          scroller: this.locationScroller,
+          permSvc: this.permSvc,
+          hasApproximatelyLocation: $hasApproximatelyLocation,
+          hasLocation: $hasLocation,
+          hasBackgroundLocation: $hasBackgroundLocation,
+          onRefreshPermission: () => { this.onRefreshPermission(); }
+        })
+      }
+      .title('定位权限', { backgroundColor: $r('sys.color.background_secondary') })
+      .hideToolBar(true)
+      .menus(this.buildCloseMenu())
+    } else if (name === 'setting') {
+      NavDestination() {
+        SettingPanel({
+          scroller: this.settingScroller,
+          nightModeIndex: $nightModeIndex,
+          pushSwitchOn: $pushSwitchOn,
+          onNightModeChange: (i: number) => { this.onNightModeChange(i); }
+        })
+      }
+      .title('设置', { backgroundColor: $r('sys.color.background_secondary') })
+      .hideToolBar(true)
+      .menus(this.buildCloseMenu())
+    } else if (name === 'strategyLab') {
+      NavDestination() {
+        StrategyLabPanel({ scroller: this.strategyLabScroller })
+      }
+      .title('策略实验室', { backgroundColor: $r('sys.color.background_secondary') })
+      .hideToolBar(true)
+      .menus(this.buildCloseMenu())
+    }
   }
 
   // 统计面板内的指标项（纯数字）
@@ -732,89 +814,5 @@ export struct FootprintTab {
       Text(label).fontSize(12).fontColor($r('sys.color.font_primary')).opacity(0.6)
     }
     .layoutWeight(1).alignItems(HorizontalAlign.Start)
-  }
-
-  // Mine 子面板
-  @Builder
-  private recordModeSheet(): void {
-    Column() {
-      Row() {
-        SymbolGlyph($r('sys.symbol.chevron_left'))
-          .fontSize(24).fontColor([$r('sys.color.ohos_id_color_activated')])
-          .margin({ left: 12 })
-          .onClick(() => { this.mineSubviewMode = ''; })
-        Text('记录规则').fontSize(18).fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary')).margin({ left: 8 })
-      }
-      .width('100%').height(56).alignItems(VerticalAlign.Center)
-
-      RecordModePanel({
-        recordMode: this.currentMode,
-        sleepModeEnabled: this.sleepModeEnabled,
-        onRecordModeChange: (mode: number) => { this.onRecordModeChange(mode); },
-        onSleepModeChange: (enabled: boolean) => { this.onSleepModeChange(enabled); }
-      })
-    }
-  }
-
-  @Builder
-  private locationSheet(): void {
-    Column() {
-      Row() {
-        SymbolGlyph($r('sys.symbol.chevron_left'))
-          .fontSize(24).fontColor([$r('sys.color.ohos_id_color_activated')])
-          .margin({ left: 12 })
-          .onClick(() => { this.mineSubviewMode = ''; })
-        Text('定位权限').fontSize(18).fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary')).margin({ left: 8 })
-      }
-      .width('100%').height(56).alignItems(VerticalAlign.Center)
-
-      LocationPermPanel({
-        permSvc: this.permSvc,
-        hasApproximatelyLocation: $hasApproximatelyLocation,
-        hasLocation: $hasLocation,
-        hasBackgroundLocation: $hasBackgroundLocation,
-        onRefreshPermission: () => { this.onRefreshPermission(); }
-      })
-    }
-  }
-
-  @Builder
-  private settingSheet(): void {
-    Column() {
-      Row() {
-        SymbolGlyph($r('sys.symbol.chevron_left'))
-          .fontSize(24).fontColor([$r('sys.color.ohos_id_color_activated')])
-          .margin({ left: 12 })
-          .onClick(() => { this.mineSubviewMode = ''; })
-        Text('设置').fontSize(18).fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary')).margin({ left: 8 })
-      }
-      .width('100%').height(56).alignItems(VerticalAlign.Center)
-
-      SettingPanel({
-        nightModeIndex: $nightModeIndex,
-        pushSwitchOn: $pushSwitchOn,
-        onNightModeChange: (i: number) => { this.onNightModeChange(i); }
-      })
-    }
-  }
-
-  @Builder
-  private strategyLabSheet(): void {
-    Column() {
-      Row() {
-        SymbolGlyph($r('sys.symbol.chevron_left'))
-          .fontSize(24).fontColor([$r('sys.color.ohos_id_color_activated')])
-          .margin({ left: 12 })
-          .onClick(() => { this.mineSubviewMode = ''; })
-        Text('策略实验室').fontSize(18).fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary')).margin({ left: 8 })
-      }
-      .width('100%').height(56).alignItems(VerticalAlign.Center)
-
-      StrategyLabPanel()
-    }
   }
 }

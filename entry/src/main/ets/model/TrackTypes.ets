@@ -22,21 +22,25 @@ export interface VisibleRange {
 
 // ===== 定位记录模式（按功耗分级，Option B）=====
 export enum RecordMode {
-  BALANCED = 0,     // 均衡（默认）
+  BALANCED = 0,     // 均衡（修改后配置，maxAccuracy=100, TRAJECTORY_TRACKING）
   HIGH_POWER = 1,   // 耗电
-  SLEEP = 2         // 睡眠
+  SLEEP = 2,        // 睡眠
+  NORMAL = 3        // 普通（临时测试：修改前的原始配置，测试完成后删除）
 }
 
 export interface RecordModeConfig {
   timeInterval: number;
   distanceInterval: number;
   label: string;
+  maxAccuracy: number;
+  useTrajectoryScenario: boolean;
 }
 
 export const MODE_CONFIG: RecordModeConfig[] = [
-  { timeInterval: 20, distanceInterval: 90,  label: '均衡' },
-  { timeInterval: 5,  distanceInterval: 30,  label: '耗电' },
-  { timeInterval: 60, distanceInterval: 0,   label: '睡眠' },
+  { timeInterval: 20, distanceInterval: 90,  label: '均衡', maxAccuracy: 100, useTrajectoryScenario: true },
+  { timeInterval: 5,  distanceInterval: 30,  label: '耗电', maxAccuracy: 0,   useTrajectoryScenario: false },
+  { timeInterval: 60, distanceInterval: 0,   label: '睡眠', maxAccuracy: 0,   useTrajectoryScenario: false },
+  { timeInterval: 20, distanceInterval: 90,  label: '普通', maxAccuracy: 0,   useTrajectoryScenario: false },
 ];
 
 // 待写入数据库的轨迹点记录（含精度/速度/时间戳）
@@ -90,6 +94,10 @@ export const PREF_KEY_RECORD_MODE: string = 'recordModeIndex';
 export const PREF_KEY_NIGHT_MODE: string = 'nightModeIndex';
 // 轻量偏好存储：持久化睡眠模式开关
 export const PREF_KEY_SLEEP_MODE: string = 'sleepModeEnabled';
+// 轻量偏好存储：持久化上次记录点位置与日期，避免重启时强制打首点
+export const PREF_KEY_LAST_LAT: string = 'lastRecordedLat';
+export const PREF_KEY_LAST_LON: string = 'lastRecordedLon';
+export const PREF_KEY_LAST_DAY: string = 'lastRecordedDay';
 
 
 // 时间范围视图索引常量

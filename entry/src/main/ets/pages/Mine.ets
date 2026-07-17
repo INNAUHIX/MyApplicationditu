@@ -8,7 +8,7 @@
  *   - 策略实验室通过顶层 Navigation 导航跳转（二级页面覆盖Tab栏）
  */
 
-import { RecordMode } from '../model/TrackTypes';
+import { RecordMode, MODE_CONFIG } from '../model/TrackTypes';
 import { CardItem } from '../components/CardItem';
 import { RecordModePanel } from '../components/RecordModePanel';
 import { LocationPermPanel } from '../components/LocationPermPanel';
@@ -38,8 +38,6 @@ export struct Mine {
   onRecordModeChange: (mode: number) => void = () => {};
   onSleepModeChange: (enabled: boolean) => void = () => {};
 
-  recordModeNames: string[] = ['均衡', '耗电'];
-
   safeBottom: number = 0;
 
   @State isShowRecordMode: boolean = false;
@@ -66,7 +64,7 @@ export struct Mine {
               CardItem({
                 label: '记录规则',
                 symbol: $r('sys.symbol.local_badge_gearshape'),
-                statusText: this.recordModeNames[this.recordMode],
+                statusText: MODE_CONFIG[this.recordMode].label,
                 statusColor: $r('sys.color.font_secondary'),
                 onClickEvent: () => { this.isShowRecordMode = true; }
               })
@@ -111,21 +109,21 @@ export struct Mine {
               .width(0)
               .height(0)
               .bindSheet($$this.isShowRecordMode, this.recordModeSheet(), {
-                title: { title: '记录规则' }, height: SheetSize.LARGE, dragBar: true, showClose: true,
+                title: { title: '记录规则' },
                 onDisappear: () => { this.isShowRecordMode = false; }
               })
             Column()
               .width(0)
               .height(0)
               .bindSheet($$this.isShowLocation, this.locationSheet(), {
-                title: { title: '定位权限' }, height: SheetSize.LARGE, dragBar: true, showClose: true,
+                title: { title: '定位权限' },
                 onDisappear: () => { this.isShowLocation = false; }
               })
             Column()
               .width(0)
               .height(0)
               .bindSheet($$this.isShowSetting, this.settingSheet(), {
-                title: { title: '设置' }, height: SheetSize.LARGE, dragBar: true, showClose: true,
+                title: { title: '设置' },
                 onDisappear: () => { this.isShowSetting = false; }
               })
           }

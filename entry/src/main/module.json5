@@ -96,6 +96,9 @@
           ],
           "when": "always"
         }
+      },
+      {
+        "name": "ohos.permission.VIBRATE"
       }
     ]
   }

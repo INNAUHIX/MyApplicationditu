@@ -20,6 +20,7 @@ const TAG_LOG: string = 'SettingPanel';
 
 @Component
 export struct SettingPanel {
+  scroller: Scroller = new Scroller();
   @Link nightModeIndex: number;
   @Link pushSwitchOn: boolean;
 
@@ -40,15 +41,14 @@ export struct SettingPanel {
       }
     }
     .width('100%')
-    .height('100%')
+    .layoutWeight(1)
     .backgroundColor($r('sys.color.background_secondary'))
   }
 
   @Builder
   private settingList(): void {
-    Scroll() {
+    Scroll(this.scroller) {
       Column({ space: 12 }) {
-        // 夜间模式
         Row() {
           Column({ space: 6 }) {
             Text('夜间模式')
@@ -75,7 +75,6 @@ export struct SettingPanel {
         .borderRadius(16)
         .backgroundColor($r('sys.color.comp_background_list_card'))
 
-        // 通知开关
         Row() {
           Column({ space: 6 }) {
             Text('通知开关')
@@ -97,7 +96,6 @@ export struct SettingPanel {
         .backgroundColor($r('sys.color.comp_background_list_card'))
 
 
-        // 隐私设置
         Row() {
           Column({ space: 6 }) {
             Text('隐私设置')
@@ -127,18 +125,12 @@ export struct SettingPanel {
     }
     .layoutWeight(1)
     .align(Alignment.Top)
-    .edgeEffect(EdgeEffect.Spring)
+    .edgeEffect(EdgeEffect.None)
     .scrollBar(BarState.Off)
-    .nestedScroll({
-      scrollForward: NestedScrollMode.PARENT_FIRST,
-      scrollBackward: NestedScrollMode.SELF_FIRST
-    })
     .width('100%')
-    .height('100%')
     .backgroundColor($r('sys.color.background_secondary'))
   }
 
-  // 「隐私设置」二级视图
   @Builder
   private privacyView(): void {
     Column() {
@@ -162,7 +154,6 @@ export struct SettingPanel {
 
       Scroll() {
         Column({ space: 12 }) {
-          // 个性化推荐
           Row() {
             Column({ space: 6 }) {
               Text('个性化推荐')
@@ -183,7 +174,6 @@ export struct SettingPanel {
           .borderRadius(16)
           .backgroundColor($r('sys.color.comp_background_list_card'))
 
-          // 用户协议
           Row() {
             Column({ space: 6 }) {
               Text('用户协议')
@@ -205,7 +195,6 @@ export struct SettingPanel {
           .borderRadius(16)
           .backgroundColor($r('sys.color.comp_background_list_card'))
 
-          // 隐私政策
           Row() {
             Column({ space: 6 }) {
               Text('隐私政策')
@@ -232,12 +221,8 @@ export struct SettingPanel {
       }
       .layoutWeight(1)
       .align(Alignment.Top)
-      .edgeEffect(EdgeEffect.Spring)
+      .edgeEffect(EdgeEffect.None)
       .scrollBar(BarState.Off)
-      .nestedScroll({
-        scrollForward: NestedScrollMode.PARENT_FIRST,
-        scrollBackward: NestedScrollMode.SELF_FIRST
-      })
       .width('100%')
       .backgroundColor($r('sys.color.background_secondary'))
     }

@@ -18,19 +18,26 @@ const TAG_LOG: string = 'RecordMode';
 
 @Component
 export struct RecordModePanel {
+  scroller: Scroller = new Scroller();
   recordMode: RecordMode = RecordMode.BALANCED;
   sleepModeEnabled: boolean = false;
   onRecordModeChange: (mode: number) => void = () => {};
   onSleepModeChange: (enabled: boolean) => void = () => {};
 
-  private recordModeNames: string[] = ['均衡', '耗电'];
+  private recordModeNames: string[] = ['均衡', '耗电', '普通'];
+  private recordModeValues: number[] = [
+    RecordMode.BALANCED,
+    RecordMode.HIGH_POWER,
+    RecordMode.NORMAL
+  ];
   private recordModeDescs: string[] = [
-    '定位方式\t精度优先GPS（按距离）\n定位间隔\t20秒\n点间距\t≥90米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约8%–15%\n适用场景\t日常通勤，精度与耗电均衡，推荐默认\n\n工作方式：系统每20秒获取一次GPS定位，App计算与上次记录点的距离，≥90米才打点，不足则丢弃',
-    '定位方式\t精度优先GPS（按距离）\n定位间隔\t5秒\n点间距\t≥30米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约15%–25%\n适用场景\t骑行/步行等需要较细腻轨迹的场景\n\n工作方式：系统每5秒获取一次GPS定位，App计算与上次记录点的距离，≥30米才打点，不足则丢弃'
+    '定位方式\t精度优先GPS（按距离）\n定位间隔\t20秒\n点间距\t≥90米（距离触发）\n定位精度\t高精GPS\n精度过滤\t100米（maxAccuracy=100）\n定位场景\t轨迹跟踪（TRAJECTORY_TRACKING）\n每日耗电\t约8%–15%\n适用场景\t日常通勤，精度与耗电均衡，推荐默认\n\n工作方式：系统每20秒获取一次GPS定位，App计算与上次记录点的距离，≥90米才打点，不足则丢弃。系统自动过滤精度差于100米的低质量定位点，防止室内漂移产生飞点。',
+    '定位方式\t精度优先GPS（按距离）\n定位间隔\t5秒\n点间距\t≥30米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约15%–25%\n适用场景\t骑行/步行等需要较细腻轨迹的场景\n\n工作方式：系统每5秒获取一次GPS定位，App计算与上次记录点的距离，≥30米才打点，不足则丢弃',
+    '定位方式\t精度优先GPS（按距离）\n定位间隔\t20秒\n点间距\t≥90米（距离触发）\n定位精度\t高精GPS\n精度过滤\t无（maxAccuracy=0）\n定位场景\t精度优先（ACCURACY+UNSET）\n每日耗电\t约8%–15%\n适用场景\t对比测试：修改前的原始配置\n\n工作方式：与均衡模式参数相同，但无精度过滤、使用priority而非scenario。用于与均衡模式对比验证修改效果。测试完成后将移除此选项。'
   ];
 
   build() {
-    Scroll() {
+    Scroll(this.scroller) {
       Column({ space: 12 }) {
         ForEach(this.recordModeDescs, (desc: string, index: number) => {
           Row() {
@@ -48,7 +55,7 @@ export struct RecordModePanel {
             .layoutWeight(1)
             .alignItems(HorizontalAlign.Start)
             Radio({ value: `${index}`, group: 'recordMode' })
-              .checked(this.recordMode === index)
+              .checked(this.recordMode === this.recordModeValues[index])
               .radioStyle({
                 checkedBackgroundColor: $r('sys.color.ohos_id_color_activated'),
                 uncheckedBorderColor: $r('sys.color.comp_background_emphasize'),
@@ -58,7 +65,7 @@ export struct RecordModePanel {
               .height(24)
               .onChange((isChecked: boolean) => {
                 if (isChecked) {
-                  this.onRecordModeChange(index);
+                  this.onRecordModeChange(this.recordModeValues[index]);
                 }
               })
               .margin({ left: 16 })
@@ -67,7 +74,7 @@ export struct RecordModePanel {
           .borderRadius(16)
           .backgroundColor($r('sys.color.comp_background_list_card'))
           .onClick(() => {
-            this.onRecordModeChange(index);
+            this.onRecordModeChange(this.recordModeValues[index]);
           })
         }, (_desc: string, index: number) => `rm_${index}`)
 
@@ -101,14 +108,9 @@ export struct RecordModePanel {
     }
     .layoutWeight(1)
     .align(Alignment.Top)
-    .edgeEffect(EdgeEffect.Spring)
+    .edgeEffect(EdgeEffect.None)
     .scrollBar(BarState.Off)
-    .nestedScroll({
-      scrollForward: NestedScrollMode.PARENT_FIRST,
-      scrollBackward: NestedScrollMode.SELF_FIRST
-    })
     .width('100%')
-    .height('100%')
     .backgroundColor($r('sys.color.background_secondary'))
   }
 }

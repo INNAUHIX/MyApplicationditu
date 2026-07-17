@@ -65,21 +65,30 @@ struct Index {
   private mainNavStack: NavPathStack = new NavPathStack();
 
   aboutToAppear(): void {
+    let ctx: common.UIAbilityContext | undefined = undefined;
+    try {
+      ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    } catch (e) {}
+
+    if (ctx !== undefined) {
+      this.locationSvc.init(ctx);
+    }
 
     this.loadPrefs();
     this.locationSvc.switchMode(this.currentMode);
     this.locationSvc.setSleepModeEnabled(this.sleepModeEnabled);
     this.locationSvc.setUserMode(this.currentMode);
     this.startSleepCheckTimer();
-    try {
-      const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
-      window.getLastWindow(ctx).then((win) => {
-        const avoidArea = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
-        this.statusBarHeight = px2vpSafe(avoidArea.topRect.height);
-        const bottomAvoid = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
-        this.navBarHeight = px2vpSafe(bottomAvoid.bottomRect.height);
-      }).catch(() => {});
-    } catch (e) {}
+    if (ctx !== undefined) {
+      try {
+        window.getLastWindow(ctx).then((win) => {
+          const avoidArea = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
+          this.statusBarHeight = px2vpSafe(avoidArea.topRect.height);
+          const bottomAvoid = win.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
+          this.navBarHeight = px2vpSafe(bottomAvoid.bottomRect.height);
+        }).catch(() => {});
+      } catch (e) {}
+    }
   }
 
   aboutToDisappear(): void {
