@@ -8,7 +8,7 @@
 import { preferences } from '@kit.ArkData';
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { PREF_NAME, PREF_KEY_MAP_STYLE } from '../model/TrackTypes';
+import { PREF_NAME, PREF_KEY_MAP_STYLE, PREF_KEY_TRACK_COLOR, TRACK_COLORS } from '../model/TrackTypes';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const TAG_LOG: string = 'MapStyleVM';
@@ -16,6 +16,7 @@ const TAG_LOG: string = 'MapStyleVM';
 export class MapStyleViewModel {
   private context?: common.UIAbilityContext;
   private mapStyleIndex: number = 0;
+  private trackColorIndex: number = 0;
 
   setContext(ctx: common.UIAbilityContext): void {
     this.context = ctx;
@@ -59,5 +60,43 @@ export class MapStyleViewModel {
       hilog.error(0x0000, TAG_LOG, 'loadMapStyle failed, code: %{public}d, message: %{public}s', error.code, error.message);
       return 0;
     }
+  }
+
+  saveTrackColor(index: number): void {
+    this.trackColorIndex = index;
+    if (!this.context) {
+      return;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      pref.putSync(PREF_KEY_TRACK_COLOR, index);
+      pref.flushSync();
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'saveTrackColor failed, code: %{public}d, message: %{public}s', error.code, error.message);
+    }
+  }
+
+  loadTrackColor(): number {
+    if (!this.context) {
+      return 0;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      let idx: number = pref.getSync(PREF_KEY_TRACK_COLOR, 0) as number;
+      if (idx < 0 || idx >= TRACK_COLORS.length) {
+        idx = 0;
+      }
+      this.trackColorIndex = idx;
+      return idx;
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'loadTrackColor failed, code: %{public}d, message: %{public}s', error.code, error.message);
+      return 0;
+    }
+  }
+
+  get currentTrackColor(): number {
+    return TRACK_COLORS[this.trackColorIndex].color;
   }
 }

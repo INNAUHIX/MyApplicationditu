@@ -10,7 +10,8 @@ import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { geoLocationManager } from '@kit.LocationKit';
 import { SymbolGlyphModifier } from '@kit.ArkUI';
-import { HdsTabs, HdsTabsController, hdsMaterial } from '@kit.UIDesignKit';
+import { HdsTabs, HdsTabsController, hdsMaterial, HdsAnimationMode } from '@kit.UIDesignKit';
+
 
 import { TrackDatabase } from '../data/TrackDatabase';
 import { PermissionService } from '../service/PermissionService';
@@ -27,13 +28,19 @@ import { StrategyLabPanel } from '../components/StrategyLabPanel';
 import {
   TAG, RecordMode, MODE_CONFIG, TrackPointRecord, StatDayItem,
   TIME_VIEW_OVERVIEW, TIME_VIEW_CUSTOM, TIME_VIEW_TODAY,
-  ONE_DAY_MS
+  ONE_DAY_MS, TRACK_COLORS, TrackColorConfig
 } from '../model/TrackTypes';
 import { calculateDistance, formatDistance, getDayStartTs, getDayEndTs, computeStats as computeStatsUtil, formatStatDate } from '../common/TrackUtils';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { vibrator } from '@kit.SensorServiceKit';
 
 const TAG_LOG: string = 'FootprintTab';
+
+interface MapStyleGridItem {
+  index: number;
+  label: string;
+  icon: Resource;
+}
 
 @Component
 export struct FootprintTab {
@@ -44,6 +51,25 @@ export struct FootprintTab {
   mapManager: MapOverlayManager = new MapOverlayManager();
   timeModel: TimeViewModel = new TimeViewModel();
   mapStyleVM: MapStyleViewModel = new MapStyleViewModel();
+
+  private static readonly CALENDAR_ICONS: Resource[] = [
+    $r('sys.symbol.calendar_01'), $r('sys.symbol.calendar_02'),
+    $r('sys.symbol.calendar_03'), $r('sys.symbol.calendar_04'),
+    $r('sys.symbol.calendar_05'), $r('sys.symbol.calendar_06'),
+    $r('sys.symbol.calendar_07'), $r('sys.symbol.calendar_08'),
+    $r('sys.symbol.calendar_09'), $r('sys.symbol.calendar_10'),
+    $r('sys.symbol.calendar_11'), $r('sys.symbol.calendar_12'),
+    $r('sys.symbol.calendar_13'), $r('sys.symbol.calendar_14'),
+    $r('sys.symbol.calendar_15'), $r('sys.symbol.calendar_16'),
+    $r('sys.symbol.calendar_17'), $r('sys.symbol.calendar_18'),
+    $r('sys.symbol.calendar_19'), $r('sys.symbol.calendar_20'),
+    $r('sys.symbol.calendar_21'), $r('sys.symbol.calendar_22'),
+    $r('sys.symbol.calendar_23'), $r('sys.symbol.calendar_24'),
+    $r('sys.symbol.calendar_25'), $r('sys.symbol.calendar_26'),
+    $r('sys.symbol.calendar_27'), $r('sys.symbol.calendar_28'),
+    $r('sys.symbol.calendar_29'), $r('sys.symbol.calendar_30'),
+    $r('sys.symbol.calendar_31'),
+  ];
 
   // ===== 布局参数（@Watch 确保窗口尺寸异步获取后更新 padding）=====
   @Prop @Watch('onLayoutMetaChange') statusBarHeight: number = 0;
@@ -75,21 +101,30 @@ export struct FootprintTab {
   @State trackPoints: mapCommon.LatLng[] = [];
   @State footprintPoints: mapCommon.LatLng[] = [];
   private lastFootprintPoint: mapCommon.LatLng | null = null;
+  private lastKnownLocation: mapCommon.LatLng | null = null;
+  private savedUserPosition: mapCommon.LatLng | null = null;
   @State displayMode: number = 0;
+  @State selectedTabIndex: number = 2;
   @Link immersive: boolean;
   @State isShowMapToolSheet: boolean = false;
 
   @State myLocationOn: boolean = false;
+  @State myLocationDisplayType: mapCommon.MyLocationDisplayType = mapCommon.MyLocationDisplayType.DEFAULT;
+  @State cameraOffset: boolean = false;
   @State mapStyleIndex: number = 0;
   @State timeViewSelectedIndexes: number[] = [TIME_VIEW_TODAY];
   @State display2SelectedIndexes: number[] = [0];
   @State mapStyle2SelectedIndexes: number[] = [0];
+  @State trackColorIndex: number = 0;
 
   // ===== 右侧浮层面板状态 ====
   @State isShowStatsSheet: boolean = false;
   @State isShowMineSheet: boolean = false;
   private mineNavStack: NavPathStack = new NavPathStack();
   @State pushSwitchOn: boolean = false;
+
+  @State isShowThemeSheet: boolean = false;
+  @State isShowSettingSheet: boolean = false;
 
   // ===== 我的面板 Scroller =====
   private mineScroller: Scroller = new Scroller();
@@ -122,6 +157,9 @@ export struct FootprintTab {
     this.mapStyleIndex = style;
     this.mapStyle2SelectedIndexes = [style];
 
+    // 恢复上次选择的轨迹颜色
+    this.trackColorIndex = this.mapStyleVM.loadTrackColor();
+
     // 恢复「时间范围」视图选择（默认今日）与自定义起止日期
     this.timeModel.setContext(ctx);
     this.timeModel.loadPrefs();
@@ -137,7 +175,8 @@ export struct FootprintTab {
     this.mapOptions = this.mapManager.buildMapOptions(this.mapStyleIndex);
     this.callback = this.mapManager.buildMapCallback(
       () => { this.onMapReady(); },
-      () => { this.onMapClick(); }
+      () => { this.onMapClick(); },
+      () => { this.onCameraGesture(); }
     );
 
     this.timeModel.startDayCheck(() => { this.onDayChange(); });
@@ -169,7 +208,7 @@ export struct FootprintTab {
     await this.db.init(ctx);
     const records = await this.db.loadAll();
     this.timeModel.setAllPoints(records);
-    await this.mapManager.createRedDotIcon();
+    await this.mapManager.createRedDotIcon(TRACK_COLORS[this.trackColorIndex].color);
     this.refreshVisibleView();
     await this.permissionFlow(ctx);
   }
@@ -180,9 +219,100 @@ export struct FootprintTab {
     this.mapManager.setBottomPadding(next);
     const controller = this.mapManager.controller;
     if (controller) {
-      // 进入沉浸(next=true)时仅隐藏「我的位置」标记（视觉），退出时按用户原开关意图恢复；
-      // 不修改 myLocationOn，保证面板里的开关决定权完全属于用户
       controller.setMyLocationEnabled(next ? false : this.myLocationOn);
+      if (!next && this.myLocationOn) {
+        controller.setMyLocationControlsEnabled(false);
+        controller.setMyLocationStyle({ displayType: this.myLocationDisplayType });
+      }
+    }
+    if (next) {
+      this.hdsTabsController.applyHideAnimation(HdsAnimationMode.CLICK_ANIMATION);
+    } else {
+      this.hdsTabsController.applyShowAnimation(HdsAnimationMode.CLICK_ANIMATION);
+    }
+  }
+
+  private onCameraGesture(): void {
+    if (this.myLocationDisplayType === mapCommon.MyLocationDisplayType.FOLLOW_ROTATE) {
+      const controller = this.mapManager.controller;
+      if (controller) {
+        this.savedUserPosition = controller.getCameraPosition().target;
+        controller.setMyLocationStyle({
+          anchorU: 0.5,
+          anchorV: 0.5,
+          radiusFillColor: 0x224085F4,
+          displayType: mapCommon.MyLocationDisplayType.TRACK_ROTATE
+        });
+      }
+      this.myLocationDisplayType = mapCommon.MyLocationDisplayType.TRACK_ROTATE;
+      this.cameraOffset = true;
+    }
+  }
+
+  private async onMyLocationClick(): Promise<void> {
+    const controller = this.mapManager.controller;
+    if (!controller) { return; }
+    try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
+
+    if (!this.myLocationOn) {
+      controller.setMyLocationEnabled(true);
+      controller.setMyLocationControlsEnabled(false);
+      this.myLocationOn = true;
+      this.myLocationDisplayType = mapCommon.MyLocationDisplayType.FOLLOW_ROTATE;
+      await controller.setMyLocationStyle({
+        anchorU: 0.5,
+        anchorV: 0.5,
+        radiusFillColor: 0x224085F4,
+        displayType: mapCommon.MyLocationDisplayType.FOLLOW_ROTATE
+      });
+      try {
+        const singleRequest: geoLocationManager.SingleLocationRequest = {
+          locatingTimeoutMs: 10000,
+          locatingPriority: geoLocationManager.LocatingPriority.PRIORITY_ACCURACY
+        };
+        const currentLocation = await geoLocationManager.getCurrentLocation(singleRequest);
+        const gcj02Location = await map.convertCoordinate(
+          mapCommon.CoordinateType.WGS84, mapCommon.CoordinateType.GCJ02,
+          { latitude: currentLocation.latitude, longitude: currentLocation.longitude }
+        );
+        controller.moveCamera(map.newCameraPosition({ target: gcj02Location, zoom: 15 }));
+      } catch (err) {
+        const error = err as BusinessError;
+        hilog.warn(0x0000, TAG_LOG, 'Failed to move camera to current location, code: %{public}d', error.code);
+      }
+      return;
+    }
+
+    if (this.cameraOffset) {
+      this.cameraOffset = false;
+      const target: mapCommon.LatLng | null = this.savedUserPosition ?? this.lastKnownLocation;
+      if (target) {
+        controller.animateCameraStatus(
+          map.newCameraPosition({ target: target, zoom: 15, bearing: 0, tilt: 0 }),
+          300
+        ).then(() => {
+          this.myLocationDisplayType = mapCommon.MyLocationDisplayType.FOLLOW_ROTATE;
+          controller.setMyLocationStyle({
+            anchorU: 0.5,
+            anchorV: 0.5,
+            radiusFillColor: 0x224085F4,
+            displayType: mapCommon.MyLocationDisplayType.FOLLOW_ROTATE
+          });
+        }).catch(() => {});
+      } else {
+        this.myLocationDisplayType = mapCommon.MyLocationDisplayType.FOLLOW_ROTATE;
+        controller.setMyLocationStyle({
+          anchorU: 0.5,
+          anchorV: 0.5,
+          radiusFillColor: 0x224085F4,
+          displayType: mapCommon.MyLocationDisplayType.FOLLOW_ROTATE
+        });
+        const cameraPos = controller.getCameraPosition();
+        controller.animateCamera(
+          map.newCameraPosition({ target: cameraPos.target, zoom: cameraPos.zoom, bearing: 0, tilt: 0 }),
+          300
+        );
+      }
     }
   }
 
@@ -210,11 +340,17 @@ export struct FootprintTab {
     const controller = this.mapManager.controller;
     if (!controller) { return; }
     try {
-      const style: mapCommon.MyLocationStyle = { displayType: mapCommon.MyLocationDisplayType.FOLLOW_ROTATE };
-      await controller.setMyLocationStyle(style);
       controller.setMyLocationEnabled(true);
-      controller.setMyLocationControlsEnabled(true);
+      controller.setMyLocationControlsEnabled(false);
+      const style: mapCommon.MyLocationStyle = {
+        anchorU: 0.5,
+        anchorV: 0.5,
+        radiusFillColor: 0x224085F4,
+        displayType: mapCommon.MyLocationDisplayType.FOLLOW_ROTATE
+      };
+      await controller.setMyLocationStyle(style);
       this.myLocationOn = true;
+      this.myLocationDisplayType = mapCommon.MyLocationDisplayType.FOLLOW_ROTATE;
     } catch (err) {
       const error = err as BusinessError;
       hilog.error(0x0000, TAG_LOG, 'Failed to set my location style, code: %{public}d, message: %{public}s', error.code, error.message);
@@ -244,7 +380,7 @@ export struct FootprintTab {
 
 
   private onLocationSample(latLng: mapCommon.LatLng, accuracy: number, speed: number, timestamp?: number): void {
-
+    this.lastKnownLocation = latLng;
     this.recordTrackPoint(latLng, accuracy, speed, timestamp);
   }
 
@@ -343,6 +479,13 @@ export struct FootprintTab {
       this.timeModel.onTimeViewSelected(TIME_VIEW_OVERVIEW);
       this.refreshVisibleView();
     } else if (index === 1) {
+      if (this.timeModel.customStart <= 0) {
+        const todayStart = getDayStartTs(Date.now());
+        const todayEnd = getDayEndTs(Date.now());
+        this.timeModel.setCustomRange(todayStart, todayEnd);
+      }
+      this.timeModel.onTimeViewSelected(TIME_VIEW_CUSTOM);
+      this.refreshVisibleView();
       this.showCustomDatePicker();
     } else if (index === 2) {
       this.timeModel.onTimeViewSelected(TIME_VIEW_TODAY);
@@ -379,6 +522,28 @@ export struct FootprintTab {
     });
   }
 
+  private getCustomDateText(): string {
+    return formatStatDate(this.timeModel.customStart);
+  }
+
+  private prevCustomDay(): void {
+    const newStart = this.timeModel.customStart - ONE_DAY_MS;
+    const newEnd = this.timeModel.customEnd - ONE_DAY_MS;
+    this.timeModel.setCustomRange(newStart, newEnd);
+    this.refreshVisibleView();
+  }
+
+  private nextCustomDay(): void {
+    const todayEnd = getDayEndTs(Date.now());
+    const newEnd = this.timeModel.customEnd + ONE_DAY_MS;
+    if (newEnd > todayEnd) {
+      return;
+    }
+    const newStart = this.timeModel.customStart + ONE_DAY_MS;
+    this.timeModel.setCustomRange(newStart, newEnd);
+    this.refreshVisibleView();
+  }
+
   // T024: 地图样式切换
   private switchMapStyle(index: number): void {
     if (this.mapStyleIndex === index) { return; }
@@ -386,6 +551,13 @@ export struct FootprintTab {
     this.mapStyle2SelectedIndexes = [index];
     this.mapStyleVM.saveMapStyle(index);
     this.mapManager.applyMapStyle(index);
+  }
+
+  private async switchTrackColor(index: number): Promise<void> {
+    if (this.trackColorIndex === index) { return; }
+    this.trackColorIndex = index;
+    this.mapStyleVM.saveTrackColor(index);
+    await this.mapManager.applyTrackColor(index, this.displayMode, this.trackPoints, this.footprintPoints);
   }
 
   private switchDisplayMode(mode: number): void {
@@ -423,13 +595,24 @@ export struct FootprintTab {
           .transition({ type: TransitionType.All, opacity: 0, translate: { x: 0, y: -16 } })
         }
 
-      }
-      .alignItems(HorizontalAlign.Start).position({ x: 12, y: 12 + this.statusBarHeight })
+        if (!this.immersive) {
+          Row() {
+            if (this.cameraOffset) {
+              SymbolGlyph($r('sys.symbol.position'))
+                .fontSize(20)
+                .fontColor([$r('sys.color.ohos_id_color_primary')])
+            } else {
+              SymbolGlyph($r('sys.symbol.location_north_up_right_circle_fill'))
+                .fontSize(20)
+          .fontColor([$r('sys.color.ohos_id_color_activated')])
+            }
+          }
+          .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
+          .backgroundColor(this.cameraOffset ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)')
+          .border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
+          .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
+          .onClick(() => { this.onMyLocationClick(); })
 
-      // 右侧浮层按钮组（统计 / 我的 / 地图工具）
-      if (!this.immersive) {
-        Column({ space: 10 }) {
-          // 统计
           Row() {
             SymbolGlyph($r('sys.symbol.waveform_folder_fill')).fontSize(20).fontColor([$r('sys.color.font_primary')])
           }
@@ -445,7 +628,6 @@ export struct FootprintTab {
             onDisappear: () => { this.isShowStatsSheet = false; }
           })
 
-          // 我的
           Row() {
             SymbolGlyph($r('sys.symbol.person_crop_circle_fill_1')).fontSize(20).fontColor([$r('sys.color.font_primary')])
           }
@@ -463,7 +645,6 @@ export struct FootprintTab {
             }
           })
 
-          // 地图工具
           Row() {
             SymbolGlyph($r('sys.symbol.paintpalette_fill')).fontSize(20).fontColor([$r('sys.color.font_primary')])
           }
@@ -478,8 +659,70 @@ export struct FootprintTab {
             onDisappear: () => { this.isShowMapToolSheet = false; }
           })
         }
-        .alignItems(HorizontalAlign.End)
-        .position({ x: '100%', y: '54%' }).markAnchor({ x: '100%', y: '50%' }).translate({ x: -16 })
+
+      }
+      .alignItems(HorizontalAlign.Start).position({ x: 12, y: 12 + this.statusBarHeight })
+
+      // 右侧功能胶囊按钮
+      if (!this.immersive) {
+        Column({ space: 10 }) {
+          Row() {
+            SymbolGlyph($r('sys.symbol.brush_fill')).fontSize(20).fontColor([$r('sys.color.font_primary')])
+          }
+          .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
+          .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
+          .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
+          .onClick(() => {
+            try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
+            this.isShowThemeSheet = true;
+          })
+          .bindSheet($$this.isShowThemeSheet, this.buildThemeSheet(), {
+            height: SheetSize.MEDIUM,
+            dragBar: true,
+            showClose: true,
+            title: { title: '主题' },
+            blurStyle: BlurStyle.COMPONENT_THIN,
+            maskColor: '#33000000',
+            backgroundColor: Color.Transparent,
+            onDisappear: () => { this.isShowThemeSheet = false; }
+          })
+
+          Row() {
+            SymbolGlyph($r('sys.symbol.worldclock_fill_2')).fontSize(20).fontColor([$r('sys.color.font_primary')])
+          }
+          .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
+          .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
+          .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
+
+          Row() {
+            SymbolGlyph($r('sys.symbol.discover_fill')).fontSize(20).fontColor([$r('sys.color.font_primary')])
+          }
+          .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
+          .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
+          .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
+
+          Row() {
+            SymbolGlyph($r('sys.symbol.gearshape')).fontSize(20).fontColor([$r('sys.color.font_primary')])
+          }
+          .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
+          .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
+          .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
+          .onClick(() => {
+            try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
+            this.isShowSettingSheet = true;
+          })
+          .bindSheet($$this.isShowSettingSheet, this.buildSettingSheet(), {
+            height: SheetSize.MEDIUM,
+            dragBar: true,
+            showClose: true,
+            title: { title: '设置' },
+            blurStyle: BlurStyle.COMPONENT_THIN,
+            maskColor: '#33000000',
+            backgroundColor: Color.Transparent,
+            onDisappear: () => { this.isShowSettingSheet = false; }
+          })
+        }
+        .position({ x: '100%', y: '68%' }).markAnchor({ x: '100%', y: '50%' }).translate({ x: -16 })
         .transition({ type: TransitionType.All, opacity: 0, translate: { x: 16, y: 0 } })
       }
 
@@ -513,10 +756,10 @@ export struct FootprintTab {
           Column().width('100%').height('100%')
         }
         .tabBar(new BottomTabBarStyle({
-          normal: new SymbolGlyphModifier($r('sys.symbol.person_crop_circle_fill_1'))
+          normal: new SymbolGlyphModifier(FootprintTab.CALENDAR_ICONS[new Date().getDate() - 1])
             .renderingStrategy(SymbolRenderingStrategy.SINGLE)
             .fontColor([$r('sys.color.ohos_id_color_primary')]),
-          selected: new SymbolGlyphModifier($r('sys.symbol.person_crop_circle_fill_1'))
+          selected: new SymbolGlyphModifier(FootprintTab.CALENDAR_ICONS[new Date().getDate() - 1])
             .renderingStrategy(SymbolRenderingStrategy.SINGLE)
             .fontColor([$r('sys.color.ohos_id_color_activated')])
         }, '今日'))
@@ -538,6 +781,7 @@ export struct FootprintTab {
       .barPosition(BarPosition.End)
       .scrollable(false)
       .onChange((index: number) => {
+        this.selectedTabIndex = index;
         try {
           vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' });
         } catch (e) {}
@@ -563,6 +807,116 @@ export struct FootprintTab {
     .width('100%').height('100%')
   }
 
+  @Builder
+  private buildSettingSheet(): void {
+    Column() {
+    }
+    .width('100%')
+    .padding({ left: 20, right: 20, top: 4, bottom: 20 })
+  }
+
+  @Builder
+  private buildThemeSheet(): void {
+    Column() {
+      Text('地图样式')
+        .fontSize(16)
+        .fontColor($r('sys.color.font_primary'))
+        .fontWeight(FontWeight.Medium)
+        .width('100%')
+        .textAlign(TextAlign.Start)
+        .margin({ bottom: 12 })
+
+      Scroll() {
+        Row({ space: 12 }) {
+          ForEach([
+            { index: 0, label: '默认', icon: $r('app.media.map_style_classic') },
+            { index: 1, label: '暗夜', icon: $r('app.media.map_style_dark') },
+            { index: 2, label: '浅白', icon: $r('app.media.map_style_light') },
+            { index: 3, label: '大白', icon: $r('app.media.map_style_dabai') }
+          ] as Array<MapStyleGridItem>, (item: MapStyleGridItem) => {
+            Column() {
+              Stack({ alignContent: Alignment.TopEnd }) {
+                Image(item.icon)
+                  .width(72)
+                  .height(72)
+                  .objectFit(ImageFit.Cover)
+                  .borderRadius(10)
+                  .border({
+                    width: this.mapStyleIndex === item.index ? 2 : 0,
+                    color: this.mapStyleIndex === item.index ? $r('sys.color.ohos_id_color_activated') : Color.Transparent,
+                    style: BorderStyle.Solid
+                  })
+
+              }
+
+              Text(item.label)
+                .fontSize(12)
+                .fontColor(this.mapStyleIndex === item.index
+                  ? $r('sys.color.ohos_id_color_activated')
+                  : $r('sys.color.font_primary'))
+                .fontWeight(this.mapStyleIndex === item.index ? FontWeight.Medium : FontWeight.Regular)
+                .margin({ top: 4 })
+                .textAlign(TextAlign.Center)
+            }
+            .onClick(() => {
+              this.switchMapStyle(item.index);
+            })
+          }, (item: MapStyleGridItem) => item.index.toString())
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.Start)
+      }
+      .scrollable(ScrollDirection.Horizontal)
+      .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.Spring)
+      .width('100%')
+
+      Text('轨迹颜色')
+        .fontSize(16)
+        .fontColor($r('sys.color.font_primary'))
+        .fontWeight(FontWeight.Medium)
+        .width('100%')
+        .textAlign(TextAlign.Start)
+        .margin({ top: 20, bottom: 12 })
+
+      Row({ space: 16 }) {
+        ForEach(TRACK_COLORS, (item: TrackColorConfig, index: number) => {
+          Column() {
+            Circle()
+              .width(36)
+              .height(36)
+              .fill(item.color === 0xFFFFFFFF ? '#FFFFFF' : item.color === 0xFF000000 ? '#000000' : '#FF0000')
+              .stroke(item.color === 0xFFFFFFFF ? '#E0E0E0' : Color.Transparent)
+              .strokeWidth(item.color === 0xFFFFFFFF ? 1 : 0)
+              .border({
+                width: this.trackColorIndex === index ? 2 : 0,
+                color: this.trackColorIndex === index ? $r('sys.color.ohos_id_color_activated') : Color.Transparent,
+                style: BorderStyle.Solid
+              })
+              .borderRadius(20)
+
+            Text(item.label)
+              .fontSize(12)
+              .fontColor(this.trackColorIndex === index
+                ? $r('sys.color.ohos_id_color_activated')
+                : $r('sys.color.font_primary'))
+              .fontWeight(this.trackColorIndex === index ? FontWeight.Medium : FontWeight.Regular)
+              .margin({ top: 4 })
+              .textAlign(TextAlign.Center)
+          }
+          .onClick(() => {
+            this.switchTrackColor(index);
+          })
+        }, (item: TrackColorConfig) => item.label)
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.Start)
+    }
+    .width('100%')
+    .alignItems(HorizontalAlign.Start)
+    .padding({ left: 20, right: 20, top: 4, bottom: 20 })
+  }
+
   // 地图工具面板（委托给 MapToolSheet 子组件）
   @Builder
   private buildMapToolSheet(): void {
@@ -578,41 +932,74 @@ export struct FootprintTab {
       onToggleMyLocation: (isOn: boolean) => {
         if (this.mapManager.controller) {
           this.mapManager.controller.setMyLocationEnabled(isOn);
-          this.mapManager.controller.setMyLocationControlsEnabled(isOn);
+          this.mapManager.controller.setMyLocationControlsEnabled(false);
+          if (!isOn) {
+            this.myLocationDisplayType = mapCommon.MyLocationDisplayType.DEFAULT;
+          }
         }
       }
     })
   }
 
-  // HdsTabs MiniBar：折线/海量点模式切换
+  // HdsTabs MiniBar：日期导航（自定义tab）或 折线/海量点模式切换（其他tab）
   @Builder
   private miniBarBuilder() {
-    Row() {
-      if (this.displayMode === 0) {
-        SymbolGlyph($r('sys.symbol.waveform_folder_fill'))
-          .fontSize(24)
-          .fontColor([$r('sys.color.ohos_id_color_activated')])
-          .transition(
-            TransitionEffect.scale({ x: 0.5, y: 0.5 }).combine(TransitionEffect.opacity(0))
-              .animation({ duration: 200, curve: Curve.Smooth })
-          )
-      } else {
-        SymbolGlyph($r('sys.symbol.person_crop_circle_fill_1'))
-          .fontSize(24)
-          .fontColor([$r('sys.color.ohos_id_color_activated')])
-          .transition(
-            TransitionEffect.scale({ x: 0.5, y: 0.5 }).combine(TransitionEffect.opacity(0))
-              .animation({ duration: 200, curve: Curve.Smooth })
-          )
+    if (this.selectedTabIndex === 1) {
+      Row() {
+        SymbolGlyph($r('sys.symbol.chevron_left'))
+          .fontSize(18)
+          .fontColor([$r('sys.color.ohos_id_color_primary')])
+          .onClick(() => {
+            try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
+            this.prevCustomDay();
+          })
+        Text(this.getCustomDateText())
+          .fontSize(16)
+          .fontColor($r('sys.color.ohos_id_color_activated'))
+          .padding({ left: 12, right: 12 })
+          .onClick(() => {
+            try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
+            this.showCustomDatePicker();
+          })
+        SymbolGlyph($r('sys.symbol.chevron_right'))
+          .fontSize(18)
+          .fontColor([$r('sys.color.ohos_id_color_primary')])
+          .onClick(() => {
+            try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
+            this.nextCustomDay();
+          })
       }
+      .width('100%').height('100%')
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+    } else {
+      Row() {
+        if (this.displayMode === 0) {
+          SymbolGlyph($r('sys.symbol.waveform_folder_fill'))
+            .fontSize(24)
+            .fontColor([$r('sys.color.ohos_id_color_activated')])
+            .transition(
+              TransitionEffect.scale({ x: 0.5, y: 0.5 }).combine(TransitionEffect.opacity(0))
+                .animation({ duration: 200, curve: Curve.Smooth })
+            )
+        } else {
+          SymbolGlyph($r('sys.symbol.person_crop_circle_fill_1'))
+            .fontSize(24)
+            .fontColor([$r('sys.color.ohos_id_color_activated')])
+            .transition(
+              TransitionEffect.scale({ x: 0.5, y: 0.5 }).combine(TransitionEffect.opacity(0))
+                .animation({ duration: 200, curve: Curve.Smooth })
+            )
+        }
+      }
+      .width('100%').height('100%')
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+      .onClick(() => {
+        try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
+        this.switchDisplayMode(this.displayMode === 0 ? 1 : 0);
+      })
     }
-    .width('100%').height('100%')
-    .justifyContent(FlexAlign.Center)
-    .alignItems(VerticalAlign.Center)
-    .onClick(() => {
-      try { vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' }); } catch (e) {}
-      this.switchDisplayMode(this.displayMode === 0 ? 1 : 0);
-    })
   }
 
   // 统计面板

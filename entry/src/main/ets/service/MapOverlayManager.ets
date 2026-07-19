@@ -21,7 +21,7 @@ import {
   TIME_VIEW_OVERVIEW,
   MAP_STYLE_DARK_ID,
   MAP_STYLE_LIGHT_ID,
-
+  TRACK_COLORS,
   TAG
 } from '../model/TrackTypes';
 
@@ -37,6 +37,7 @@ export class MapOverlayManager {
   private navBarHeight: number = 0;
   private statusBarHeight: number = 0;
   private initialMapStyleIndex: number = 0;
+  private currentTrackColor: number = TRACK_COLORS[0].color;
   private context?: common.UIAbilityContext;
 
 
@@ -111,7 +112,6 @@ export class MapOverlayManager {
     this.redDotIcon = pixelMap;
   }
 
-  // 初始化地图初始参数：按已保存的地图样式在初始化阶段就预置 dayNightMode 与 styleId，让首帧直接对
   buildMapOptions(mapStyleIndex: number): mapCommon.MapOptions {
     const initialDayNight: mapCommon.DayNightMode =
       (mapStyleIndex === 2 || mapStyleIndex === 3) ? mapCommon.DayNightMode.DAY : mapCommon.DayNightMode.NIGHT;
@@ -126,9 +126,9 @@ export class MapOverlayManager {
         },
         zoom: 15
       },
-      myLocationControlsEnabled: true,
+      myLocationControlsEnabled: false,
       scaleControlsEnabled: true,
-      compassControlsEnabled: true,
+      compassControlsEnabled: false,
       zoomControlsEnabled: false,
       tiltGesturesEnabled: true,
       rotateGesturesEnabled: true,
@@ -140,12 +140,11 @@ export class MapOverlayManager {
 
   // 构造地图初始化回调：地图就绪后保存 controller、设置留白/控件、开启 3D、定位首帧样式，
   // 并通过 onMapClick / onMapReady 把交互与后续编排交还页面
-  buildMapCallback(onMapReady: () => void, onMapClick: () => void): AsyncCallback<map.MapComponentController> {
+  buildMapCallback(onMapReady: () => void, onMapClick: () => void, onCameraGesture: () => void): AsyncCallback<map.MapComponentController> {
     return async (err: BusinessError | undefined, mapController: map.MapComponentController) => {
       if (!err) {
         this.mapController = mapController;
 
-        // 底部留白：将缩放控件、"我的位置"按钮整体顶到悬浮 tab 栏上方，避免被遮挡
         this.mapController.setPadding({
           left: 0,
           top: 0,
@@ -153,10 +152,8 @@ export class MapOverlayManager {
           bottom: this.navBarHeight + 90
         });
 
-        // 关闭系统缩放控件（initMapOptions 已设 zoomControlsEnabled=false，这里再次确保运行时关闭）
         this.mapController.setZoomControlsEnabled(false);
 
-        // 关闭地图自带的审图号
         try {
           this.mapController.setApproveNumberEnabled(false);
         } catch (e) {
@@ -165,14 +162,17 @@ export class MapOverlayManager {
 
         hilog.info(0x0000, TAG_LOG, 'Map initialized successfully');
 
-        // 点击地图空白区域切换沉浸模式：交给页面处理（涉及 immersive / tabs / padding）
         this.mapEventManager = this.mapController.getEventManager();
         this.mapEventManager.on('mapClick', () => {
           onMapClick();
         });
+        this.mapEventManager.on('cameraMoveStart', (reason: number) => {
+          if (reason === 1) {
+            onCameraGesture();
+          }
+        });
 
         this.enable3DBuilding();
-        // 地图就绪后按已存（或默认）的样式强制应用一次，确保重进后保持上次选择
         this.applyMapStyle(this.initialMapStyleIndex);
         onMapReady();
       } else {
@@ -208,6 +208,14 @@ export class MapOverlayManager {
     });
   }
 
+  // 应用轨迹颜色：重新生成海量点图标 + 重建折线颜色
+  async applyTrackColor(colorIndex: number, displayMode: number,
+    trackPoints: mapCommon.LatLng[], footprintPoints: mapCommon.LatLng[]): Promise<void> {
+    this.currentTrackColor = TRACK_COLORS[colorIndex].color;
+    await this.createRedDotIcon(this.currentTrackColor);
+    this.rebuildOverlay(displayMode, trackPoints, footprintPoints);
+  }
+
   // 移除现有覆盖物并依据当前展示模式重建（基于可见集 trackPoints / footprintPoints）
   rebuildOverlay(displayMode: number, trackPoints: mapCommon.LatLng[], footprintPoints: mapCommon.LatLng[]): void {
     if (this.trackPolyline) {
@@ -233,7 +241,7 @@ export class MapOverlayManager {
       const polylineOption: mapCommon.MapPolylineOptions = {
         points: trackPoints,
         width: 6,
-        color: 0xFFFF0000,
+        color: this.currentTrackColor,
         geodesic: false
       };
       this.mapController?.addPolyline(polylineOption).then((polyline) => {

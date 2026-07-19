@@ -98,6 +98,18 @@ export const PREF_KEY_SLEEP_MODE: string = 'sleepModeEnabled';
 export const PREF_KEY_LAST_LAT: string = 'lastRecordedLat';
 export const PREF_KEY_LAST_LON: string = 'lastRecordedLon';
 export const PREF_KEY_LAST_DAY: string = 'lastRecordedDay';
+export const PREF_KEY_TRACK_COLOR: string = 'trackColorIndex';
+
+export interface TrackColorConfig {
+  color: number;
+  label: string;
+}
+
+export const TRACK_COLORS: TrackColorConfig[] = [
+  { color: 0xFFFF0000, label: '红色' },
+  { color: 0xFFFFFFFF, label: '白色' },
+  { color: 0xFF000000, label: '黑色' },
+];
 
 
 // 时间范围视图索引常量
