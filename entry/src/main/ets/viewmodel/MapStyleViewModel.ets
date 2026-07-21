@@ -8,7 +8,7 @@
 import { preferences } from '@kit.ArkData';
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { PREF_NAME, PREF_KEY_MAP_STYLE, PREF_KEY_TRACK_COLOR, TRACK_COLORS } from '../model/TrackTypes';
+import { PREF_NAME, PREF_KEY_MAP_STYLE, PREF_KEY_TRACK_COLOR, PREF_KEY_BUILDING_ENABLED, PREF_KEY_POI_VISIBLE, PREF_KEY_ROAD_LABEL_VISIBLE, PREF_KEY_TRANSIT_VISIBLE, TRACK_COLORS } from '../model/TrackTypes';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const TAG_LOG: string = 'MapStyleVM';
@@ -98,5 +98,117 @@ export class MapStyleViewModel {
 
   get currentTrackColor(): number {
     return TRACK_COLORS[this.trackColorIndex].color;
+  }
+
+  saveBuildingEnabled(enabled: boolean): void {
+    if (!this.context) {
+      return;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      pref.putSync(PREF_KEY_BUILDING_ENABLED, enabled);
+      pref.flushSync();
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'saveBuildingEnabled failed, code: %{public}d, message: %{public}s', error.code, error.message);
+    }
+  }
+
+  loadBuildingEnabled(): boolean {
+    if (!this.context) {
+      return true;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      return pref.getSync(PREF_KEY_BUILDING_ENABLED, true) as boolean;
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'loadBuildingEnabled failed, code: %{public}d, message: %{public}s', error.code, error.message);
+      return true;
+    }
+  }
+
+  savePoiVisible(visible: boolean): void {
+    if (!this.context) {
+      return;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      pref.putSync(PREF_KEY_POI_VISIBLE, visible);
+      pref.flushSync();
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'savePoiVisible failed, code: %{public}d, message: %{public}s', error.code, error.message);
+    }
+  }
+
+  loadPoiVisible(): boolean {
+    if (!this.context) {
+      return true;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      return pref.getSync(PREF_KEY_POI_VISIBLE, true) as boolean;
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'loadPoiVisible failed, code: %{public}d, message: %{public}s', error.code, error.message);
+      return true;
+    }
+  }
+
+  saveRoadLabelVisible(visible: boolean): void {
+    if (!this.context) {
+      return;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      pref.putSync(PREF_KEY_ROAD_LABEL_VISIBLE, visible);
+      pref.flushSync();
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'saveRoadLabelVisible failed, code: %{public}d, message: %{public}s', error.code, error.message);
+    }
+  }
+
+  loadRoadLabelVisible(): boolean {
+    if (!this.context) {
+      return true;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      return pref.getSync(PREF_KEY_ROAD_LABEL_VISIBLE, true) as boolean;
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'loadRoadLabelVisible failed, code: %{public}d, message: %{public}s', error.code, error.message);
+      return true;
+    }
+  }
+
+  saveTransitVisible(visible: boolean): void {
+    if (!this.context) {
+      return;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      pref.putSync(PREF_KEY_TRANSIT_VISIBLE, visible);
+      pref.flushSync();
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'saveTransitVisible failed, code: %{public}d, message: %{public}s', error.code, error.message);
+    }
+  }
+
+  loadTransitVisible(): boolean {
+    if (!this.context) {
+      return true;
+    }
+    try {
+      const pref = preferences.getPreferencesSync(this.context, { name: PREF_NAME });
+      return pref.getSync(PREF_KEY_TRANSIT_VISIBLE, true) as boolean;
+    } catch (e) {
+      const error = e as BusinessError;
+      hilog.error(0x0000, TAG_LOG, 'loadTransitVisible failed, code: %{public}d, message: %{public}s', error.code, error.message);
+      return true;
+    }
   }
 }

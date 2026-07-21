@@ -99,6 +99,10 @@ export const PREF_KEY_LAST_LAT: string = 'lastRecordedLat';
 export const PREF_KEY_LAST_LON: string = 'lastRecordedLon';
 export const PREF_KEY_LAST_DAY: string = 'lastRecordedDay';
 export const PREF_KEY_TRACK_COLOR: string = 'trackColorIndex';
+export const PREF_KEY_BUILDING_ENABLED: string = 'buildingEnabled';
+export const PREF_KEY_POI_VISIBLE: string = 'poiVisible';
+export const PREF_KEY_ROAD_LABEL_VISIBLE: string = 'roadLabelVisible';
+export const PREF_KEY_TRANSIT_VISIBLE: string = 'transitVisible';
 
 export interface TrackColorConfig {
   color: number;

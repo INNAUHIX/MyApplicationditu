@@ -61,6 +61,12 @@ export function formatStatDate(ts: number): string {
   return `${d.getFullYear()}-${m < 10 ? '0' + m : m}-${day < 10 ? '0' + day : day}`;
 }
 
+export function formatLongDate(ts: number): string {
+  if (!ts) { return '—'; }
+  const d: Date = new Date(ts);
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+}
+
 // 基于全量 points 派生统计指标：累计里程 / 足迹点 / 活跃天数 / 日均 / 最长单日 / 首末记录 / 最近7天分布
 // 纯函数版本：输入完整记录数组，输出 StatResult，调用方自行写入组件 @State。
 export function computeStats(pts: TrackPointRecord[]): StatResult {

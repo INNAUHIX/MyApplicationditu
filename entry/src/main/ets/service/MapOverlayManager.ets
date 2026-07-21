@@ -14,6 +14,7 @@
 import { MapComponent, mapCommon, map } from '@kit.MapKit';
 import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
+import { display } from '@kit.ArkUI';
 import { image } from '@kit.ImageKit';
 import { util } from '@kit.ArkTS';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -37,6 +38,10 @@ export class MapOverlayManager {
   private navBarHeight: number = 0;
   private statusBarHeight: number = 0;
   private initialMapStyleIndex: number = 0;
+  private initialBuildingEnabled: boolean = true;
+  private initialPoiVisible: boolean = true;
+  private initialRoadLabelVisible: boolean = true;
+  private initialTransitVisible: boolean = true;
   private currentTrackColor: number = TRACK_COLORS[0].color;
   private context?: common.UIAbilityContext;
 
@@ -56,6 +61,22 @@ export class MapOverlayManager {
 
   setInitialMapStyle(index: number): void {
     this.initialMapStyleIndex = index;
+  }
+
+  setInitialBuildingEnabled(enabled: boolean): void {
+    this.initialBuildingEnabled = enabled;
+  }
+
+  setInitialPoiVisible(visible: boolean): void {
+    this.initialPoiVisible = visible;
+  }
+
+  setInitialRoadLabelVisible(visible: boolean): void {
+    this.initialRoadLabelVisible = visible;
+  }
+
+  setInitialTransitVisible(visible: boolean): void {
+    this.initialTransitVisible = visible;
   }
 
   setContext(ctx: common.UIAbilityContext): void {
@@ -160,7 +181,21 @@ export class MapOverlayManager {
           hilog.error(0x0000, TAG_LOG, 'setApproveNumberEnabled failed: %{public}s', JSON.stringify(e));
         }
 
-        hilog.info(0x0000, TAG_LOG, 'Map initialized successfully');
+        this.mapController.setScaleControlsEnabled(true);
+        try {
+          const disp = display.getDefaultDisplaySync();
+          const density = disp.densityPixels;
+          const screenHeightPx = disp.height;
+          const scaleHeight = this.mapController.getScaleControlsHeight();
+          const point: mapCommon.MapPoint = {
+            positionX: 16 * density,
+            positionY: screenHeightPx / 2 - scaleHeight / 2
+          };
+          this.mapController.setScalePosition(point);
+          hilog.info(0x0000, TAG_LOG, 'Scale position set: x=%{public}d y=%{public}d', point.positionX, point.positionY);
+        } catch (e) {
+          hilog.error(0x0000, TAG_LOG, 'setScalePosition failed: %{public}s', JSON.stringify(e));
+        }
 
         this.mapEventManager = this.mapController.getEventManager();
         this.mapEventManager.on('mapClick', () => {
@@ -172,8 +207,9 @@ export class MapOverlayManager {
           }
         });
 
-        this.enable3DBuilding();
+        this.setBuildingEnabled(this.initialBuildingEnabled);
         this.applyMapStyle(this.initialMapStyleIndex);
+        this.applyLabelVisibility(this.initialPoiVisible, this.initialRoadLabelVisible, this.initialMapStyleIndex, this.initialTransitVisible, this.initialBuildingEnabled);
         onMapReady();
       } else {
         hilog.error(0x0000, TAG_LOG, 'Failed to initialize the map, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
@@ -181,17 +217,16 @@ export class MapOverlayManager {
     };
   }
 
-  // 开启地图 3D 建筑显示效果
-  enable3DBuilding(): void {
+  setBuildingEnabled(enabled: boolean): void {
     if (!this.mapController) {
       return;
     }
     try {
-      this.mapController.setBuildingEnabled(true);
-      hilog.info(0x0000, TAG_LOG, '3D building enabled');
+      this.mapController.setBuildingEnabled(enabled);
+      hilog.info(0x0000, TAG_LOG, '3D building %{public}s', enabled ? 'enabled' : 'disabled');
     } catch (err) {
       const error = err as BusinessError;
-      hilog.error(0x0000, TAG_LOG, 'Failed to enable 3D building, code: %{public}s, message: %{public}s', error.code.toString(), error.message.toString());
+      hilog.error(0x0000, TAG_LOG, 'Failed to set building enabled, code: %{public}s, message: %{public}s', error.code.toString(), error.message.toString());
     }
   }
 
@@ -377,11 +412,10 @@ export class MapOverlayManager {
     // 用局部常量承接，避免闭包内 this.mapController 被判定为 possibly 'undefined'
     const controller: map.MapComponentController = this.mapController;
     if (index === 1) {
-      // 暗夜样式：固定夜间模式 + 套用自定义暗夜样式
+      // 暗夜样式：固定夜间模式 + 套用本地自定义暗夜样式（从 rawfile 读取 JSON 字符串注入）
       controller.setDayNightMode(mapCommon.DayNightMode.NIGHT);
-      const param: mapCommon.CustomMapStyleOptions = {
-        styleId: MAP_STYLE_DARK_ID
-      };
+      const styleContent: string = this.readMapStyleDarkJson();
+      const param: mapCommon.CustomMapStyleOptions = { styleContent: styleContent };
       controller.setCustomMapStyle(param).then(() => {
         hilog.info(0x0000, TAG_LOG, 'Dark night map style applied');
       }).catch((err: BusinessError) => {
@@ -432,6 +466,185 @@ export class MapOverlayManager {
     } catch (e) {
       hilog.error(0x0000, TAG_LOG, 'readMapStyleTestJson failed: %{public}s', JSON.stringify(e));
       return '[]';
+    }
+  }
+
+  private readMapStyleDarkJson(): string {
+    if (!this.context) {
+      hilog.error(0x0000, TAG_LOG, 'readMapStyleDarkJson: context is null');
+      return '[]';
+    }
+    try {
+      const rawContent: Uint8Array = this.context.resourceManager.getRawFileContentSync('map_style_dark.json');
+      const decoder: util.TextDecoder = util.TextDecoder.create('utf-8');
+      return decoder.decodeToString(rawContent);
+    } catch (e) {
+      hilog.error(0x0000, TAG_LOG, 'readMapStyleDarkJson failed: %{public}s', JSON.stringify(e));
+      return '[]';
+    }
+  }
+
+  applyLabelVisibility(poiVisible: boolean, roadLabelVisible: boolean, mapStyleIndex: number,
+    transitVisible: boolean, buildingEnabled: boolean): void {
+    if (!this.mapController) {
+      return;
+    }
+    if (mapStyleIndex === 2) {
+      return;
+    }
+    const controller: map.MapComponentController = this.mapController;
+    if (mapStyleIndex === 0) {
+      const poiAllOn: boolean = poiVisible && roadLabelVisible;
+      if (poiAllOn) {
+        const param: mapCommon.CustomMapStyleOptions = { styleContent: '[]' };
+        controller.setCustomMapStyle(param).then(() => {
+          hilog.info(0x0000, TAG_LOG, 'Classic style all labels restored');
+        }).catch((err: BusinessError) => {
+          hilog.error(0x0000, TAG_LOG, 'applyLabelVisibility classic restore failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
+        });
+        return;
+      }
+      const rules: string[] = [];
+      if (!poiVisible) {
+        rules.push('{"mapFeature":"poi","options":"all","visibility":false}');
+        rules.push('{"mapFeature":"administrative.locality","options":"all","visibility":false}');
+        rules.push('{"mapFeature":"administrative.house number","options":"labels.text","visibility":false}');
+        rules.push('{"mapFeature":"landcover.human-made.address area","options":"labels.text","visibility":false}');
+        rules.push('{"mapFeature":"landcover.business.shopping center","options":"labels.text","visibility":false}');
+        rules.push('{"mapFeature":"landcover.college","options":"labels.text","visibility":false}');
+        rules.push('{"mapFeature":"landcover.business.business district","options":"labels.text","visibility":false}');
+        rules.push('{"mapFeature":"landcover.business_park","options":"labels.text","visibility":false}');
+        rules.push('{"mapFeature":"landcover.human-made.hotel","options":"labels.text","visibility":false}');
+      }
+      if (!roadLabelVisible) {
+        rules.push('{"mapFeature":"road","options":"labels","visibility":false}');
+        rules.push('{"mapFeature":"road","options":"labels.icon","visibility":false}');
+      }
+      if (!transitVisible) {
+        rules.push('{"mapFeature":"transit","options":"all","visibility":false}');
+      }
+      const param: mapCommon.CustomMapStyleOptions = { styleContent: '[' + rules.join(',') + ']' };
+      controller.setCustomMapStyle(param).then(() => {
+        hilog.info(0x0000, TAG_LOG, 'Classic style labels applied: poi=%{public}s, road=%{public}s', poiVisible.toString(), roadLabelVisible.toString());
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0000, TAG_LOG, 'applyLabelVisibility classic failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
+      });
+    } else if (mapStyleIndex === 1) {
+      const styleContent: string = this.readMapStyleDarkJson();
+      let modifiedContent: string = this.modifyLabelVisibility(styleContent, poiVisible, roadLabelVisible, transitVisible, buildingEnabled);
+      const extraRules: string[] = [];
+      if (!poiVisible) {
+        extraRules.push('{"mapFeature":"poi","options":"labels.icon","visibility":false}');
+      }
+      if (!roadLabelVisible) {
+        extraRules.push('{"mapFeature":"road","options":"labels.icon","visibility":false}');
+      }
+      if (!transitVisible) {
+        extraRules.push('{"mapFeature":"transit","options":"labels.icon","visibility":false}');
+      }
+      if (extraRules.length > 0) {
+        modifiedContent = modifiedContent.substring(0, modifiedContent.length - 1) + ',' + extraRules.join(',') + ']';
+      }
+      const param: mapCommon.CustomMapStyleOptions = { styleContent: modifiedContent };
+      controller.setCustomMapStyle(param).then(() => {
+        hilog.info(0x0000, TAG_LOG, 'Dark style labels applied: poi=%{public}s, road=%{public}s, transit=%{public}s', poiVisible.toString(), roadLabelVisible.toString(), transitVisible.toString());
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0000, TAG_LOG, 'applyLabelVisibility dark failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
+      });
+    } else if (mapStyleIndex === 3) {
+      const styleContent: string = this.readMapStyleTestJson();
+      let modifiedContent: string = this.modifyLabelVisibility(styleContent, poiVisible, roadLabelVisible, transitVisible, buildingEnabled);
+      const extraRules: string[] = [];
+      if (!poiVisible) {
+        extraRules.push('{"mapFeature":"poi","options":"labels.icon","visibility":false}');
+      }
+      if (!roadLabelVisible) {
+        extraRules.push('{"mapFeature":"road","options":"labels.icon","visibility":false}');
+      }
+      if (!transitVisible) {
+        extraRules.push('{"mapFeature":"transit","options":"labels.icon","visibility":false}');
+      }
+      if (extraRules.length > 0) {
+        modifiedContent = modifiedContent.substring(0, modifiedContent.length - 1) + ',' + extraRules.join(',') + ']';
+      }
+      const param: mapCommon.CustomMapStyleOptions = { styleContent: modifiedContent };
+      controller.setCustomMapStyle(param).then(() => {
+        hilog.info(0x0000, TAG_LOG, 'Dabai style labels applied: poi=%{public}s, road=%{public}s, transit=%{public}s', poiVisible.toString(), roadLabelVisible.toString(), transitVisible.toString());
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0000, TAG_LOG, 'applyLabelVisibility dabai failed, code: %{public}s, message: %{public}s', err.code.toString(), err.message.toString());
+      });
+    }
+  }
+
+  private modifyLabelVisibility(jsonStr: string, poiVisible: boolean, roadLabelVisible: boolean,
+    transitVisible: boolean, buildingEnabled: boolean): string {
+    try {
+      const arr: Object[] = JSON.parse(jsonStr) as Object[];
+      const poiFeatures: string[] = [
+        'poi',
+        'administrative.locality',
+        'administrative.house number',
+        'landcover.human-made.address area',
+        'landcover.business.shopping center',
+        'landcover.college',
+        'landcover.business.business district',
+        'landcover.business_park',
+        'landcover.human-made.hotel'
+      ];
+      const result: Object[] = [];
+      for (let i = 0; i < arr.length; i++) {
+        const item: Record<string, Object> = arr[i] as Record<string, Object>;
+        const feature: string = (item['mapFeature'] ?? '') as string;
+        const options: string = (item['options'] ?? '') as string;
+        const isLabelOption: boolean = options.indexOf('labels') === 0;
+        const isTransit: boolean = feature.indexOf('transit') === 0;
+        const isPoi: boolean = feature.indexOf('poi') === 0;
+        const isPoiLabel: boolean = poiFeatures.indexOf(feature) >= 0 && isLabelOption;
+        const isRoad: boolean = feature.indexOf('road') === 0;
+        const isRoadLabel: boolean = isRoad && isLabelOption;
+        const isBuilding: boolean = feature.indexOf('landcover.human-made.building') === 0 ||
+          feature === 'landcover.human-made.Public building' ||
+          feature === 'landcover.human_made';
+        if (isTransit) {
+          const newItem: Record<string, Object> = {} as Record<string, Object>;
+          const keys: string[] = Object.keys(item);
+          for (let k = 0; k < keys.length; k++) {
+            newItem[keys[k]] = item[keys[k]];
+          }
+          newItem['visibility'] = transitVisible;
+          result.push(newItem as Object);
+        } else if (isPoi || isPoiLabel) {
+          const newItem: Record<string, Object> = {} as Record<string, Object>;
+          const keys: string[] = Object.keys(item);
+          for (let k = 0; k < keys.length; k++) {
+            newItem[keys[k]] = item[keys[k]];
+          }
+          newItem['visibility'] = poiVisible;
+          result.push(newItem as Object);
+        } else if (isRoadLabel) {
+          const newItem: Record<string, Object> = {} as Record<string, Object>;
+          const keys: string[] = Object.keys(item);
+          for (let k = 0; k < keys.length; k++) {
+            newItem[keys[k]] = item[keys[k]];
+          }
+          newItem['visibility'] = roadLabelVisible;
+          result.push(newItem as Object);
+        } else if (isBuilding) {
+          const newItem: Record<string, Object> = {} as Record<string, Object>;
+          const keys: string[] = Object.keys(item);
+          for (let k = 0; k < keys.length; k++) {
+            newItem[keys[k]] = item[keys[k]];
+          }
+          newItem['visibility'] = buildingEnabled;
+          result.push(newItem as Object);
+        } else {
+          result.push(item);
+        }
+      }
+      return JSON.stringify(result);
+    } catch (e) {
+      hilog.error(0x0000, TAG_LOG, 'modifyLabelVisibility failed: %{public}s', JSON.stringify(e));
+      return jsonStr;
     }
   }
 }
