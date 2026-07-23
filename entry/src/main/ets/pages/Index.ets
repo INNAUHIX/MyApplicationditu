@@ -15,6 +15,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { TrackDatabase } from '../data/TrackDatabase';
 import { PermissionService } from '../service/PermissionService';
 import { TrackLocationService } from '../service/TrackLocationService';
+import { LogService } from '../service/LogService';
 import { MapOverlayManager } from '../service/MapOverlayManager';
 import { TimeViewModel } from '../viewmodel/TimeViewModel';
 import { MapStyleViewModel } from '../viewmodel/MapStyleViewModel';
@@ -23,7 +24,7 @@ import { FootprintTab } from './FootprintTab';
 import { StrategyLabPanel } from '../components/StrategyLabPanel';
 
 import {
-  RecordMode, TAG, PREF_NAME, PREF_KEY_RECORD_MODE, PREF_KEY_NIGHT_MODE, PREF_KEY_SLEEP_MODE
+  RecordMode, MODE_CONFIG, TAG, PREF_NAME, PREF_KEY_RECORD_MODE, PREF_KEY_NIGHT_MODE, PREF_KEY_SLEEP_MODE
 } from '../model/TrackTypes';
 
 const TAG_LOG: string = 'Index';
@@ -43,6 +44,7 @@ struct Index {
   private db: TrackDatabase = new TrackDatabase();
   private permSvc: PermissionService = new PermissionService();
   private locationSvc: TrackLocationService = new TrackLocationService();
+  private logSvc: LogService = new LogService();
   private mapManager: MapOverlayManager = new MapOverlayManager();
   private timeModel: TimeViewModel = new TimeViewModel();
   private mapStyleVM: MapStyleViewModel = new MapStyleViewModel();
@@ -144,7 +146,11 @@ struct Index {
     try {
       const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
       const pref = preferences.getPreferencesSync(ctx, { name: PREF_NAME });
-      this.currentMode = pref.getSync(PREF_KEY_RECORD_MODE, RecordMode.BALANCED) as RecordMode;
+      let mode = pref.getSync(PREF_KEY_RECORD_MODE, RecordMode.BALANCED) as number;
+      if (mode < 0 || mode >= MODE_CONFIG.length || mode === RecordMode.SLEEP) {
+        mode = RecordMode.BALANCED;
+      }
+      this.currentMode = mode as RecordMode;
       this.nightModeIndex = pref.getSync(PREF_KEY_NIGHT_MODE, 0) as number;
       this.sleepModeEnabled = pref.getSync(PREF_KEY_SLEEP_MODE, false) as boolean;
     } catch (e) {
@@ -173,6 +179,7 @@ struct Index {
         db: this.db,
         permSvc: this.permSvc,
         locationSvc: this.locationSvc,
+        logSvc: this.logSvc,
         mapManager: this.mapManager,
         timeModel: this.timeModel,
         mapStyleVM: this.mapStyleVM,

@@ -10,12 +10,13 @@ import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { geoLocationManager } from '@kit.LocationKit';
 import { SymbolGlyphModifier } from '@kit.ArkUI';
-import { HdsTabs, HdsTabsController, hdsMaterial, HdsAnimationMode } from '@kit.UIDesignKit';
+import { HdsTabs, HdsTabsController, hdsMaterial, HdsAnimationMode, HdsNavDestination, HdsNavigation, HdsNavigationMenuContentOptions } from '@kit.UIDesignKit';
 
 
 import { TrackDatabase } from '../data/TrackDatabase';
 import { PermissionService } from '../service/PermissionService';
 import { TrackLocationService } from '../service/TrackLocationService';
+import { LogService } from '../service/LogService';
 import { MapOverlayManager } from '../service/MapOverlayManager';
 import { TimeViewModel } from '../viewmodel/TimeViewModel';
 import { MapStyleViewModel } from '../viewmodel/MapStyleViewModel';
@@ -23,6 +24,8 @@ import { CardItem } from '../components/CardItem';
 import { RecordModePanel } from '../components/RecordModePanel';
 import { LocationPermPanel } from '../components/LocationPermPanel';
 import { SettingPanel } from '../components/SettingPanel';
+import { LogPanel } from '../components/LogPanel';
+import { PrivacyPanel } from '../components/PrivacyPanel';
 import { StrategyLabPanel } from '../components/StrategyLabPanel';
 import {
   RecordMode, MODE_CONFIG, TrackPointRecord,
@@ -47,6 +50,7 @@ export struct FootprintTab {
   db: TrackDatabase = new TrackDatabase();
   permSvc: PermissionService = new PermissionService();
   locationSvc: TrackLocationService = new TrackLocationService();
+  logSvc: LogService = new LogService();
   mapManager: MapOverlayManager = new MapOverlayManager();
   timeModel: TimeViewModel = new TimeViewModel();
   mapStyleVM: MapStyleViewModel = new MapStyleViewModel();
@@ -118,19 +122,12 @@ export struct FootprintTab {
   @State transitVisible: boolean = true;
 
   // ===== 右侧浮层面板状态 ====
-  @State isShowMineSheet: boolean = false;
-  private mineNavStack: NavPathStack = new NavPathStack();
   @State pushSwitchOn: boolean = false;
 
   @State isShowThemeSheet: boolean = false;
   @State isShowSettingSheet: boolean = false;
-
-  // ===== 我的面板 Scroller =====
-  private mineScroller: Scroller = new Scroller();
-  private recordModeScroller: Scroller = new Scroller();
-  private locationScroller: Scroller = new Scroller();
+  private settingNavStack: NavPathStack = new NavPathStack();
   private settingScroller: Scroller = new Scroller();
-  private strategyLabScroller: Scroller = new Scroller();
 
   // ===== HdsTabs 底部悬浮页签 =====
   private hdsTabsController: HdsTabsController = new HdsTabsController();
@@ -191,6 +188,10 @@ export struct FootprintTab {
   private async onMapReady(): Promise<void> {
     const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
     await this.db.init(ctx);
+    if (this.db.store !== null) {
+      this.logSvc.init(this.db.store);
+      this.locationSvc.setLogService(this.logSvc);
+    }
     const records = await this.db.loadAll();
     this.timeModel.setAllPoints(records);
     await this.mapManager.createRedDotIcon(TRACK_COLORS[this.trackColorIndex].color);
@@ -655,41 +656,6 @@ export struct FootprintTab {
           .transition({ type: TransitionType.All, opacity: 0, translate: { x: 0, y: -16 } })
         }
 
-        if (!this.immersive) {
-          Row() {
-            SymbolGlyph($r('sys.symbol.person_crop_circle_fill_1')).fontSize(20).fontColor([$r('sys.color.font_primary')])
-          }
-          .padding({ left: 14, right: 14, top: 10, bottom: 10 }).borderRadius(16).clip(true).backdropBlur(12)
-          .backgroundColor('rgba(255,255,255,0.1)').border({ width: 0.5, color: 'rgba(255,255,255,0.25)' })
-          .shadow({ radius: 6, color: 'rgba(0,0,0,0.08)', offsetX: 0, offsetY: 1 })
-          .onClick(() => {
-            // @SuppressWarnings permission
-            // @SuppressWarnings compatibility
-            try {
-              vibrator.startVibration({
-                type: 'preset', effectId: 'haptic.clock.timer', count: 1
-              }, {
-                usage: 'touch'
-              }).then(() => {
-              }, (error: BusinessError) => {
-                hilog.warn(0x0000, TAG_LOG, 'vibrator failed: %{public}d', error.code);
-              });
-            } catch (err) {
-              let e: BusinessError = err as BusinessError;
-              hilog.warn(0x0000, TAG_LOG, 'vibrator error: %{public}d', e.code);
-            }
-            this.isShowMineSheet = true;
-          })
-          .bindSheet($$this.isShowMineSheet, this.buildMineSheet(), {
-            onDisappear: () => {
-              this.isShowMineSheet = false;
-              this.mineNavStack.clear();
-            }
-          })
-
-
-        }
-
       }
       .alignItems(HorizontalAlign.Start).position({ x: 12, y: 12 + this.statusBarHeight })
 
@@ -769,16 +735,6 @@ export struct FootprintTab {
             }
             this.isShowSettingSheet = true;
           })
-          .bindSheet($$this.isShowSettingSheet, this.buildSettingSheet(), {
-            height: SheetSize.MEDIUM,
-            dragBar: true,
-            showClose: true,
-            title: { title: '设置' },
-            blurStyle: BlurStyle.COMPONENT_THIN,
-            maskColor: '#33000000',
-            backgroundColor: Color.Transparent,
-            onDisappear: () => { this.isShowSettingSheet = false; }
-          })
 
           Row() {
             if (this.cameraOffset) {
@@ -800,6 +756,20 @@ export struct FootprintTab {
         .position({ x: '100%', y: '60%' }).markAnchor({ x: '100%', y: '50%' }).translate({ x: -16 })
         .transition({ type: TransitionType.All, opacity: 0, translate: { x: 16, y: 0 } })
       }
+
+      // 设置半模态宿主（独立零尺寸 Column，不与触发按钮绑定）
+      Column()
+        .width(0).height(0)
+        .bindSheet($$this.isShowSettingSheet, this.buildSettingSheet(), {
+          height: SheetSize.LARGE,
+          dragBar: true,
+          showClose: false,
+          backgroundColor: $r('sys.color.comp_background_primary'),
+          onDisappear: () => {
+            this.isShowSettingSheet = false;
+            this.settingNavStack.clear();
+          }
+        })
 
       // 日期胶囊（仅自定义Tab时显示）
       if (this.selectedTabIndex === 1) {
@@ -922,10 +892,146 @@ export struct FootprintTab {
 
   @Builder
   private buildSettingSheet(): void {
-    Column() {
+    HdsNavigation(this.settingNavStack) {
+      Scroll(this.settingScroller) {
+        Column({ space: 16 }) {
+          Column() {
+            CardItem({
+              label: '记录规则',
+              symbol: $r('sys.symbol.local_badge_gearshape'),
+              statusText: MODE_CONFIG[this.currentMode].label,
+              statusColor: $r('sys.color.font_secondary'),
+              onClickEvent: () => { this.settingNavStack.pushPath({ name: 'recordMode' }); }
+            })
+            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
+            CardItem({
+              label: '策略实验室',
+              symbol: $r('sys.symbol.person_shield_fill'),
+              onClickEvent: () => { this.settingNavStack.pushPath({ name: 'strategyLab' }); }
+            })
+            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
+            CardItem({
+              label: '定位权限',
+              symbol: $r('sys.symbol.position_badge_exclamationmark'),
+              statusText: (!this.hasApproximatelyLocation || !this.hasLocation || !this.hasBackgroundLocation) ? '权限异常' : '',
+              statusColor: $r('sys.color.ohos_id_color_warning'),
+              onClickEvent: () => {
+                this.onRefreshPermission();
+                this.settingNavStack.pushPath({ name: 'location' });
+              }
+            })
+            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
+            CardItem({
+              label: '通用设置',
+              symbol: $r('sys.symbol.gearshape'),
+              onClickEvent: () => { this.settingNavStack.pushPath({ name: 'generalSetting' }); }
+            })
+            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
+            CardItem({
+              label: '隐私设置',
+              symbol: $r('sys.symbol.lock_fill'),
+              onClickEvent: () => { this.settingNavStack.pushPath({ name: 'privacy' }); }
+            })
+            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
+            CardItem({
+              label: '运行日志',
+              symbol: $r('sys.symbol.doc_text'),
+              onClickEvent: () => { this.settingNavStack.pushPath({ name: 'log' }); }
+            })
+          }
+          .width('100%').borderRadius(16).backgroundColor($r('sys.color.comp_background_list_card'))
+        }
+        .width('100%').padding({ left: 16, right: 16, top: 12 })
+        .margin({ bottom: 16 })
+      }
+      .layoutWeight(1)
+      .align(Alignment.Top)
+      .edgeEffect(EdgeEffect.None)
+      .scrollBar(BarState.Off)
+      .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
     }
+    .titleBar({
+      content: {
+        title: { mainTitle: '设置' },
+        menu: this.buildSettingCloseMenu()
+      }
+    })
+    .mode(NavigationMode.Stack)
+    .hideBackButton(true)
+    .hideToolBar(true)
+    .navDestination(this.settingNavDestination)
     .width('100%')
-    .padding({ left: 20, right: 20, top: 4, bottom: 20 })
+    .height('100%')
+  }
+
+  // 标题栏右侧关闭按钮（home 与子页共用）
+  private buildSettingCloseMenu(): HdsNavigationMenuContentOptions {
+    return {
+      value: [
+        {
+          content: {
+            icon: new SymbolGlyphModifier($r('sys.symbol.xmark')).fontSize(24),
+            action: () => { this.isShowSettingSheet = false; }
+          }
+        }
+      ]
+    };
+  }
+
+  @Builder
+  settingNavDestination(name: string) {
+    if (name === 'recordMode') {
+      HdsNavDestination() {
+        RecordModePanel({
+          recordMode: this.currentMode,
+          sleepModeEnabled: this.sleepModeEnabled,
+          onRecordModeChange: (mode: number) => { this.onRecordModeChange(mode); },
+          onSleepModeChange: (enabled: boolean) => { this.onSleepModeChange(enabled); }
+        })
+      }
+      .titleBar({ content: { title: { mainTitle: '记录规则' }, menu: this.buildSettingCloseMenu() } })
+      .hideBackButton(false)
+    } else if (name === 'strategyLab') {
+      HdsNavDestination() {
+        StrategyLabPanel()
+      }
+      .titleBar({ content: { title: { mainTitle: '策略实验室' }, menu: this.buildSettingCloseMenu() } })
+      .hideBackButton(false)
+    } else if (name === 'location') {
+      HdsNavDestination() {
+        LocationPermPanel({
+          permSvc: this.permSvc,
+          hasApproximatelyLocation: $hasApproximatelyLocation,
+          hasLocation: $hasLocation,
+          hasBackgroundLocation: $hasBackgroundLocation,
+          onRefreshPermission: () => { this.onRefreshPermission(); }
+        })
+      }
+      .titleBar({ content: { title: { mainTitle: '定位权限' }, menu: this.buildSettingCloseMenu() } })
+      .hideBackButton(false)
+    } else if (name === 'generalSetting') {
+      HdsNavDestination() {
+        SettingPanel({
+          nightModeIndex: $nightModeIndex,
+          pushSwitchOn: $pushSwitchOn,
+          onNightModeChange: (i: number) => { this.onNightModeChange(i); }
+        })
+      }
+      .titleBar({ content: { title: { mainTitle: '通用设置' }, menu: this.buildSettingCloseMenu() } })
+      .hideBackButton(false)
+    } else if (name === 'privacy') {
+      HdsNavDestination() {
+        PrivacyPanel({ pushSwitchOn: $pushSwitchOn })
+      }
+      .titleBar({ content: { title: { mainTitle: '隐私设置' }, menu: this.buildSettingCloseMenu() } })
+      .hideBackButton(false)
+    } else if (name === 'log') {
+      HdsNavDestination() {
+        LogPanel({ logSvc: this.logSvc })
+      }
+      .titleBar({ content: { title: { mainTitle: '运行日志' }, menu: this.buildSettingCloseMenu() } })
+      .hideBackButton(false)
+    }
   }
 
   @Builder
@@ -1192,126 +1298,6 @@ export struct FootprintTab {
       }
       this.switchDisplayMode(this.displayMode === 0 ? 1 : 0);
     })
-  }
-
-  @Builder
-  private buildMineSheet(): void {
-    Navigation(this.mineNavStack) {
-      Scroll(this.mineScroller) {
-        Column({ space: 16 }) {
-          Column() {
-            CardItem({
-              label: '记录规则',
-              symbol: $r('sys.symbol.local_badge_gearshape'),
-              statusText: MODE_CONFIG[this.currentMode].label,
-              statusColor: $r('sys.color.font_secondary'),
-              onClickEvent: () => { this.mineNavStack.pushPath({ name: 'recordMode' }); }
-            })
-            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
-            CardItem({
-              label: '策略实验室',
-              symbol: $r('sys.symbol.person_shield_fill'),
-              onClickEvent: () => { this.mineNavStack.pushPath({ name: 'strategyLab' }); }
-            })
-            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
-            CardItem({
-              label: '定位权限',
-              symbol: $r('sys.symbol.position_badge_exclamationmark'),
-              statusText: (!this.hasApproximatelyLocation || !this.hasLocation || !this.hasBackgroundLocation) ? '权限异常' : '',
-              statusColor: $r('sys.color.ohos_id_color_warning'),
-              onClickEvent: () => {
-                this.onRefreshPermission();
-                this.mineNavStack.pushPath({ name: 'location' });
-              }
-            })
-            Divider().strokeWidth('1px').color($r('sys.color.comp_divider')).margin({ left: 48, right: 12 })
-            CardItem({
-              label: '设置',
-              symbol: $r('sys.symbol.gearshape'),
-              onClickEvent: () => { this.mineNavStack.pushPath({ name: 'setting' }); }
-            })
-          }
-          .width('100%').borderRadius(16).backgroundColor($r('sys.color.comp_background_list_card'))
-        }
-        .width('100%').padding({ left: 16, right: 16, top: 12 })
-        .margin({ bottom: 16 })
-      }
-      .layoutWeight(1)
-      .align(Alignment.Top)
-      .edgeEffect(EdgeEffect.None)
-      .scrollBar(BarState.Off)
-      .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
-    }
-    .title('我的', { backgroundColor: $r('sys.color.background_secondary') })
-    .titleMode(NavigationTitleMode.Mini)
-    .mode(NavigationMode.Stack)
-    .hideBackButton(true)
-    .hideToolBar(true)
-    .menus(this.buildCloseMenu())
-    .navDestination(this.mineNavDestination)
-    .width('100%')
-    .height('100%')
-    .backgroundColor($r('sys.color.background_secondary'))
-  }
-
-  private buildCloseMenu(): Array<NavigationMenuItem> {
-    const item: NavigationMenuItem = {
-      value: '',
-      symbolIcon: new SymbolGlyphModifier($r('sys.symbol.xmark')).fontSize(24),
-      action: () => { this.isShowMineSheet = false; }
-    };
-    return [item];
-  }
-
-  @Builder
-  mineNavDestination(name: string) {
-    if (name === 'recordMode') {
-      NavDestination() {
-        RecordModePanel({
-          scroller: this.recordModeScroller,
-          recordMode: this.currentMode,
-          sleepModeEnabled: this.sleepModeEnabled,
-          onRecordModeChange: (mode: number) => { this.onRecordModeChange(mode); },
-          onSleepModeChange: (enabled: boolean) => { this.onSleepModeChange(enabled); }
-        })
-      }
-      .title('记录规则', { backgroundColor: $r('sys.color.background_secondary') })
-      .hideToolBar(true)
-      .menus(this.buildCloseMenu())
-    } else if (name === 'location') {
-      NavDestination() {
-        LocationPermPanel({
-          scroller: this.locationScroller,
-          permSvc: this.permSvc,
-          hasApproximatelyLocation: $hasApproximatelyLocation,
-          hasLocation: $hasLocation,
-          hasBackgroundLocation: $hasBackgroundLocation,
-          onRefreshPermission: () => { this.onRefreshPermission(); }
-        })
-      }
-      .title('定位权限', { backgroundColor: $r('sys.color.background_secondary') })
-      .hideToolBar(true)
-      .menus(this.buildCloseMenu())
-    } else if (name === 'setting') {
-      NavDestination() {
-        SettingPanel({
-          scroller: this.settingScroller,
-          nightModeIndex: $nightModeIndex,
-          pushSwitchOn: $pushSwitchOn,
-          onNightModeChange: (i: number) => { this.onNightModeChange(i); }
-        })
-      }
-      .title('设置', { backgroundColor: $r('sys.color.background_secondary') })
-      .hideToolBar(true)
-      .menus(this.buildCloseMenu())
-    } else if (name === 'strategyLab') {
-      NavDestination() {
-        StrategyLabPanel({ scroller: this.strategyLabScroller })
-      }
-      .title('策略实验室', { backgroundColor: $r('sys.color.background_secondary') })
-      .hideToolBar(true)
-      .menus(this.buildCloseMenu())
-    }
   }
 
 }

@@ -1,11 +1,10 @@
 /**
  * RecordModePanel.ets —— 记录规则面板子组件
  *
- * 从 Mine.buildRecordModeSheet() 提取的独立 @Component，
- * 承载三档记录规则的 Radio 选择与说明。
+ * 承载均衡模式说明与睡眠模式开关。
  *
  * 布局规范（HarmonyOS Design）：
- *   - 两档模式拆为独立卡片，卡片间距 12vp
+ *   - 卡片间距 12vp
  *   - 卡片圆角 16vp（RadiusL）
  *   - 卡片内边距 16vp（Padding_level8）
  *   - 屏幕边缘 16vp
@@ -24,59 +23,30 @@ export struct RecordModePanel {
   onRecordModeChange: (mode: number) => void = () => {};
   onSleepModeChange: (enabled: boolean) => void = () => {};
 
-  private recordModeNames: string[] = ['均衡', '耗电', '普通'];
-  private recordModeValues: number[] = [
-    RecordMode.BALANCED,
-    RecordMode.HIGH_POWER,
-    RecordMode.NORMAL
-  ];
-  private recordModeDescs: string[] = [
-    '定位方式\t精度优先GPS（按距离）\n定位间隔\t20秒\n点间距\t≥90米（距离触发）\n定位精度\t高精GPS\n精度过滤\t100米（maxAccuracy=100）\n定位场景\t轨迹跟踪（TRAJECTORY_TRACKING）\n每日耗电\t约8%–15%\n适用场景\t日常通勤，精度与耗电均衡，推荐默认\n\n工作方式：系统每20秒获取一次GPS定位，App计算与上次记录点的距离，≥90米才打点，不足则丢弃。系统自动过滤精度差于100米的低质量定位点，防止室内漂移产生飞点。',
-    '定位方式\t精度优先GPS（按距离）\n定位间隔\t5秒\n点间距\t≥30米（距离触发）\n定位精度\t高精GPS\n每日耗电\t约15%–25%\n适用场景\t骑行/步行等需要较细腻轨迹的场景\n\n工作方式：系统每5秒获取一次GPS定位，App计算与上次记录点的距离，≥30米才打点，不足则丢弃',
-    '定位方式\t精度优先GPS（按距离）\n定位间隔\t20秒\n点间距\t≥90米（距离触发）\n定位精度\t高精GPS\n精度过滤\t无（maxAccuracy=0）\n定位场景\t精度优先（ACCURACY+UNSET）\n每日耗电\t约8%–15%\n适用场景\t对比测试：修改前的原始配置\n\n工作方式：与均衡模式参数相同，但无精度过滤、使用priority而非scenario。用于与均衡模式对比验证修改效果。测试完成后将移除此选项。'
-  ];
+  private balancedDesc: string =
+    '定位方式\t轨迹跟踪场景（系统优化）\n定位间隔\t20秒\n点间距\t≥90米（距离触发）\n定位场景\t轨迹跟踪（TRAJECTORY_TRACKING）\n每日耗电\t约8%–15%\n适用场景\t日常通勤，精度与耗电均衡\n\n工作方式：系统基于轨迹跟踪场景自动优化定位频率与功耗，每20秒获取一次定位，App计算与上次记录点的距离，≥90米才打点，不足则丢弃。不限制定位精度上限，确保地铁等信号差场景也能保留轨迹点，避免断档空白。';
 
   build() {
     Scroll(this.scroller) {
       Column({ space: 12 }) {
-        ForEach(this.recordModeDescs, (desc: string, index: number) => {
-          Row() {
-            Column({ space: 6 }) {
-              Text(this.recordModeNames[index])
-                .fontSize(16)
-                .fontColor($r('sys.color.font_primary'))
-                .fontWeight(FontWeight.Medium)
-                .textAlign(TextAlign.Start)
-              Text(desc)
-                .fontSize(12)
-                .fontColor($r('sys.color.font_secondary'))
-                .textAlign(TextAlign.Start)
-            }
-            .layoutWeight(1)
-            .alignItems(HorizontalAlign.Start)
-            Radio({ value: `${index}`, group: 'recordMode' })
-              .checked(this.recordMode === this.recordModeValues[index])
-              .radioStyle({
-                checkedBackgroundColor: $r('sys.color.ohos_id_color_activated'),
-                uncheckedBorderColor: $r('sys.color.comp_background_emphasize'),
-                indicatorColor: $r('sys.color.comp_background_primary')
-              })
-              .width(24)
-              .height(24)
-              .onChange((isChecked: boolean) => {
-                if (isChecked) {
-                  this.onRecordModeChange(this.recordModeValues[index]);
-                }
-              })
-              .margin({ left: 16 })
+        Row() {
+          Column({ space: 6 }) {
+            Text('均衡模式')
+              .fontSize(16)
+              .fontColor($r('sys.color.font_primary'))
+              .fontWeight(FontWeight.Medium)
+              .textAlign(TextAlign.Start)
+            Text(this.balancedDesc)
+              .fontSize(12)
+              .fontColor($r('sys.color.font_secondary'))
+              .textAlign(TextAlign.Start)
           }
-          .padding(16)
-          .borderRadius(16)
-          .backgroundColor($r('sys.color.comp_background_list_card'))
-          .onClick(() => {
-            this.onRecordModeChange(this.recordModeValues[index]);
-          })
-        }, (_desc: string, index: number) => `rm_${index}`)
+          .layoutWeight(1)
+          .alignItems(HorizontalAlign.Start)
+        }
+        .padding(16)
+        .borderRadius(16)
+        .backgroundColor($r('sys.color.comp_background_list_card'))
 
         Row() {
           Column({ space: 6 }) {
@@ -85,7 +55,7 @@ export struct RecordModePanel {
               .fontColor($r('sys.color.font_primary'))
               .fontWeight(FontWeight.Medium)
               .textAlign(TextAlign.Start)
-            Text(`定位间隔\t60秒\n自动时段\t0:00-${SLEEP_END_HOUR}:00\n适用场景\t夜间自动降频省电，检测到活动自动恢复\n\n进入条件：0:00-${SLEEP_END_HOUR}:00时段内，连续10个定位点均落在15米半径内，判定为静止后进入睡眠模式\n退出条件：移动距离达到当前记录规则的点间距阈值（与均衡/耗电模式一致）时打点并退出；或${SLEEP_END_HOUR}:00准时退出\n防抖机制：退出睡眠后5分钟内不会重新进入，防止短暂移动后反复进出\n\n工作方式：进入后切换为60秒低频定位且不记录足迹点，省电运行；退出后立即恢复正常记录规则`)
+            Text(`定位间隔\t60秒\n自动时段\t0:00-${SLEEP_END_HOUR}:00\n适用场景\t夜间自动降频省电，检测到活动自动恢复\n\n进入条件：0:00-${SLEEP_END_HOUR}:00时段内，连续10个定位点均落在15米半径内，判定为静止后进入睡眠模式\n退出条件：移动距离达到当前记录规则的点间距阈值（与均衡模式一致）时打点并退出；或${SLEEP_END_HOUR}:00准时退出\n防抖机制：退出睡眠后5分钟内不会重新进入，防止短暂移动后反复进出\n\n工作方式：进入后切换为60秒低频定位且不记录足迹点，省电运行；退出后立即恢复正常记录规则`)
               .fontSize(12)
               .fontColor($r('sys.color.font_secondary'))
               .textAlign(TextAlign.Start)

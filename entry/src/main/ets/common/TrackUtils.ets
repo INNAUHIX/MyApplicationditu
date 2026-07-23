@@ -42,6 +42,33 @@ export function calculateDistance(from: mapCommon.LatLng, to: mapCommon.LatLng):
   return R * c;
 }
 
+// 计算点 P 到线段 AB 的最短距离（米），使用局部平面近似，对短距离（<1km）足够精确
+export function pointToSegmentDistance(
+  p: mapCommon.LatLng, a: mapCommon.LatLng, b: mapCommon.LatLng
+): number {
+  const R: number = 6371000;
+  const toMeters: number = Math.PI / 180 * R;
+  const cosLat: number = Math.cos(a.latitude * Math.PI / 180);
+  const bx: number = (b.longitude - a.longitude) * toMeters * cosLat;
+  const by: number = (b.latitude - a.latitude) * toMeters;
+  const px: number = (p.longitude - a.longitude) * toMeters * cosLat;
+  const py: number = (p.latitude - a.latitude) * toMeters;
+  const abLen2: number = bx * bx + by * by;
+  if (abLen2 < 1e-10) {
+    const dpx: number = px;
+    const dpy: number = py;
+    return Math.sqrt(dpx * dpx + dpy * dpy);
+  }
+  let t: number = (px * bx + py * by) / abLen2;
+  if (t < 0) { t = 0; }
+  if (t > 1) { t = 1; }
+  const projX: number = t * bx;
+  const projY: number = t * by;
+  const dx: number = px - projX;
+  const dy: number = py - projY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 // 将米格式化为易读里程：不足 1 公里显示「米」，否则显示「公里（保留两位）」
 export function formatDistance(meters: number): string {
   if (meters < 1000) {

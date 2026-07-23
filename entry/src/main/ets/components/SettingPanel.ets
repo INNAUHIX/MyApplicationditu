@@ -1,9 +1,9 @@
 /**
- * SettingPanel.ets —— 设置面板子组件
+ * SettingPanel.ets —— 通用设置面板子组件
  *
- * 从 Mine.buildSettingSheet() + privacyRootContent() 提取的独立 @Component。
- * 承载设置项列表 + 隐私设置二级视图切换。
- * 已移除占位项：字体大小、页面跳转、Web页面、关于我们、检测版本。
+ * 承载夜间模式与通知开关。
+ * 隐私设置已提取为独立路由页面 PrivacyPanel（由设置半模态 Navigation 统一 push 转场），
+ * 本组件不再内嵌 if/else 页面切换。
  *
  * 布局规范（HarmonyOS Design）：
  *   - 设置项拆为独立卡片，卡片间距 12vp
@@ -14,9 +14,6 @@
  */
 
 import { SymbolGlyphModifier } from '@kit.ArkUI';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-const TAG_LOG: string = 'SettingPanel';
 
 @Component
 export struct SettingPanel {
@@ -26,27 +23,12 @@ export struct SettingPanel {
 
   onNightModeChange: (index: number) => void = () => {};
 
-  @State isShowPrivacy: boolean = false;
   private displayModeOptions: string[] = ['跟随系统', '普通模式', '夜间模式'];
   private checkMarkModifier: SymbolGlyphModifier = new SymbolGlyphModifier($r('sys.symbol.checkmark'))
     .fontSize('20vp')
     .fontColor([$r('sys.color.ohos_id_color_activated')]);
 
   build() {
-    Column() {
-      if (this.isShowPrivacy) {
-        this.privacyView()
-      } else {
-        this.settingList()
-      }
-    }
-    .width('100%')
-    .layoutWeight(1)
-    .backgroundColor($r('sys.color.background_secondary'))
-  }
-
-  @Builder
-  private settingList(): void {
     Scroll(this.scroller) {
       Column({ space: 12 }) {
         Row() {
@@ -94,31 +76,6 @@ export struct SettingPanel {
         .padding(16)
         .borderRadius(16)
         .backgroundColor($r('sys.color.comp_background_list_card'))
-
-
-        Row() {
-          Column({ space: 6 }) {
-            Text('隐私设置')
-              .fontSize(16)
-              .fontColor($r('sys.color.font_primary'))
-              .fontWeight(FontWeight.Medium)
-              .textAlign(TextAlign.Start)
-          }
-          .layoutWeight(1)
-          .alignItems(HorizontalAlign.Start)
-          Row() {
-            SymbolGlyph($r('sys.symbol.chevron_right'))
-              .fontSize(24)
-              .fontColor([$r('sys.color.font_fourth')])
-          }
-          .justifyContent(FlexAlign.End)
-        }
-        .padding(16)
-        .borderRadius(16)
-        .backgroundColor($r('sys.color.comp_background_list_card'))
-        .onClick(() => {
-          this.isShowPrivacy = true;
-        })
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 12 })
@@ -129,103 +86,6 @@ export struct SettingPanel {
     .scrollBar(BarState.Off)
     .width('100%')
     .backgroundColor($r('sys.color.background_secondary'))
-  }
-
-  @Builder
-  private privacyView(): void {
-    Column() {
-      Row() {
-        SymbolGlyph($r('sys.symbol.chevron_left'))
-          .fontSize(24)
-          .fontColor([$r('sys.color.ohos_id_color_activated')])
-          .margin({ left: 12 })
-          .onClick(() => {
-            this.isShowPrivacy = false;
-          })
-        Text('隐私设置')
-          .fontSize(18)
-          .fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_primary'))
-          .margin({ left: 8 })
-      }
-      .width('100%')
-      .height(56)
-      .alignItems(VerticalAlign.Center)
-
-      Scroll() {
-        Column({ space: 12 }) {
-          Row() {
-            Column({ space: 6 }) {
-              Text('个性化推荐')
-                .fontSize(16)
-                .fontColor($r('sys.color.font_primary'))
-                .fontWeight(FontWeight.Medium)
-                .textAlign(TextAlign.Start)
-            }
-            .layoutWeight(1)
-            .alignItems(HorizontalAlign.Start)
-            Row() {
-              Toggle({ type: ToggleType.Switch, isOn: $$this.pushSwitchOn })
-                .selectedColor($r('sys.color.ohos_id_color_warning'))
-            }
-            .justifyContent(FlexAlign.End)
-          }
-          .padding(16)
-          .borderRadius(16)
-          .backgroundColor($r('sys.color.comp_background_list_card'))
-
-          Row() {
-            Column({ space: 6 }) {
-              Text('用户协议')
-                .fontSize(16)
-                .fontColor($r('sys.color.font_primary'))
-                .fontWeight(FontWeight.Medium)
-                .textAlign(TextAlign.Start)
-            }
-            .layoutWeight(1)
-            .alignItems(HorizontalAlign.Start)
-            Row() {
-              SymbolGlyph($r('sys.symbol.chevron_right'))
-                .fontSize(24)
-                .fontColor([$r('sys.color.font_fourth')])
-            }
-            .justifyContent(FlexAlign.End)
-          }
-          .padding(16)
-          .borderRadius(16)
-          .backgroundColor($r('sys.color.comp_background_list_card'))
-
-          Row() {
-            Column({ space: 6 }) {
-              Text('隐私政策')
-                .fontSize(16)
-                .fontColor($r('sys.color.font_primary'))
-                .fontWeight(FontWeight.Medium)
-                .textAlign(TextAlign.Start)
-            }
-            .layoutWeight(1)
-            .alignItems(HorizontalAlign.Start)
-            Row() {
-              SymbolGlyph($r('sys.symbol.chevron_right'))
-                .fontSize(24)
-                .fontColor([$r('sys.color.font_fourth')])
-            }
-            .justifyContent(FlexAlign.End)
-          }
-          .padding(16)
-          .borderRadius(16)
-          .backgroundColor($r('sys.color.comp_background_list_card'))
-        }
-        .width('100%')
-        .padding({ left: 16, right: 16, top: 12 })
-      }
-      .layoutWeight(1)
-      .align(Alignment.Top)
-      .edgeEffect(EdgeEffect.None)
-      .scrollBar(BarState.Off)
-      .width('100%')
-      .backgroundColor($r('sys.color.background_secondary'))
-    }
   }
 
   @Builder

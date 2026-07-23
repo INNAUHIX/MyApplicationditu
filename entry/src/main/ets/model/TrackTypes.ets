@@ -20,12 +20,10 @@ export interface VisibleRange {
   end: number;
 }
 
-// ===== 定位记录模式（按功耗分级，Option B）=====
+// ===== 定位记录模式 =====
 export enum RecordMode {
-  BALANCED = 0,     // 均衡（修改后配置，maxAccuracy=100, TRAJECTORY_TRACKING）
-  HIGH_POWER = 1,   // 耗电
-  SLEEP = 2,        // 睡眠
-  NORMAL = 3        // 普通（临时测试：修改前的原始配置，测试完成后删除）
+  BALANCED = 0,     // 均衡
+  SLEEP = 1,        // 睡眠
 }
 
 export interface RecordModeConfig {
@@ -37,10 +35,8 @@ export interface RecordModeConfig {
 }
 
 export const MODE_CONFIG: RecordModeConfig[] = [
-  { timeInterval: 20, distanceInterval: 90,  label: '均衡', maxAccuracy: 100, useTrajectoryScenario: true },
-  { timeInterval: 5,  distanceInterval: 30,  label: '耗电', maxAccuracy: 0,   useTrajectoryScenario: false },
+  { timeInterval: 20, distanceInterval: 90,  label: '均衡', maxAccuracy: 0,   useTrajectoryScenario: true },
   { timeInterval: 60, distanceInterval: 0,   label: '睡眠', maxAccuracy: 0,   useTrajectoryScenario: false },
-  { timeInterval: 20, distanceInterval: 90,  label: '普通', maxAccuracy: 0,   useTrajectoryScenario: false },
 ];
 
 // 待写入数据库的轨迹点记录（含精度/速度/时间戳）
@@ -88,7 +84,7 @@ export const PREF_KEY_MAP_STYLE: string = 'mapStyleIndex';
 export const PREF_KEY_TIME_VIEW: string = 'timeViewIndex';
 export const PREF_KEY_CUSTOM_START: string = 'customStartTs';
 export const PREF_KEY_CUSTOM_END: string = 'customEndTs';
-// 轻量偏好存储：持久化记录规则（0=均衡 / 1=耗电）
+// 轻量偏好存储：持久化记录规则（0=均衡）
 export const PREF_KEY_RECORD_MODE: string = 'recordModeIndex';
 // 轻量偏好存储：持久化夜间模式（0=跟随系统 / 1=普通模式 / 2=夜间模式）
 export const PREF_KEY_NIGHT_MODE: string = 'nightModeIndex';
@@ -133,6 +129,8 @@ export const MAP_STYLE_LIGHT_ID: string = '1992216939216384896';
 export const STATIONARY_WINDOW: number = 10;
 // 静止检测：窗口内所有点到质心距离 < 15米则判定为静止
 export const STATIONARY_RADIUS: number = 15;
+// 尖刺检测：中间点到两端点连线偏离距离阈值（米），超过此距离标记为 GPS 漂移尖刺
+export const SPIKE_DEVIATION_METERS: number = 30;
 
 
 // ===== 睡眠模式阈值 =====
@@ -140,4 +138,39 @@ export const STATIONARY_RADIUS: number = 15;
 export const SLEEP_END_HOUR: number = 6;
 // 退出睡眠后最短活动持续时间（毫秒）：防止抖动导致反复进出睡眠
 export const SLEEP_MIN_ACTIVE_DURATION: number = 5 * 60 * 1000;
+
+// ===== 日志系统 =====
+export enum LogLevel {
+  INFO = 0,
+  WARN = 1,
+  ERROR = 2
+}
+
+export interface LogRecord {
+  id?: number;
+  timestamp: number;
+  level: LogLevel;
+  tag: string;
+  message: string;
+}
+
+export interface LogCategoryStyle {
+  color: string;
+  label: string;
+}
+
+export const LOG_CATEGORY_STYLES: Record<string, LogCategoryStyle> = {
+  '打点': { color: '#0AAD6E', label: '📍' },
+  '尖刺': { color: '#FF9500', label: '⚡' },
+  '中断': { color: '#FF3B30', label: '🔴' },
+  '恢复': { color: '#34C759', label: '🟢' },
+  '睡眠': { color: '#AF52DE', label: '🌙' },
+  '模式': { color: '#007AFF', label: '🔄' },
+};
+
+export const LOG_TABLE_NAME: string = 'app_log';
+export const CREATE_LOG_TABLE_SQL: string =
+  `CREATE TABLE IF NOT EXISTS ${LOG_TABLE_NAME} (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp INTEGER, level INTEGER, tag TEXT, message TEXT)`;
+export const CREATE_LOG_INDEX_SQL: string =
+  `CREATE INDEX IF NOT EXISTS idx_log_ts ON ${LOG_TABLE_NAME}(timestamp)`;
 
